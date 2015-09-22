@@ -37,64 +37,64 @@ jQuery(document).ready(function ($) {
         '',
         '                    {{#if temporal_coverage }}',
         '                        <li>',
-        '                            <a class="btn btn-xs" rel="tooltip"',
+        '                            <span class="" rel="tooltip"',
         '                                data-placement="top" data-container="body"',
         '                                title="{{_ \'temporal_coverage\'}}">',
         '                                <span class="fa fa-calendar fa-fw"></span>',
         '                                {{dt temporal_coverage.start format=\'L\' }} {{_ \'to\'}} {{dt temporal_coverage.end format=\'L\' }}',
-        '                            </a>',
+        '                            </span>',
         '                        </li>',
         '                    {{/if}}',
         '',
         '                    {{#if frequency }}',
         '                        <li>',
-        '                            <a class="btn btn-xs" rel="tooltip"',
+        '                            <span class="" rel="tooltip"',
         '                                data-placement="top" data-container="body"',
         '                                title="{{_ \'Update frequency\' }}">',
         '                                <span class="fa fa-clock-o fa-fw"></span>',
         '                                {{_ frequency }}',
-        '                            </a>',
+        '                            </span>',
         '                        </li>',
         '                    {{/if}}',
         '',
         '                    {{#if spatial.territories }}',
         '                        <li>',
-        '                            <a class="btn btn-xs" rel="tooltip"',
+        '                            <span class="" rel="tooltip"',
         '                                data-placement="top" data-container="body"',
         '                                title="{{_ \'Spatial coverage\'}}">',
         '                                <span class="fa fa-map-marker fa-fw"></span>',
         '                                {{_ spatial.territories.0.name }}',
-        '                            </a>',
+        '                            </span>',
         '                        </li>',
         '                    {{/if}}',
         '',
         '                    {{#if spatial.granularity }}',
         '                        <li>',
-        '                            <a class="btn btn-xs" rel="tooltip"',
+        '                            <span class="" rel="tooltip"',
         '                                data-placement="top" data-container="body"',
         '                                title="{{_ \'Spatial granularity\'}}">',
         '                                <span class="fa fa-bullseye fa-fw"></span>',
         '                                {{_ spatial.granularity }}',
-        '                            </a>',
+        '                            </span>',
         '                        </li>',
         '                    {{/if}}',
         '',
         '                    <li>',
-        '                        <a class="btn btn-xs" rel="tooltip"',
+        '                        <span class="" rel="tooltip"',
         '                            data-placement="top" data-container="body"',
         '                            title="{{_ \'Reuses\'}}">',
         '                            <span class="fa fa-retweet fa-fw"></span>',
         '                            {{default metrics.reuses 0 }}',
-        '                        </a>',
+        '                        </span>',
         '                    </li>',
         '',
         '                    <li>',
-        '                        <a class="btn btn-xs" rel="tooltip"',
+        '                        <span class="" rel="tooltip"',
         '                            data-placement="top" data-container="body"',
         '                            title="{{_ \'Followers\'}}">',
         '                            <span class="fa fa-star fa-fw"></span>',
         '                            {{default metrics.followers 0 }}',
-        '                        </a>',
+        '                        </span>',
         '                    </li>',
         '',
         '                </ul>',
@@ -206,8 +206,11 @@ jQuery(document).ready(function ($) {
 
     Templates.datasetsForm = [
         '<div class="datasetsForm">',
-        '    <input type="text" name="q" value="{{q}}"></input>',
-        '    <select name="organizations">',
+        ' <form action="" method="get">',
+        '    <input type="hidden" name="option" value="com_udata"></input>',
+        '    <input type="hidden" name="view" value="udata"></input>',
+        '    <div><label></label><input type="text" name="q" value="{{q}}" placeholder="Rechercher des données"></input></div>',
+        '    <div><label>Organisme</label><select name="organizations">',
         '       {{#each orgs}}',
         '       {{#ifCond id "==" ../organization}}',
         '       <option value="{{id}}" selected>{{name}}</option>',
@@ -215,8 +218,9 @@ jQuery(document).ready(function ($) {
         '       <option value="{{id}}">{{name}}</option>',
         '       {{/ifCond}}',
         '       {{/each}}',
-        '    </select>',
-        '    <button type="button" class="hidden">actualiser</button>',
+        '    </select></div>',
+        '    <div><label></label><input type="submit" value="ok"></input></div>',
+        '    </form>',
         '</div>',
         '    <br>'
     ];
@@ -308,22 +312,29 @@ jQuery(document).ready(function ($) {
     }
 
 
-    var baseUrl = jQuery('script[src$="/js/udata.js"]').attr('src').replace('/js/udata.js', '/');
+    var baseUrl = jQuery('script[src$="/udata.js"]').attr('src').replace('/udata.js', '/');
     var _uData = {};
 
 
     uData = function (obj, options) {
 
 
+        var scrollTop = function () {
+            $('html, body').animate({
+                scrollTop: jQuery('div.uData-data').offset().top
+            }, 250);
+        }
+
+
         _uData.displayLastDatasets = function () {
-            /*  var url = API_ROOT + '/datasets/?sort=-created&' + jQuery.param(options);
+            /*  var url = API_ROOT + 'datasets/?sort=-created&' + jQuery.param(options);
             jQuery.getJSON(url, function (data) {
                 obj.html(Templates.lastdatasets(data));
             });*/
         };
 
         _uData.displayDatasets = function () {
-            var url = API_ROOT + '/datasets/?' + jQuery.param(options);
+            var url = API_ROOT + 'datasets/?' + jQuery.param(options);
             jQuery.getJSON(url, function (data) {
                 var params = {
                     q: options.q,
@@ -333,22 +344,30 @@ jQuery(document).ready(function ($) {
 
                 var html = Templates.datasetsForm(params) + Templates.datasets(data);
                 obj.html(html);
+                scrollTop();
+            }).fail(function () {
+                obj.html('<p class="error">Serveur www.data.gouv.fr injoignable</p>');
             });
         };
 
 
         _uData.displayDataset = function () {
-            var url = API_ROOT + '/datasets/' + options.dataset + '/';
+            var url = API_ROOT + 'datasets/' + options.dataset + '/';
             jQuery.getJSON(url, function (data) {
                 obj.find('.dataset-result[data-dataset="' + options.dataset + '"]')
                     .append(jQuery(Templates.dataset(data)));
 
                 obj.find('div.dataset[data-dataset="' + options.dataset + '"] ').hide().slideDown();
-            });
+            }).fail(
+                function () {
+                    oobj.find('.dataset-result[data-dataset="' + options.dataset + '"]')
+                        .append('<p class="error">Serveur www.data.gouv.fr injoignable</p>');
+                }
+            );
         };
 
         /*    _uData.displayLastReuses = function () {
-            var url = API_ROOT + '/reuses/?' + jQuery.param(options);
+            var url = API_ROOT + 'reuses/?' + jQuery.param(options);
             jQuery.getJSON(url, function (data) {
                 var t = Handlebars.compile($("#reuse-template").html());
                 obj.html(t(data));
@@ -365,6 +384,7 @@ jQuery(document).ready(function ($) {
 
     var checklibs = function () {
         var dependences = {
+            'Handlebars': 'https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.2/handlebars.min.js',
             'i18n': 'https://cdnjs.cloudflare.com/ajax/libs/i18next/1.6.3/i18next-1.6.3.min.js',
             'moment': 'https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.6/moment.min.js',
             'marked': 'https://cdnjs.cloudflare.com/ajax/libs/marked/0.3.5/marked.min.js',
@@ -479,7 +499,7 @@ jQuery(document).ready(function ($) {
                 var obj = jQuery(this);
                 var ud = uData(obj, obj.data());
                 ud.displayDatasets();
-                scrollTop();
+
             });
         }
 
@@ -559,8 +579,12 @@ jQuery(document).ready(function ($) {
 
     };
 
+    var jsonfail = function () {
+        _uData.container.html('<p class="error">Serveur www.data.gouv.fr injoignable</p>')
+    }
+
     var getOrganizationName = function (org) {
-        var url = API_ROOT + '/organizations/' + org + '/';
+        var url = API_ROOT + 'organizations/' + org + '/';
         jQuery.getJSON(url, function (data) {
             for (var i in _uData.orgs) {
                 var o = _uData.orgs[i];
@@ -579,7 +603,7 @@ jQuery(document).ready(function ($) {
             var html = Templates.datasetsForm(params);
             jQuery('.datasetsForm').replaceWith(html);
 
-        });
+        }).fail(jsonfail);
     }
 
     /* START */
@@ -587,6 +611,8 @@ jQuery(document).ready(function ($) {
     window._uData = {};
     _uData.container = jQuery('div.uData-data[data-organizations]');
     var orgs = _uData.container.data('organizations').split(',');
+
+    _uData.container.html('<p class="loading">chargement en cours</p>');
 
     for (var i in orgs) {
         getOrganizationName(orgs[i]);
