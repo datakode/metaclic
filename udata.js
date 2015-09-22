@@ -306,10 +306,7 @@ jQuery(document).ready(function ($) {
 
 
 
-    for (var tmpl in Templates) {
-        Templates[tmpl] = Templates[tmpl].join("\n");
-        Templates[tmpl] = Handlebars.compile(Templates[tmpl]);
-    }
+
 
 
     var baseUrl = jQuery('script[src$="/udata.js"]').attr('src').replace('/udata.js', '/');
@@ -412,6 +409,7 @@ jQuery(document).ready(function ($) {
 
         var container = _uData.container;
 
+        /** i18n init  **/
         _uData.lang = lang = 'fr';
 
         i18n.init({
@@ -427,6 +425,8 @@ jQuery(document).ready(function ($) {
             keyseparator: '$$', // Allow to use real sentences as keys
         }, function (err, t) { /* loading done */ });
 
+
+        /** momentjs init  **/
         moment.locale('fr', {
             months: "janvier_février_mars_avril_mai_juin_juillet_août_septembre_octobre_novembre_décembre".split("_"),
             monthsShort: "janv._févr._mars_avr._mai_juin_juil._août_sept._oct._nov._déc.".split("_"),
@@ -487,6 +487,189 @@ jQuery(document).ready(function ($) {
         });
 
         moment.locale(lang);
+
+
+        /** Handlebars init  **/
+
+        Handlebars.registerHelper('ifCond', function (v1, operator, v2, options) {
+
+            switch (operator) {
+            case '==':
+                return (v1 == v2) ? options.fn(this) : options.inverse(this);
+            case '!=':
+                return (v1 != v2) ? options.fn(this) : options.inverse(this);
+            case '===':
+                return (v1 === v2) ? options.fn(this) : options.inverse(this);
+            case '<':
+                return (v1 < v2) ? options.fn(this) : options.inverse(this);
+            case '<=':
+                return (v1 <= v2) ? options.fn(this) : options.inverse(this);
+            case '>':
+                return (v1 > v2) ? options.fn(this) : options.inverse(this);
+            case '>=':
+                return (v1 >= v2) ? options.fn(this) : options.inverse(this);
+            case '&&':
+                return (v1 && v2) ? options.fn(this) : options.inverse(this);
+            case '||':
+                return (v1 || v2) ? options.fn(this) : options.inverse(this);
+            default:
+                return options.inverse(this);
+            }
+        });
+
+
+
+        Handlebars.registerHelper('paginate', function (n, total, page_size) {
+
+            var res = '';
+            var nPage = Math.ceil(total / page_size);
+            if (nPage == 1) return '';
+            for (var i = 1; i <= nPage; ++i) {
+                res += '<li' + (i == n ? ' class="active"' : '') + ">";
+                res += '<a href="#" data-page=' + i + '>' + i + '</a></li>';
+            }
+            return '<nav><ul class="pagination">' + res + '</ul></nav>';
+        });
+
+        Handlebars.registerHelper('taglist', function (tags) {
+            var res = '';
+            for (var i in tags) {
+                res += "<span class='label label-primary' >" + tags[i] + '</span> ';
+            }
+            return res;
+        });
+
+        Handlebars.registerHelper('trimString', function (passedString) {
+            if (passedString.length > 150) {
+                var theString = passedString.substring(0, 150) + '...';
+                return new Handlebars.SafeString(theString);
+            } else {
+                return passedString;
+            }
+
+        });
+
+        Handlebars.registerHelper('truncate', function (str, len) {
+            if (str && str.length > len && str.length > 0) {
+                var new_str = str + " ";
+                new_str = str.substr(0, len);
+                new_str = str.substr(0, new_str.lastIndexOf(" "));
+                new_str = (new_str.length > 0) ? new_str : str.substr(0, len);
+
+                return new Handlebars.SafeString(new_str + '...');
+            }
+            return str;
+        });
+
+        Handlebars.registerHelper('default', function (value, defaultValue) {
+            if (value != null) {
+                return value
+            } else {
+                return defaultValue;
+            }
+        });
+
+        Handlebars.registerHelper('dt', function (value, options) {
+            return moment(value).format(options.hash['format'] || 'LLL');
+        });
+
+        Handlebars.registerHelper('placeholder', function (url, type) {
+            return url ? url : baseUrl + 'img/placeholders/' + type + '.png';
+        });
+
+        Handlebars.registerHelper('_', function (value, options) {
+            if (!value || typeof value !== 'string') {
+                return '';
+            }
+            options.hash.defaultValue = '???';
+            var res = i18n.t(value, options.hash);
+
+            if (res == '???') {
+                value = value.charAt(0).toLowerCase() + value.slice(1);
+                res = i18n.t(value, options.hash);
+                res = res.charAt(0).toUpperCase() + res.slice(1);
+            }
+            if (res == '???') {
+                value = value.charAt(0).toUpperCase() + value.slice(1);
+                res = i18n.t(value, options.hash);
+                res = res.charAt(0).toLowerCase() + res.slice(1);
+            }
+            if (res == '???') {
+                console.log('i18n "' + value + '" NOT FOUND')
+                return value;
+            }
+
+            return res;
+        });
+
+
+        Handlebars.registerHelper('md', function (value) {
+            return new Handlebars.SafeString(marked(value));
+        });
+
+
+
+        Handlebars.registerHelper('mdshort', function (value, length) {
+            if (!value) {
+                return;
+            }
+
+            var EXCERPT_TOKEN = '<!--- --- -->',
+                DEFAULT_LENGTH = 128;
+
+            if (typeof length == 'undefined') {
+                length = DEFAULT_LENGTH;
+            }
+
+            var text, ellipsis;
+            if (value.indexOf('<!--- excerpt -->')) {
+                value = value.split(EXCERPT_TOKEN, 1)[0];
+            }
+            ellipsis = value.length >= length ? '...' : '';
+            text = marked(value.substring(0, length) + ellipsis);
+            text = text.replace('<a ', '<span ').replace('</a>', '</span>');
+            return new Handlebars.SafeString(text);
+        });
+
+
+        Handlebars.registerHelper('theme', function (value) {
+            return new Handlebars.SafeString(baseUrl + '' + value);
+        });
+
+
+        Handlebars.registerHelper('fulllogo', function (value) {
+            //   value = value.replace('-100.png', '.png'); // BAD IDEA can be .png or .jpg
+            return new Handlebars.SafeString(value);
+        });
+
+        for (var tmpl in Templates) {
+            Templates[tmpl] = Templates[tmpl].join("\n");
+            Templates[tmpl] = Handlebars.compile(Templates[tmpl]);
+        }
+
+        /** init  **/
+
+        window._uData = {};
+        container = _uData.container = jQuery('div.uData-data[data-organizations]');
+        var orgs = _uData.container.data('organizations').split(',');
+
+        _uData.container.html('<p class="loading">chargement en cours</p>');
+
+        for (var i in orgs) {
+            getOrganizationName(orgs[i]);
+        }
+
+        _uData.container.data('organization', orgs[0]);
+        _uData.container.data('organizations', '');
+        _uData.orgs = [];
+
+        for (var i in orgs) {
+            _uData.orgs.push({
+                id: orgs[i],
+                name: orgs[i]
+            });
+        }
+
 
         container.each(function () {
             var obj = jQuery(this);
@@ -607,186 +790,7 @@ jQuery(document).ready(function ($) {
     }
 
     /* START */
-
-    window._uData = {};
-    _uData.container = jQuery('div.uData-data[data-organizations]');
-    var orgs = _uData.container.data('organizations').split(',');
-
-    _uData.container.html('<p class="loading">chargement en cours</p>');
-
-    for (var i in orgs) {
-        getOrganizationName(orgs[i]);
-    }
-
-    _uData.container.data('organization', orgs[0]);
-    _uData.container.data('organizations', '');
-    _uData.orgs = [];
-
-    for (var i in orgs) {
-        _uData.orgs.push({
-            id: orgs[i],
-            name: orgs[i]
-        });
-    }
-
     checklibs();
-
-
-
-
-
-
-    Handlebars.registerHelper('ifCond', function (v1, operator, v2, options) {
-
-        switch (operator) {
-        case '==':
-            return (v1 == v2) ? options.fn(this) : options.inverse(this);
-        case '!=':
-            return (v1 != v2) ? options.fn(this) : options.inverse(this);
-        case '===':
-            return (v1 === v2) ? options.fn(this) : options.inverse(this);
-        case '<':
-            return (v1 < v2) ? options.fn(this) : options.inverse(this);
-        case '<=':
-            return (v1 <= v2) ? options.fn(this) : options.inverse(this);
-        case '>':
-            return (v1 > v2) ? options.fn(this) : options.inverse(this);
-        case '>=':
-            return (v1 >= v2) ? options.fn(this) : options.inverse(this);
-        case '&&':
-            return (v1 && v2) ? options.fn(this) : options.inverse(this);
-        case '||':
-            return (v1 || v2) ? options.fn(this) : options.inverse(this);
-        default:
-            return options.inverse(this);
-        }
-    });
-
-
-
-    Handlebars.registerHelper('paginate', function (n, total, page_size) {
-
-        var res = '';
-        var nPage = Math.ceil(total / page_size);
-        if (nPage == 1) return '';
-        for (var i = 1; i <= nPage; ++i) {
-            res += '<li' + (i == n ? ' class="active"' : '') + ">";
-            res += '<a href="#" data-page=' + i + '>' + i + '</a></li>';
-        }
-        return '<nav><ul class="pagination">' + res + '</ul></nav>';
-    });
-
-    Handlebars.registerHelper('taglist', function (tags) {
-        var res = '';
-        for (var i in tags) {
-            res += "<span class='label label-primary' >" + tags[i] + '</span> ';
-        }
-        return res;
-    });
-
-    Handlebars.registerHelper('trimString', function (passedString) {
-        if (passedString.length > 150) {
-            var theString = passedString.substring(0, 150) + '...';
-            return new Handlebars.SafeString(theString);
-        } else {
-            return passedString;
-        }
-
-    });
-
-    Handlebars.registerHelper('truncate', function (str, len) {
-        if (str && str.length > len && str.length > 0) {
-            var new_str = str + " ";
-            new_str = str.substr(0, len);
-            new_str = str.substr(0, new_str.lastIndexOf(" "));
-            new_str = (new_str.length > 0) ? new_str : str.substr(0, len);
-
-            return new Handlebars.SafeString(new_str + '...');
-        }
-        return str;
-    });
-
-    Handlebars.registerHelper('default', function (value, defaultValue) {
-        if (value != null) {
-            return value
-        } else {
-            return defaultValue;
-        }
-    });
-
-    Handlebars.registerHelper('dt', function (value, options) {
-        return moment(value).format(options.hash['format'] || 'LLL');
-    });
-
-    Handlebars.registerHelper('placeholder', function (url, type) {
-        return url ? url : baseUrl + 'img/placeholders/' + type + '.png';
-    });
-
-    Handlebars.registerHelper('_', function (value, options) {
-        if (!value || typeof value !== 'string') {
-            return '';
-        }
-        options.hash.defaultValue = '???';
-        var res = i18n.t(value, options.hash);
-
-        if (res == '???') {
-            value = value.charAt(0).toLowerCase() + value.slice(1);
-            res = i18n.t(value, options.hash);
-            res = res.charAt(0).toUpperCase() + res.slice(1);
-        }
-        if (res == '???') {
-            value = value.charAt(0).toUpperCase() + value.slice(1);
-            res = i18n.t(value, options.hash);
-            res = res.charAt(0).toLowerCase() + res.slice(1);
-        }
-        if (res == '???') {
-            console.log('i18n "' + value + '" NOT FOUND')
-            return value;
-        }
-
-        return res;
-    });
-
-
-    Handlebars.registerHelper('md', function (value) {
-        return new Handlebars.SafeString(marked(value));
-    });
-
-
-
-    Handlebars.registerHelper('mdshort', function (value, length) {
-        if (!value) {
-            return;
-        }
-
-        var EXCERPT_TOKEN = '<!--- --- -->',
-            DEFAULT_LENGTH = 128;
-
-        if (typeof length == 'undefined') {
-            length = DEFAULT_LENGTH;
-        }
-
-        var text, ellipsis;
-        if (value.indexOf('<!--- excerpt -->')) {
-            value = value.split(EXCERPT_TOKEN, 1)[0];
-        }
-        ellipsis = value.length >= length ? '...' : '';
-        text = marked(value.substring(0, length) + ellipsis);
-        text = text.replace('<a ', '<span ').replace('</a>', '</span>');
-        return new Handlebars.SafeString(text);
-    });
-
-
-    Handlebars.registerHelper('theme', function (value) {
-        return new Handlebars.SafeString(baseUrl + '' + value);
-    });
-
-
-    Handlebars.registerHelper('fulllogo', function (value) {
-        //   value = value.replace('-100.png', '.png'); // BAD IDEA can be .png or .jpg
-        return new Handlebars.SafeString(value);
-    });
-
 
 
 
