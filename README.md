@@ -263,4 +263,5 @@ voici les identifiants et templates par défaut utilisés:
         </div>
 </script>
 ```
-
+##  exemple de personnalisation
+http://depthfrance.github.io/udata-js/exemple2.html
