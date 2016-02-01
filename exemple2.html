@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>udata-js exemple personnalisation</title>
-    <link type="text/css" href="./exemple.css" rel="stylesheet">
+    <link type="text/css" href="./exemple2.css" rel="stylesheet">
 
 </head>
 <body>
@@ -15,7 +15,25 @@
     <!-- chargement feuille de style font-awesome -->
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/css/font-awesome.min.css">
 
-    <script src="./udata.js"></script>
+        <script src="./udata.js"></script>
+
+
+    <script id='udata_template_datasetsForm' type="text/x-handlebars-template">
+        <h1>Service départemental d'incendie et de secours du Tarn</h1>
+    </script>
+
+    <script id='udata_template_dataset' type="text/x-handlebars-template">
+        <div class="dataset" data-dataset="{{id}}">
+            <h2 class='text-center'>{{title}}</h2>
+            {{#each resources}}
+                <div class="resources-list">
+                        <a href="{{url}}" data-size="{{filesize}}" data-format="{{format}}" data-title="{{title}}" data-id="{{id}}" itemprop="url" target=_blank></a>
+                </div>
+            {{/each}}
+
+        </div>
+    </script>
+
 
     <script id='udata_template_dataset' type="text/x-handlebars-template">
         <div class="dataset" data-dataset="{{id}}">

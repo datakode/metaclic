@@ -42,8 +42,6 @@ voici les identifiants et templates par défaut utilisés:
 <script id='udata_template_datasetsForm' type="text/x-handlebars-template">
         <div class="datasetsForm">
                 <form action="" method="get">
-                        <input type="hidden" name="option" value="com_udata"></input>
-                        <input type="hidden" name="view" value="udata"></input>
                         <div><label></label><input type="text" name="q" value="{{q}}" placeholder="Rechercher des données" class="form-control"></input></div>
                         {{#ifCount orgs ">" 1 }}
                         <div>
