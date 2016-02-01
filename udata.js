@@ -74,7 +74,7 @@ jQuery(document).ready(function ($) {
         '                    <div class="result-description">',
         '                        {{mdshort description 128}}</div></div>',
         '',
-        '                </a><ul class="list-inline result-infos"><a href="{{ url }}" title="{{title}}"></a>',
+        '                </a><ul class="list-inline result-infos">',
         '',
         '                    {{#if temporal_coverage }}',
         '                        <li>',
