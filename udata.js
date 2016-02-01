@@ -511,6 +511,8 @@ jQuery(document).ready(function ($) {
                 var geojson_url = geojson_link.prop('href');
                 var url = API_ROOT + 'datasets/checkurl/?url=' + encodeURIComponent(geojson_url) + '&group=' + options.dataset;
 
+                geojson_link.closest('div').append(jQuery('<div class="geojson_loading alert alert-info">chargement en cours <i class="fa fa-spinner fa-spin"></i></div>'));
+
                 jQuery.getJSON(url, function (data) {
                     var contentlength = parseInt(data['content-length']);
                     // console.log(contentlength);
@@ -519,7 +521,8 @@ jQuery(document).ready(function ($) {
                         jQuery.getJSON(geojson_url, function (data) {
 
                             if (data.features.length > featurelength_limit) {
-                                console.warn('feature count excess: ' + data.features.length + ' (max:' + featurelength_limit + ')');
+                                //console.warn('feature count excess: ' + data.features.length + ' (max:' + featurelength_limit + ')');
+                                 geojson_link.closest('div').find('.geojson_loading').removeClass('alert-info').addClass('alert-warning').html('<strong><i class="fa fa-info-circle"></i> fichier trop important pour être chargé (>'+featurelength_limit+' objets)</strong><br><a href="'+geojson_url+'">'+geojson_url+'</a>');
                                 return false;
                             }
 
@@ -541,13 +544,16 @@ jQuery(document).ready(function ($) {
                                 }
                             }).addTo(map);
                             map.fitBounds(layer.getBounds());
+                            geojson_link.closest('div').find('.geojson_loading').slideUp('slow');
                             geojson_link.closest('div').find('.geojson_preview').hide().fadeIn('slow');
                         }).fail(
                             function (data) {
-                                console.warn("can't load GeoJson: " + geojson_url);
+                                //console.warn("can't load GeoJson: " + geojson_url);
+                                geojson_link.closest('div').find('.geojson_loading').removeClass('alert-info').addClass('alert alert-danger').html('<strong><i class="fa fa-warning"></i> impossible de charger le fichier</strong><br><a href="'+geojson_url+'">'+geojson_url+'</a>');
                             });
                     } else {
-                        console.warn('content-length excess: ' + contentlength + ' (max:' + contentlength_limit + ')');
+                        //console.warn('content-length excess: ' + contentlength + ' (max:' + contentlength_limit + ')');
+                        geojson_link.closest('div').find('.geojson_loading').removeClass('alert-info').addClass('alert alert-warning').html('<strong><i class="fa fa-info-circle"></i> fichier trop important pour être chargé (>'+contentlength_limit/1000+'ko)</strong><br><a href="'+geojson_url+'">'+geojson_url+'</a>');
                     }
 
                 });
