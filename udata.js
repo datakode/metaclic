@@ -173,10 +173,10 @@ jQuery(document).ready(function ($) {
         '            {{#each resources}}',
         '            <div data-checkurl="/api/1/datasets/checkurl/" itemtype="http://schema.org/DataDownload" itemscope="itemscope" id="resource-{{id}}">',
         '',
-        '                <a href="{{url}}" data-size="{{filesize}}" data-format="{{format}}" data-title="{{title}}" data-id="{{id}}" itemprop="url" target=_blank>',
+        '                <a href="{{url}}" data-size="{{filesize}}" data-format="{{uppercase format}}" data-title="{{title}}" data-id="{{id}}" itemprop="url" target=_blank>',
         '                    <h4>',
-        '                        <span data-format="{{format}}">',
-        '                            {{format}}',
+        '                        <span data-format="{{uppercase format}}">',
+        '                            {{uppercase format}}',
         '                        </span>',
         '                        {{title}}',
         '                        <p>',
@@ -415,7 +415,7 @@ jQuery(document).ready(function ($) {
             var options2 = options;
 
             if (typeof options2.sort == 'undefined') {
-                    options2.sort=sortTypes[0].id;
+                options2.sort = sortTypes[0].id;
             }
 
             if (typeof options2.sort == 'string') {
@@ -501,7 +501,7 @@ jQuery(document).ready(function ($) {
 
         var addPreviewMap = function (dataset) {
             var bloc = obj.find('.dataset-result[data-dataset="' + options.dataset + '"]');
-            var geojson_links = bloc.find('.resources-list a[data-format="JSON"]');
+            var geojson_links = bloc.find('.resources-list a[data-format="JSON"],.resources-list a[data-format="GEOJSON"]');
             //console.log(geojson_links);
 
             geojson_links.each(function () {
@@ -522,7 +522,7 @@ jQuery(document).ready(function ($) {
 
                             if (data.features.length > featurelength_limit) {
                                 //console.warn('feature count excess: ' + data.features.length + ' (max:' + featurelength_limit + ')');
-                                 geojson_link.closest('div').find('.geojson_loading').removeClass('alert-info').addClass('alert-warning').html('<strong><i class="fa fa-info-circle"></i> fichier trop important pour être chargé (>'+featurelength_limit+' objets)</strong><br><a href="'+geojson_url+'">'+geojson_url+'</a>');
+                                geojson_link.closest('div').find('.geojson_loading').removeClass('alert-info').addClass('alert-warning').html('<strong><i class="fa fa-info-circle"></i> fichier trop important pour être chargé (>' + featurelength_limit + ' objets)</strong><br><a href="' + geojson_url + '">' + geojson_url + '</a>');
                                 return false;
                             }
 
@@ -549,11 +549,11 @@ jQuery(document).ready(function ($) {
                         }).fail(
                             function (data) {
                                 //console.warn("can't load GeoJson: " + geojson_url);
-                                geojson_link.closest('div').find('.geojson_loading').removeClass('alert-info').addClass('alert alert-danger').html('<strong><i class="fa fa-warning"></i> impossible de charger le fichier</strong><br><a href="'+geojson_url+'">'+geojson_url+'</a>');
+                                geojson_link.closest('div').find('.geojson_loading').removeClass('alert-info').addClass('alert alert-danger').html('<strong><i class="fa fa-warning"></i> impossible de charger le fichier</strong><br><a href="' + geojson_url + '">' + geojson_url + '</a>');
                             });
                     } else {
                         //console.warn('content-length excess: ' + contentlength + ' (max:' + contentlength_limit + ')');
-                        geojson_link.closest('div').find('.geojson_loading').removeClass('alert-info').addClass('alert alert-warning').html('<strong><i class="fa fa-info-circle"></i> fichier trop important pour être chargé (>'+contentlength_limit/1000+'ko)</strong><br><a href="'+geojson_url+'">'+geojson_url+'</a>');
+                        geojson_link.closest('div').find('.geojson_loading').removeClass('alert-info').addClass('alert alert-warning').html('<strong><i class="fa fa-info-circle"></i> fichier trop important pour être chargé (>' + contentlength_limit / 1000 + 'ko)</strong><br><a href="' + geojson_url + '">' + geojson_url + '</a>');
                     }
 
                 });
@@ -746,8 +746,8 @@ jQuery(document).ready(function ($) {
             }
         });
 
- Handlebars.registerHelper('ifCount', function (v1, operator, v2, options) {
-            var v1=v1.length;
+        Handlebars.registerHelper('ifCount', function (v1, operator, v2, options) {
+            var v1 = v1.length;
             switch (operator) {
             case '==':
                 return (v1 == v2) ? options.fn(this) : options.inverse(this);
@@ -802,6 +802,11 @@ jQuery(document).ready(function ($) {
                 return passedString;
             }
 
+        });
+
+
+        Handlebars.registerHelper('uppercase', function (passedString) {
+            return passedString.toUpperCase();
         });
 
         Handlebars.registerHelper('truncate', function (str, len) {
@@ -1063,7 +1068,7 @@ jQuery(document).ready(function ($) {
             //tri par nom
             _uData.orgs.sort(function (a, b) {
                 if (a.name > b.name)
-                  return 1;
+                    return 1;
                 return -1;
             });
 
@@ -1085,7 +1090,7 @@ jQuery(document).ready(function ($) {
 
     /* START */
     if (jQuery('link[href$="udata.css"]').length == 0)
-                jQuery('<link type="text/css" href="' + baseUrl + 'udata.css" rel="stylesheet">').appendTo('head');
+        jQuery('<link type="text/css" href="' + baseUrl + 'udata.css" rel="stylesheet">').appendTo('head');
 
     checklibs();
 
