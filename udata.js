@@ -1,5 +1,17 @@
 var uData;
 
+
+var uDataUtils = {};
+
+uDataUtils.urlify = function (text) {
+    if ('string' != typeof text) return text;
+    var urlRegex = /(https?:\/\/[^\s]+)/g;
+    return text.replace(urlRegex, function (url) {
+            return '<a href="' + url + '" target="_blank">' + url + '</a>';
+        })
+        // or alternatively
+        // return text.replace(urlRegex, '<a href="$1">$1</a>')
+}
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -53,6 +65,15 @@ jQuery(document).ready(function ($) {
         '       </a>',
         '</div>',
         '{{/ifCond}}',
+
+        '<div class="row">',
+        '{{#ifCond facets "!=" undefined}}',
+        '<div class="col-md-9">',
+        '{{else}}',
+        '<div class="col-md-12">',
+        '{{/ifCond}}',
+
+
         '    <ul class="search-results">',
         '        {{#each data}}',
         '        <li class="search-result dataset-result" data-dataset="{{id}}">',
@@ -142,6 +163,110 @@ jQuery(document).ready(function ($) {
         '        </li>',
         '    {{/each}}',
         '    </ul>',
+        '</div>',
+
+        '{{#ifCond facets "!=" undefined}}',
+        '<div class="col-md-3 uData-facets"><br>',
+
+        '{{#ifCond facets.tag "!=" undefined}}',
+        '{{#if facets.tag.terms}}',
+        '<div class="panel panel-default">',
+        '    <div class="panel-heading"><i class="fa fa-tags fa-fw"></i> Tags</div>',
+        '    <ul class="list-group">',
+        '       {{#each facets.tag.terms}}',
+
+        '       <a class="list-group-item" href="#" data-addTag="{{this.[0]}}">',
+        '       <span class="badge">{{this.[1]}}</span>',
+        '       {{this.[0]}}',
+        '       </a>',
+        '       {{/each}}',
+        '    </ul>',
+        '</div>',
+        '{{/if}}',
+        '{{/ifCond}}',
+
+
+        '{{#ifCond facets.license "!=" undefined}}',
+        '{{#if facets.license.models}}',
+        '<div class="panel panel-default">',
+        '    <div class="panel-heading"><i class="fa fa-copyright fa-fw"></i> Licences</div>',
+        '    <ul class="list-group">',
+        '       {{#each facets.license.models}}',
+
+        '       <a class="list-group-item" href="#" data-addLicense="{{this.[0].id}}">',
+        '       <span class="badge">{{this.[1]}}</span>',
+        '       {{_ this.[0].id}}',
+        '       </a>',
+        '       {{/each}}',
+        '    </ul>',
+        '</div>',
+        '{{/if}}',
+        '{{/ifCond}}',
+
+        //couverture temporelle
+
+        '{{#ifCond facets.geozone "!=" undefined}}',
+        '{{#if facets.geozone.models}}',
+        '<div class="panel panel-default">',
+        '    <div class="panel-heading"><i class="fa fa-map-marker fa-fw"></i> Couverture spatiale</div>',
+        '    <ul class="list-group">',
+        '       {{#each facets.geozone.models}}',
+
+        '       <a class="list-group-item geozone-to-load" href="#" data-addGeozone="{{this.[0].id}}">',
+        '       <span class="badge">{{this.[1]}}</span>',
+        '       {{this.[0].id}}',
+        '       </a>',
+        '       {{/each}}',
+        '    </ul>',
+        '</div>',
+        '{{/if}}',
+        '{{/ifCond}}',
+
+
+
+        '{{#ifCond facets.granularity "!=" undefined}}',
+        '{{#if facets.granularity.terms}}',
+        '<div class="panel panel-default">',
+        '    <div class="panel-heading"><i class="fa fa-bullseye fa-fw"></i> Granularité territoriale</div>',
+        '    <ul class="list-group">',
+        '       {{#each facets.granularity.terms}}',
+
+        '       <a class="list-group-item" href="#" data-addGranularity="{{this.[0]}}">',
+        '       <span class="badge">{{this.[1]}}</span>',
+        '       {{_ this.[0]}}',
+        '       </a>',
+        '       {{/each}}',
+        '    </ul>',
+        '</div>',
+        '{{/if}}',
+        '{{/ifCond}}',
+
+
+        '{{#ifCond facets.format "!=" undefined}}',
+        '{{#if facets.format.terms}}',
+        '<div class="panel panel-default">',
+        '    <div class="panel-heading"><i class="fa fa-file fa-fw"></i> Formats</div>',
+        '    <ul class="list-group">',
+        '       {{#each facets.format.terms}}',
+
+        '       <a class="list-group-item" href="#" data-addFormat="{{this.[0]}}">',
+        '       <span class="badge">{{this.[1]}}</span>',
+        '       {{_ this.[0]}}',
+        '       </a>',
+        '       {{/each}}',
+        '    </ul>',
+        '</div>',
+        '{{/if}}',
+        '{{/ifCond}}',
+
+        // reuse
+
+
+        '</div>',
+        '{{/ifCond}}',
+
+        '</div>',
+
         '    <div class="text-center">',
         '        <div class="pagination">',
         '            {{{ paginate page total page_size }}}',
@@ -263,6 +388,25 @@ jQuery(document).ready(function ($) {
         '',
         //'    <div><label></label><input type="submit" value="ok"></input></div>',
         '    </form>',
+        '    <p class="selected_assets">',
+        '   {{#if tag}}',
+        '   {{#each tag}}',
+        '       <a href="#" class="btn btn-default btn-sm" data-removeTag="{{.}}"> &times;<i class="fa fa-tags fa-fw"></i> {{.}}</a>',
+        '   {{/each}}',
+        '   {{/if}}',
+        '   {{#if license}}',
+        '       <a href="#" class="btn btn-default btn-sm" data-removeParam="license"> &times;<i class="fa fa-copyright fa-fw"></i> {{license}}</a>',
+        '   {{/if}}',
+        '   {{#if geozone}}',
+        '       <a href="#" class="btn btn-default btn-sm" data-removeParam="geozone"> &times;<i class="fa fa-map-marker fa-fw"></i> {{geozone}}</a>',
+        '   {{/if}}',
+        '   {{#if granularity}}',
+        '       <a href="#" class="btn btn-default btn-sm" data-removeParam="granularity"> &times;<i class="fa fa-bullseye  fa-fw"></i> {{granularity}}</a>',
+        '   {{/if}}',
+        '   {{#if format}}',
+        '       <a href="#" class="btn btn-default btn-sm" data-removeParam="format"> &times;<i class="fa fa-file fa-fw"></i> {{format}}</a>',
+        '   {{/if}}',
+        '   </p>',
         '</div>',
         '    <br>'
     ];
@@ -346,6 +490,8 @@ jQuery(document).ready(function ($) {
 
 
 
+
+
     Templates.shareLink = [
         '<div class="uData-shareLink">',
         '<div class="text-right"><a href="#">intégrez cet outil de recherche sur votre site&nbsp;<i class="fa fa-share-alt"></i></a></div>',
@@ -376,9 +522,31 @@ jQuery(document).ready(function ($) {
 
 
 
+    Templates.shareLinkMap = [
+        '<div class="uDataMap-shareLink">',
+        '<div class="text-right"><a href="#">intégrez cette carte à votre site&nbsp;<i class="fa fa-share-alt"></i></a></div>',
+        '<div class="hidden">',
+        '   <h4>Vous pouvez intégrer cet carte sur votre site</h4>',
+        '   <p>Pour ceci collez le code suivant dans le code HTML de votre page</p>',
+        '   <pre>',
+        '&lt;script&gt;window.jQuery || document.write("&lt;script src=\'//cdnjs.cloudflare.com/ajax/libs/jquery/2.2.0/jquery.min.js\'&gt;&lt;\\\/script&gt;")&lt;/script&gt;',
+        '',
+        '&lt;script src="{{baseUrl}}udata.js"&gt;&lt;/script&gt;',
+        '&lt;div class="uData-map"',
+        "   data-ressources='{{jsonencode ressources}}'",
+        "   data-leafletMapOptions='{{jsonencode leafletMapOptions}}'",
+        "   data-title='{{title}}'",
+        '&gt&lt;/div&gt',
+        '   </pre>',
+        "   <p>vous pouvez trouver plus d'info sur cet outil et son paramétrage à cette adresse: <a href='https://github.com/DepthFrance/udata-js' target='_blank'>https://github.com/DepthFrance/udata-js</a></p>",
+        '</div>',
+        '</div>',
+    ];
 
 
-    var baseUrl = jQuery('script[src$="/udata.js"]').attr('src').replace('/udata.js', '/');
+
+
+    var baseUrl = jQuery('script[src$="/udata.js"]')[0].src.replace('/udata.js', '/');
 
     var _uData = {};
 
@@ -438,6 +606,17 @@ jQuery(document).ready(function ($) {
                     sortDesc: sortDesc,
                 };
 
+                if (typeof options.tag == 'string') params.tag = [options.tag];
+                if (typeof options.tag == 'array') params.tag = options.tag;
+
+                if (typeof options.license == 'string') params.license = options.license;
+
+                if (typeof options.geozone == 'string') params.geozone = options.geozone;
+
+                if (typeof options.granularity == 'string') params.granularity = options.granularity;
+
+                if (typeof options.format == 'string') params.format = options.format;
+
 
                 data.sort = options.sort;
                 if (typeof data.sort == 'string') {
@@ -448,14 +627,17 @@ jQuery(document).ready(function ($) {
 
 
                 var html = Templates.datasetsForm(params) + Templates.datasets(data);
+
                 if (options.sharelink) {
                     html += Templates.shareLink(options);
                 }
+
                 // console.log(params);
                 obj.html(html);
+                updateGeozonesTrans();
                 scrollTop();
             }).fail(function () {
-                obj.html('<p class="error">Serveur www.data.gouv.fr injoignable</p>');
+                obj.html('<p class="error">Serveur ' + API_ROOT + ' injoignable</p>');
             });
         };
 
@@ -464,6 +646,14 @@ jQuery(document).ready(function ($) {
             var zones_li = bloc.find('ul.spatial_zones li');
             bloc.find('ul.spatial_zones').hide();
             var list = [];
+            var style = function (feature) {
+                return {
+                    weight: 1,
+                    opacity: 1,
+                    fillOpacity: 0.25
+                };
+            };
+
             zones_li.each(function () {
                 list.push(jQuery(this).data('zone'));
             });
@@ -479,7 +669,8 @@ jQuery(document).ready(function ($) {
                         onEachFeature: function (feature, layer) {
                             var html = '<h4>' + feature.properties.name + '</h4>' + feature.properties.population + ' habitants'
                             layer.bindPopup(html);
-                        }
+                        },
+                        style: style
                     }).addTo(map);
                     map.fitBounds(layer.getBounds());
                 });
@@ -487,15 +678,10 @@ jQuery(document).ready(function ($) {
             }
         }
 
-        var urlify = function (text) {
-            if ('string' != typeof text) return text;
-            var urlRegex = /(https?:\/\/[^\s]+)/g;
-            return text.replace(urlRegex, function (url) {
-                    return '<a href="' + url + '" target="_blank">' + url + '</a>';
-                })
-                // or alternatively
-                // return text.replace(urlRegex, '<a href="$1">$1</a>')
-        }
+
+
+
+
 
 
 
@@ -511,46 +697,32 @@ jQuery(document).ready(function ($) {
                 var geojson_url = geojson_link.prop('href');
                 var url = API_ROOT + 'datasets/checkurl/?url=' + encodeURIComponent(geojson_url) + '&group=' + options.dataset;
 
-                geojson_link.closest('div').append(jQuery('<div class="geojson_loading alert alert-info">chargement en cours <i class="fa fa-spinner fa-spin"></i></div>'));
+                //geojson_link.closest('div').append(jQuery('<div class="geojson_loading alert alert-info">chargement en cours <i class="fa fa-spinner fa-spin"></i></div>'));
 
                 jQuery.getJSON(url, function (data) {
                     var contentlength = parseInt(data['content-length']);
                     // console.log(contentlength);
                     // que faire des NaN ???
                     if (isNaN(contentlength) || contentlength <= contentlength_limit) {
-                        jQuery.getJSON(geojson_url, function (data) {
 
-                            if (data.features.length > featurelength_limit) {
-                                //console.warn('feature count excess: ' + data.features.length + ' (max:' + featurelength_limit + ')');
-                                geojson_link.closest('div').find('.geojson_loading').removeClass('alert-info').addClass('alert-warning').html('<strong><i class="fa fa-info-circle"></i> fichier trop important pour être chargé (>' + featurelength_limit + ' objets)</strong><br><a href="' + geojson_url + '">' + geojson_url + '</a>');
-                                return false;
-                            }
-
-                            //bloc.find('.dataset .resources-list')
-                            geojson_link.closest('div').append(jQuery('<div class="geojson_preview card card-5"><div class="map map_preview" id="map_ressource_' + ressource_id + '"></div><h4>' + ressource_title + '</h4></div>'));
-                            var map = L.map('map_ressource_' + ressource_id, {
+                        var mapOptions = {
+                            ressources: [{
+                                url: geojson_url,
+                                id: ressource_id,
+                                title: ressource_title,
+                                type: 'geojson',
+                                //style: test_style,
+                                //template: test_template
+                            }],
+                            title: ressource_title,
+                            sharelink: true,
+                            leafletMapOptions: {
                                 scrollWheelZoom: false
-                            }).setView([0, 0], 1);
-                            L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png').addTo(map);
-                            var layer = L.geoJson(data, {
-                                onEachFeature: function (feature, layer) {
-                                    var html = '';
-                                    jQuery.each(feature.properties, function (k, v) {
-                                        html += '<tr><th>' + k + '</th><td>' + urlify(v) + '</td></tr>';
-                                    });
-                                    html = '<table class="table table-hover table-bordered">' + html + '</table>';
+                            }
+                        }
 
-                                    layer.bindPopup(html);
-                                }
-                            }).addTo(map);
-                            map.fitBounds(layer.getBounds());
-                            geojson_link.closest('div').find('.geojson_loading').slideUp('slow');
-                            geojson_link.closest('div').find('.geojson_preview').hide().fadeIn('slow');
-                        }).fail(
-                            function (data) {
-                                //console.warn("can't load GeoJson: " + geojson_url);
-                                geojson_link.closest('div').find('.geojson_loading').removeClass('alert-info').addClass('alert alert-danger').html('<strong><i class="fa fa-warning"></i> impossible de charger le fichier</strong><br><a href="' + geojson_url + '">' + geojson_url + '</a>');
-                            });
+                        uDataMap(geojson_link.closest('div'), mapOptions);
+
                     } else {
                         //console.warn('content-length excess: ' + contentlength + ' (max:' + contentlength_limit + ')');
                         geojson_link.closest('div').find('.geojson_loading').removeClass('alert-info').addClass('alert alert-warning').html('<strong><i class="fa fa-info-circle"></i> fichier trop important pour être chargé (>' + contentlength_limit / 1000 + 'ko)</strong><br><a href="' + geojson_url + '">' + geojson_url + '</a>');
@@ -590,10 +762,256 @@ jQuery(document).ready(function ($) {
         return _uData;
     };
 
+    //////////////////// UDATAMAP
 
-    var API_ROOT = "https://www.data.gouv.fr/api/1/"; //!TODO get from div param
+    uDataMap = function (obj, ori_options) {
+        var _uDataMap = {};
+        var defaults = {
+            title: false,
+            sharelink: false,
+            ressources: [],
+            leafletMapOptions: {},
+            onLoaded: null,
+            backgroundLayers: [
+                /*{
+                title: 'OSM-Fr',
+                layer: L.tileLayer('//tilecache.openstreetmap.fr/osmfr/{z}/{x}/{y}.png'),
+            },
+             {
+                title: 'Positron',
+                layer: L.tileLayer('//cartodb-basemaps-a.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png'),
+            },
+             {
+                title: 'Outdoors (OSM)',
+                layer: L.tileLayer('//{s}.tile.thunderforest.com/outdoors/{z}/{x}/{y}.png'),
+            },
+             {
+                title: 'OSM Roads',
+                layer: L.tileLayer('//korona.geog.uni-heidelberg.de/tiles/roads/x={x}&y={y}&z={z}'),
+            },
+             {
+                title: 'Dark Matter',
+                layer: L.tileLayer('//cartodb-basemaps-a.global.ssl.fastly.net/dark_all/{z}/{x}/{y}.png'),
+            }, */
+                {
+                    title: 'OpenStreetMap',
+                    layer: L.tileLayer('//{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'),
+                },
+                /* {
+                title: 'Toner',
+                layer: L.tileLayer('//{s}.tile.stamen.com/toner-lite/{z}/{x}/{y}.png'),
+            },
+             {
+                title: 'Landscape',
+                layer: L.tileLayer('//{s}.tile3.opencyclemap.org/landscape/{z}/{x}/{y}.png'),
+            },
+             {
+                title: 'Transport',
+                layer: L.tileLayer('//{s}.tile2.opencyclemap.org/transport/{z}/{x}/{y}.png'),
+            },*/
+                {
+                    title: 'MapQuest Open',
+                    layer: L.tileLayer('//otile1.mqcdn.com/tiles/1.0.0/osm/{z}/{x}/{y}.png'),
+                },
+                /* {
+                title: 'HOTOSM style',
+                layer: L.tileLayer('//tilecache.openstreetmap.fr/hot/{z}/{x}/{y}.png'),
+            },
+             {
+                title: 'OpenCycleMap',
+                layer: L.tileLayer('//{s}.tile.opencyclemap.org/cycle/{z}/{x}/{y}.png'),
+            },
+             {
+                title: 'Watercolor',
+                layer: L.tileLayer('//{s}.tile.stamen.com/watercolor/{z}/{x}/{y}.png'),
+            },
+             {
+                title: 'hikebikemap',
+                layer: L.tileLayer('//toolserver.org/tiles/hikebike/{z}/{x}/{y}.png'),
+            },*/
+                {
+                    title: 'OSM-monochrome',
+                    layer: L.tileLayer('//www.toolserver.org/tiles/bw-mapnik/{z}/{x}/{y}.png'),
+                },
+                /* {
+                title: 'Hydda',
+                layer: L.tileLayer('//{s}.tile.openstreetmap.se/hydda/full/{z}/{x}/{y}.png'),
+            },*/
+                {
+                    title: 'OpenTopoMap',
+                    layer: L.tileLayer('//{s}.tile.opentopomap.org/{z}/{x}/{y}.png'),
+                },
+                /* {
+                title: 'OpenRiverboatMap',
+                layer: L.tileLayer('//tilecache.openstreetmap.fr/openriverboatmap/{z}/{x}/{y}.png'),
+            }*/
+            ]
+        }
+
+        var backgroundLayers = [];
+        var loadedLayers = [];
+
+
+        console.dir(ori_options);
+        options = jQuery.extend({}, defaults, ori_options || {});
+        var map = null;
+
+        var initMap = function () {
+            obj.append(jQuery('<div class="geojson_preview card card-5"><div class="map map_preview"></div>' + (options.title ? '<h4>' + options.title + '</h4>' : '') + '</div>'));
+
+            map = L.map(obj.find('.map')[0], options.leafletMapOptions).setView([0, 0], 1);
+            map.attributionControl.setPrefix('');
+            for (var i in options.backgroundLayers) {
+                backgroundLayers[options.backgroundLayers[i].title] = options.backgroundLayers[i].layer;
+                if (i == 0) backgroundLayers[options.backgroundLayers[i].title].addTo(map)
+            }
+            map.layerController = L.control.layers(backgroundLayers, loadedLayers).addTo(map);
+
+            if (options.sharelink) {
+                console.dir(ori_options);
+                ori_options.baseUrl = baseUrl;
+                Template_shareLink = Templates.shareLinkMap;
+                var html = Template_shareLink(ori_options);
+                console.log(html);
+                obj.find('.geojson_preview').append(html);
+
+                obj.on('click', '.uDataMap-shareLink a[href="#"]', function (e) {
+                    jQuery('.uDataMap-shareLink .hidden').removeClass('hidden').hide().slideDown('slow');
+                    jQuery('.uDataMap-shareLink  a[href="#"]').fadeOut();
+                    e.preventDefault();
+                })
+            }
+
+
+        }; //FIN initMap
+
+
+
+        var updateBBoxAndLayerController = function () {
+            var bounds = null;
+            for (var i in loadedLayers) {
+                if (null === bounds) {
+                    bounds = loadedLayers[i].getBounds();
+                } else {
+                    bounds = bounds.extend(loadedLayers[i].getBounds());
+                }
+            }
+            map.fitBounds(bounds);
+
+            map.layerController.removeFrom(map);
+            map.layerController = L.control.layers(backgroundLayers, loadedLayers).addTo(map);
+        }; // FIN updateBBoxAndLayerController
+
+
+        var default_style = function (feature) {
+            return {
+                //fillColor: "#ff7800",
+                // color: "#000",
+                weight: 1,
+                opacity: 1,
+                fillOpacity: 0.5
+            }
+        };
+
+        var default_template = function (feature) {
+            var html = '';
+            jQuery.each(feature.properties, function (k, v) {
+                html += '<tr><th>' + k + '</th><td>' + uDataUtils.urlify(v) + '</td></tr>';
+            });
+            html = '<table class="table table-hover table-bordered">' + html + '</table>';
+            return html;
+        };
+
+        //var default_pointToLayer = false;
+        var default_pointToLayer = function (feature, latlng, featuresCount) {
+
+            if (featuresCount < icons_limit) return L.marker(latlng);
+
+            var geojsonMarkerOptions = {
+                radius: 3
+            };
+
+            return L.circleMarker(latlng, geojsonMarkerOptions);
+        };
+
+        var loadRessource = function (ressource) {
+
+            var ressource_defaults = {
+                title: '',
+                type: 'geojson',
+                style: default_style,
+                template: default_template,
+                pointToLayer: default_pointToLayer
+            };
+
+            ressource = jQuery.extend({}, ressource_defaults, ressource || {});
+
+            obj.append(jQuery('<div class="geojson_loading_' + ressource.id + ' geojson_loading alert alert-info">' + ressource.title + ' - chargement en cours <i class="fa fa-spinner fa-spin"></i></div>'));
+            jQuery.getJSON(ressource.url, function (data) {
+
+                if (data.features.length > featurelength_limit) {
+                    //console.warn('feature count excess: ' + data.features.length + ' (max:' + featurelength_limit + ')');
+                    obj.find('.geojson_loading_' + ressource.id).removeClass('alert-info').addClass('alert-warning').html('<strong><i class="fa fa-info-circle"></i> fichier trop important pour être chargé (>' + featurelength_limit + ' objets)</strong><br><a href="' + geojson_url + '">' + geojson_url + '</a>');
+                    return false;
+                }
+
+                if (null === map) initMap();
+
+                if (ressource.type == 'geojson') {
+                    var layer = L.geoJson(data, {
+                        onEachFeature: function (feature, layer) {
+                            if (ressource.template) layer.bindPopup(ressource.template(feature, layer));
+                        },
+                        pointToLayer: function (feature, layer) {
+                            if (ressource.pointToLayer) return ressource.pointToLayer(feature, layer, data.features.length);
+                            return false;
+                        },
+                        style: ressource.style
+                    });
+                }
+
+                layer.addTo(map);
+                loadedLayers[ressource.title] = layer;
+
+                updateBBoxAndLayerController();
+
+                obj.find('.geojson_loading_' + ressource.id).slideUp('slow');
+                return true;
+
+            }).fail(function (data) {
+                //console.warn("can't load GeoJson: " + geojson_url);
+                obj.find('.geojson_loading_' + ressource.id).removeClass('alert-info').addClass('alert alert-danger').html('<strong><i class="fa fa-warning"></i> impossible de charger le fichier</strong><br><a href="' + ressource.url + '">' + ressource.url + '</a>');
+
+                return false;
+            });
+        }; // FIN loadRessource
+
+        for (var i in options.ressources) {
+            var ressource = options.ressources[i];
+            loadRessource(ressource);
+        }
+
+
+
+
+
+        _uDataMap.map = map;
+        return _uDataMap;
+    }; // FIN uDataMap
+
+
+
+    //*****************************************************
+
+
+
+
+
+    var API_ROOT = "https://demo.data.gouv.fr/api/1/"; //!TODO get from div param
+    //var API_ROOT = "https://www.data.gouv.fr/api/1/";
     var contentlength_limit = 2.5 * 1000000; //2.5Mo
-    var featurelength_limit = 2000; //nb max d'objet geojson
+    var icons_limit = 200;
+    var featurelength_limit = 2000 * 100; //nb max d'objet geojson
 
 
 
@@ -902,6 +1320,12 @@ jQuery(document).ready(function ($) {
             return new Handlebars.SafeString(value);
         });
 
+
+        Handlebars.registerHelper('jsonencode', function (value) {
+
+            return JSON.stringify(value, null, 4);
+        });
+
         for (var tmpl in Templates) {
             var template_surcharge_id = 'udata_template_' + tmpl;
             console.info('load template: #' + template_surcharge_id);
@@ -922,132 +1346,220 @@ jQuery(document).ready(function ($) {
 
         window._uData = {};
         container = _uData.container = jQuery('div.uData-data[data-organizations]');
-        var orgs = _uData.container.data('organizations').split(',');
-
-        _uData.container.html('<p class="loading">chargement en cours</p>');
-
-        for (var i in orgs) {
-            getOrganizationName(orgs[i]);
-        }
-
-        //_uData.container.data('organization', orgs[0]);
-        _uData.container.data('organizations', '');
-        _uData.orgs = [];
-
-        for (var i in orgs) {
-            _uData.orgs.push({
-                id: orgs[i],
-                name: orgs[i]
-            });
-        }
+        if (container.length) {
 
 
-        container.each(function () {
-            var obj = jQuery(this);
-            var ud = uData(obj, obj.data());
-            ud.displayLastDatasets();
-        });
+            var orgs = _uData.container.data('organizations').split(',');
+            var geozones_trans = {};
 
-        var loadDataSets = function () {
+            _uData.container.html('<p class="loading">chargement en cours</p>');
+
+            for (var i in orgs) {
+                getOrganizationName(orgs[i]);
+            }
+
+            //_uData.container.data('organization', orgs[0]);
+            _uData.container.data('organizations', '');
+            _uData.orgs = [];
+
+            for (var i in orgs) {
+                _uData.orgs.push({
+                    id: orgs[i],
+                    name: orgs[i]
+                });
+            }
+
+
             container.each(function () {
                 var obj = jQuery(this);
                 var ud = uData(obj, obj.data());
-                ud.displayDatasets();
-
+                ud.displayLastDatasets();
             });
-        }
 
-
-        var loadDataSet = function (id) {
-
-            if (jQuery('div.dataset[data-dataset="' + id + '"]').length) {
-                jQuery('div.dataset[data-dataset="' + id + '"] ').slideToggle();
-            } else {
-
+            var loadDataSets = function () {
                 container.each(function () {
                     var obj = jQuery(this);
-                    var ud = uData(obj, {
-                        dataset: id
-                    });
-                    ud.displayDataset();
+                    var ud = uData(obj, obj.data());
+                    ud.displayDatasets();
                 });
-            }
-        }
 
-        /*   container.each(function () {
+            }
+
+
+            updateGeozonesTrans = function () {
+
+
+                container.find('.geozone-to-load').each(function () {
+
+                    var obj = jQuery(this);
+                    obj.removeClass('geozone-to-load').addClass('geozone-to-update');
+                    var k = obj.data('addgeozone');
+
+                    if (geozones_trans[k] == undefined) {
+                        var url = API_ROOT + 'spatial/zone/' + k;
+                        jQuery.getJSON(url, function (data) {
+                            geozones_trans[data.id] = i18n.t(data.name) + ' <i>(' + data.code + ')</i>';
+                            updateGeozonesTrans();
+                        });
+                    }
+                });
+
+                container.find('.geozone-to-update').each(function () {
+                    var obj = jQuery(this);
+                    var k = obj.data('addgeozone');
+                    if (geozones_trans[k] != undefined) {
+                        obj.removeClass('geozone-to-update');
+                        obj.html(obj.html().replace(k, geozones_trans[k]));
+                    }
+                });
+            };
+
+
+
+            var loadDataSet = function (id) {
+
+                if (jQuery('div.dataset[data-dataset="' + id + '"]').length) {
+                    jQuery('div.dataset[data-dataset="' + id + '"] ').slideToggle();
+                } else {
+
+                    container.each(function () {
+                        var obj = jQuery(this);
+                        var ud = uData(obj, {
+                            dataset: id
+                        });
+                        ud.displayDataset();
+                    });
+                }
+
+
+            }
+
+            /*   container.each(function () {
             var obj = jQuery(this);
             var ud = uData(obj, obj.data());
             ud.displayLastReuses();
         });*/
 
 
-        var scrollTop = function () {
-            $('html, body').animate({
-                scrollTop: jQuery('div.uData-data').offset().top
-            }, 250);
-        }
-
-        var updateParams = function () {
-            var q = container.find('.datasetsForm input[name="q"]').val();
-            _uData.container.data('q', q);
-            var organization = container.find('.datasetsForm select[name="organizations"] option:selected').val();
-            _uData.container.data('organization', organization);
-            var sort = container.find('.result-sort select[name="sort"] option:selected').val();
-            _uData.container.data('sort', sort);
-            _uData.container.data('page', 1);
-        }
-
-
-        if (jQuery('div.uData-data').length) {
-
-            var container = jQuery('div.uData-data');
-            var setPage = function (p) {
-                container.data('page', p);
-                loadDataSets();
+            var scrollTop = function () {
+                $('html, body').animate({
+                    scrollTop: jQuery('div.uData-data').offset().top
+                }, 250);
             }
 
-            container.on('click', 'a[data-page]', function (e) {
-                e.preventDefault();
-                setPage(jQuery(this).data('page'));
-            })
-                .on('click', 'a[data-dataset]', function (e) {
-                    e.preventDefault();
-                    loadDataSet(jQuery(this).data('dataset'));
-                })
-                .on('click', 'a.reloadDataSets', function (e) {
-                    e.preventDefault();
+            var updateParams = function () {
+                var q = container.find('.datasetsForm input[name="q"]').val();
+                _uData.container.data('q', q);
+                var organization = container.find('.datasetsForm select[name="organizations"] option:selected').val();
+                _uData.container.data('organization', organization);
+                var sort = container.find('.result-sort select[name="sort"] option:selected').val();
+                _uData.container.data('sort', sort);
+                _uData.container.data('page', 1);
+            }
+
+
+            if (jQuery('div.uData-data').length) {
+
+                var container = jQuery('div.uData-data');
+                var setPage = function (p) {
+                    container.data('page', p);
                     loadDataSets();
-                }).
-            on('click', '.datasetsForm button', function (e) {
-                e.preventDefault();
-                updateParams();
-                loadDataSets();
-            }).
-            on('change', '.datasetsForm *, .result-sort *', function (e) {
-                e.preventDefault();
-                updateParams();
-                loadDataSets();
-            }).
-            on('click', '.result-sort a.sortdirection', function (e) {
-                e.preventDefault();
-                sortDesc = !sortDesc;
-                updateParams();
-                loadDataSets();
-            }).on('submit', '.datasetsForm form', function (e) {
-                e.preventDefault();
-                updateParams();
-                loadDataSets();
-            }).
-            on('click', '.uData-shareLink a[href="#"]', function (e) {
-                jQuery('.uData-shareLink .hidden').removeClass('hidden').hide().slideDown('slow');
-                jQuery('.uData-shareLink  a[href="#"]').fadeOut();
-                e.preventDefault();
-            });
+                }
+
+                container.on('click', 'a[data-page]', function (e) {
+                    e.preventDefault();
+                    setPage(jQuery(this).data('page'));
+                })
+                    .on('click', 'a[data-dataset]', function (e) {
+                        e.preventDefault();
+                        loadDataSet(jQuery(this).data('dataset'));
+                    })
+                    .on('click', 'a.reloadDataSets', function (e) {
+                        e.preventDefault();
+                        loadDataSets();
+                    })
+                    .on('click', '.datasetsForm button', function (e) {
+                        e.preventDefault();
+                        updateParams();
+                        loadDataSets();
+                    })
+                    .on('change', '.datasetsForm *, .result-sort *', function (e) {
+                        e.preventDefault();
+                        updateParams();
+                        loadDataSets();
+                    })
+                    .on('click', '.result-sort a.sortdirection', function (e) {
+                        e.preventDefault();
+                        sortDesc = !sortDesc;
+                        updateParams();
+                        loadDataSets();
+                    })
+                    .on('submit', '.datasetsForm form', function (e) {
+                        e.preventDefault();
+                        updateParams();
+                        loadDataSets();
+                    }).
+                on('click', '.uData-shareLink a[href="#"]', function (e) {
+                    jQuery('.uData-shareLink .hidden').removeClass('hidden').hide().slideDown('slow');
+                    jQuery('.uData-shareLink  a[href="#"]').fadeOut();
+                    e.preventDefault();
+                })
+                    .on('click', 'a[data-addTag]', function (e) {
+                        var tag = jQuery(this).data('addtag');
+                        e.preventDefault();
+                        _uData.container.data('tag', tag);
+                        loadDataSets();
+                    })
+                    .on('click', 'a[data-addLicense]', function (e) {
+                        var license = jQuery(this).data('addlicense');
+                        e.preventDefault();
+                        _uData.container.data('license', license);
+                        loadDataSets();
+                    })
+                    .on('click', 'a[data-addGeozone]', function (e) {
+                        var geozone = jQuery(this).data('addgeozone');
+                        e.preventDefault();
+                        _uData.container.data('geozone', geozone);
+                        loadDataSets();
+                    })
+                    .on('click', 'a[data-addGranularity]', function (e) {
+                        var granularity = jQuery(this).data('addgranularity');
+                        e.preventDefault();
+                        _uData.container.data('granularity', granularity);
+                        loadDataSets();
+                    })
+                    .on('click', 'a[data-addFormat]', function (e) {
+                        var format = jQuery(this).data('addformat');
+                        e.preventDefault();
+                        _uData.container.data('format', format);
+                        loadDataSets();
+                    })
+                    .on('click', 'a[data-removeParam]', function (e) {
+                        var paramName = jQuery(this).data('removeparam');
+                        e.preventDefault();
+                        _uData.container.removeData(paramName);
+                        loadDataSets();
+                    })
+                    .on('click', 'a[data-removeTag]', function (e) {
+                        e.preventDefault();
+                        //var tag = jQuery(this).data('removetag');
+                        //!TODO gerer des tableaux
+                        _uData.container.removeData('tag');
+                        loadDataSets();
+                    });
 
 
-            setPage(1);
-            //loadDataSet('53698ed4a3a729239d203594');
+                setPage(1);
+                //loadDataSet('53698ed4a3a729239d203594');
+            }
         }
+
+
+
+        jQuery('.uData-map[data-ressources]').each(function () {
+            uDataMap(jQuery(this), jQuery(this).data())
+        });
+
 
     };
 
