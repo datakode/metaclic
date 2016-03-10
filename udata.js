@@ -68,9 +68,9 @@ jQuery(document).ready(function ($) {
 
         '<div class="row">',
         '{{#ifCond facets "!=" undefined}}',
-        '<div class="col-md-9">',
+        '<div class="col-md-9 span9">',
         '{{else}}',
-        '<div class="col-md-12">',
+        '<div class="col-md-12  span12">',
         '{{/ifCond}}',
 
 
@@ -166,7 +166,7 @@ jQuery(document).ready(function ($) {
         '</div>',
 
         '{{#ifCond facets "!=" undefined}}',
-        '<div class="col-md-3 uData-facets"><br>',
+        '<div class="col-md-3  span3 uData-facets"><br>',
 
         '{{#ifCond facets.tag "!=" undefined}}',
         '{{#if facets.tag.terms}}',
@@ -298,7 +298,7 @@ jQuery(document).ready(function ($) {
         '            {{#each resources}}',
         '            <div data-checkurl="/api/1/datasets/checkurl/" itemtype="http://schema.org/DataDownload" itemscope="itemscope" id="resource-{{id}}">',
         '',
-        '                <a href="{{url}}" data-size="{{filesize}}" data-format="{{uppercase format}}" data-title="{{title}}" data-id="{{id}}" itemprop="url" target=_blank>',
+        '                <a href="{{url}}" data-size="{{filesize}}" data-format="{{uppercase format}}" data-map_title="{{../title}}" data-title="{{title}}" data-id="{{id}}" itemprop="url" target=_blank>',
         '                    <h4>',
         '                        <span data-format="{{uppercase format}}">',
         '                            {{uppercase format}}',
@@ -388,25 +388,25 @@ jQuery(document).ready(function ($) {
         '',
         //'    <div><label></label><input type="submit" value="ok"></input></div>',
         '    </form>',
-        '    <p class="selected_assets">',
+        '    <div class="selected_facets">',
         '   {{#if tags}}',
         '   {{#each tags}}',
-        '       <a href="#" class="btn btn-default btn-sm" data-removeTag="{{.}}"> &times;<i class="fa fa-tags fa-fw"></i> {{.}}</a>',
+        '       <a title="{{_ \'fermer\'}}" href="#" class="btn btn-default btn-sm" data-removeTag="{{.}}"> &times;<i class="fa fa-tags fa-fw"></i> {{.}}</a>',
         '   {{/each}}',
         '   {{/if}}',
         '   {{#if license}}',
-        '       <a href="#" class="btn btn-default btn-sm" data-removeParam="license"> &times;<i class="fa fa-copyright fa-fw"></i> {{license}}</a>',
+        '       <a title="{{_ \'fermer\'}}" href="#" class="btn btn-default btn-sm" data-removeParam="license"> &times;<i class="fa fa-copyright fa-fw"></i> {{license}}</a>',
         '   {{/if}}',
         '   {{#if geozone}}',
-        '       <a href="#" class="btn btn-default btn-sm" data-removeParam="geozone"> &times;<i class="fa fa-map-marker fa-fw"></i> {{geozone}}</a>',
+        '       <a title="{{_ \'fermer\'}}" href="#" class="btn btn-default btn-sm" data-removeParam="geozone"> &times;<i class="fa fa-map-marker fa-fw"></i> {{geozone}}</a>',
         '   {{/if}}',
         '   {{#if granularity}}',
-        '       <a href="#" class="btn btn-default btn-sm" data-removeParam="granularity"> &times;<i class="fa fa-bullseye  fa-fw"></i> {{granularity}}</a>',
+        '       <a title="{{_ \'fermer\'}}" href="#" class="btn btn-default btn-sm" data-removeParam="granularity"> &times;<i class="fa fa-bullseye  fa-fw"></i> {{granularity}}</a>',
         '   {{/if}}',
         '   {{#if format}}',
-        '       <a href="#" class="btn btn-default btn-sm" data-removeParam="format"> &times;<i class="fa fa-file fa-fw"></i> {{format}}</a>',
+        '       <a title="{{_ \'fermer\'}}" href="#" class="btn btn-default btn-sm" data-removeParam="format"> &times;<i class="fa fa-file fa-fw"></i> {{format}}</a>',
         '   {{/if}}',
-        '   </p>',
+        '   </div>',
         '</div>',
         '    <br>'
     ];
@@ -703,6 +703,7 @@ jQuery(document).ready(function ($) {
             geojson_links.each(function () {
                 var geojson_link = jQuery(this);
                 var ressource_title = geojson_link.data('title');
+                var map_title = geojson_link.data('map_title');
                 var ressource_id = geojson_link.data('id');
                 var geojson_url = geojson_link.prop('href');
                 var url = API_ROOT + 'datasets/checkurl/?url=' + encodeURIComponent(geojson_url) + '&group=' + options.dataset;
@@ -715,6 +716,7 @@ jQuery(document).ready(function ($) {
                     // que faire des NaN ???
                     if (isNaN(contentlength) || contentlength <= contentlength_limit) {
 
+
                         var mapOptions = {
                             ressources: [{
                                 url: geojson_url,
@@ -724,7 +726,7 @@ jQuery(document).ready(function ($) {
                                 //style: test_style,
                                 //template: test_template
                             }],
-                            title: ressource_title,
+                            title: map_title,
                             sharelink: true,
                             leaflet_map_options: {
                                 scrollWheelZoom: false
