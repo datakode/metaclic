@@ -883,9 +883,9 @@ jQuery(document).ready(function ($) {
         };
 
         //var default_pointToLayer = false;
-        var default_pointToLayer = function (feature, latlng, featuresCount) {
+        var default_pointToLayer = function (feature, latlng, f_marker, featuresCount) {
 
-            if (featuresCount < icons_limit) return L.marker(latlng);
+            if (featuresCount < icons_limit) return f_marker(feature, latlng);
 
             var geojsonMarkerOptions = {
                 radius: 3
@@ -894,6 +894,11 @@ jQuery(document).ready(function ($) {
             return L.circleMarker(latlng, geojsonMarkerOptions);
         };
 
+
+        var default_marker = function (feature, latlng) {
+            return L.marker(latlng)
+        }
+
         var loadRessource = function (ressource) {
 
             var ressource_defaults = {
@@ -901,7 +906,8 @@ jQuery(document).ready(function ($) {
                 type: 'geojson',
                 style: default_style,
                 template: default_template,
-                pointToLayer: default_pointToLayer
+                pointToLayer: default_pointToLayer,
+                marker: default_marker
             };
 
             ressource = jQuery.extend({}, ressource_defaults, ressource || {});
@@ -924,6 +930,17 @@ jQuery(document).ready(function ($) {
                     } catch (err) {
                         console.log(err.message);
                     }
+                }
+
+
+                if (typeof ressource.marker == 'string') {
+                    try {
+                        var f = eval(ressource.marker);
+                        if (typeof f == 'function') ressource.marker = f;
+                    } catch (err) {
+                        console.log(err.message);
+                    }
+
                 }
 
 
@@ -960,7 +977,7 @@ jQuery(document).ready(function ($) {
                         },
                         pointToLayer: function (feature, layer) {
                             if (ressource.pointToLayer) {
-                                return ressource.pointToLayer(feature, layer, data.features.length);
+                                return ressource.pointToLayer(feature, layer, ressource.marker, data.features.length);
                             }
                             return false;
                         },
