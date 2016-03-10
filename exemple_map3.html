@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>udata-js exemple carte</title>
+    <link type="text/css" href="./exemple.css" rel="stylesheet">
+    <style>
+        .uData-map{
+            height: 900px;
+        }
+
+        .uData-map .map,
+        .uData-map .geojson_preview{
+            height: 100% !important;
+        }
+    </style>
+
+
+    <!-- chargement feuille de style bootstrap -->
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/css/bootstrap.css">
+
+</head>
+<body>
+
+   <script>window.jQuery || document.write("<script src='//cdnjs.cloudflare.com/ajax/libs/jquery/2.2.0/jquery.min.js'><\/script>")</script>
+
+   <script src="./udata.js"></script>
+
+   <script>
+       pprn_style= function(feature, layer){
+        var color= '#555';
+
+        console.log(feature.properties);
+
+        switch(feature.properties.CODEZONE) {
+            case 'Rouge':
+            color="#ff0000";
+            break;
+            case 'Bleue':
+            color="#0000ff";
+            break;
+            case 'Violet':
+            color="#ff00ff";
+            break;
+            case 'Violette':
+            color="#ff00ff";
+            break;
+             case 'Vert':
+            color="#00ff00";
+            break;
+
+            default:
+             console.log(feature.properties.CODEZONE+' not found');
+        }
+
+        return {
+            fillColor: color,
+            weight: 0,
+            fillOpacity: 0.75
+        }
+    }
+</script>
+
+
+
+<div class="uData-map"
+data-ressources='[
+{
+       "url": "https://inspire.data.gouv.fr/api/geogw/services/556c635b330f1fcd48343879/feature-types/sdis81:CIS/download?format=GeoJSON&projection=WGS84",
+       "id": "56e6fb9d-6f32-41b8-9baf-4b7a5147250c",
+       "title": "CIS",
+       "type": "geojson"
+    }
+]'
+
+
+data-background_layers= '[
+    {
+        "title": "Toner",
+        "url": "//{s}.tile.stamen.com/toner-lite/{z}/{x}/{y}.png"
+    },
+    {
+        "title": "OSM-monochrome",
+        "url": "//www.toolserver.org/tiles/bw-mapnik/{z}/{x}/{y}.png"
+    },
+    {
+        "title": "OpenTopoMap",
+        "url": "//{s}.tile.opentopomap.org/{z}/{x}/{y}.png"
+    }
+]'
+
+
+data-title='SDIS Tarn'
+
+></div>
+
+</body>
+</html>

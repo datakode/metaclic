@@ -172,7 +172,7 @@ jQuery(document).ready(function ($) {
         '{{#if facets.tag.terms}}',
         '<div class="panel panel-default">',
         '    <div class="panel-heading"><i class="fa fa-tags fa-fw"></i> Tags</div>',
-        '    <ul class="list-group">',
+        '    <ul class="list-group" data-limitlist=5>',
         '       {{#each facets.tag.terms}}',
 
         '       <a class="list-group-item" href="#" data-addTag="{{this.[0]}}">',
@@ -190,7 +190,7 @@ jQuery(document).ready(function ($) {
         '{{#if facets.license.models}}',
         '<div class="panel panel-default">',
         '    <div class="panel-heading"><i class="fa fa-copyright fa-fw"></i> Licences</div>',
-        '    <ul class="list-group">',
+        '    <ul class="list-group" data-limitlist=5>',
         '       {{#each facets.license.models}}',
 
         '       <a class="list-group-item" href="#" data-addLicense="{{this.[0].id}}">',
@@ -209,7 +209,7 @@ jQuery(document).ready(function ($) {
         '{{#if facets.geozone.models}}',
         '<div class="panel panel-default">',
         '    <div class="panel-heading"><i class="fa fa-map-marker fa-fw"></i> Couverture spatiale</div>',
-        '    <ul class="list-group">',
+        '    <ul class="list-group" data-limitlist=5>',
         '       {{#each facets.geozone.models}}',
 
         '       <a class="list-group-item geozone-to-load" href="#" data-addGeozone="{{this.[0].id}}">',
@@ -228,7 +228,7 @@ jQuery(document).ready(function ($) {
         '{{#if facets.granularity.terms}}',
         '<div class="panel panel-default">',
         '    <div class="panel-heading"><i class="fa fa-bullseye fa-fw"></i> Granularité territoriale</div>',
-        '    <ul class="list-group">',
+        '    <ul class="list-group" data-limitlist=5>',
         '       {{#each facets.granularity.terms}}',
 
         '       <a class="list-group-item" href="#" data-addGranularity="{{this.[0]}}">',
@@ -246,7 +246,7 @@ jQuery(document).ready(function ($) {
         '{{#if facets.format.terms}}',
         '<div class="panel panel-default">',
         '    <div class="panel-heading"><i class="fa fa-file fa-fw"></i> Formats</div>',
-        '    <ul class="list-group">',
+        '    <ul class="list-group" data-limitlist=5>',
         '       {{#each facets.format.terms}}',
 
         '       <a class="list-group-item" href="#" data-addFormat="{{this.[0]}}">',
@@ -389,8 +389,8 @@ jQuery(document).ready(function ($) {
         //'    <div><label></label><input type="submit" value="ok"></input></div>',
         '    </form>',
         '    <p class="selected_assets">',
-        '   {{#if tag}}',
-        '   {{#each tag}}',
+        '   {{#if tags}}',
+        '   {{#each tags}}',
         '       <a href="#" class="btn btn-default btn-sm" data-removeTag="{{.}}"> &times;<i class="fa fa-tags fa-fw"></i> {{.}}</a>',
         '   {{/each}}',
         '   {{/if}}',
@@ -534,7 +534,7 @@ jQuery(document).ready(function ($) {
         '&lt;script src="{{baseUrl}}udata.js"&gt;&lt;/script&gt;',
         '&lt;div class="uData-map"',
         "   data-ressources='{{jsonencode ressources}}'",
-        "   data-leafletMapOptions='{{jsonencode leafletMapOptions}}'",
+        "   data-leaflet_map_options='{{jsonencode leaflet_map_options}}'",
         "   data-title='{{title}}'",
         '&gt&lt;/div&gt',
         '   </pre>',
@@ -593,7 +593,16 @@ jQuery(document).ready(function ($) {
                 }
             }
 
+            delete options2.organizations;
+            delete options2.sharelink;
+            delete options2.sharemaps;
+            delete options2.baseUrl;
+            delete options2.organizationList;
+            if (options2.tags != undefined)
+                options2.tag = options2.tags;
+
             var url = API_ROOT + 'datasets/?' + jQuery.param(options2);
+            url = url.replace(/tag%5B%5D/g, 'tag'); // ! a corriger dans l'API pour gerer des vrais get array
             jQuery.getJSON(url, function (data) {
 
 
@@ -606,16 +615,16 @@ jQuery(document).ready(function ($) {
                     sortDesc: sortDesc,
                 };
 
-                if (typeof options.tag == 'string') params.tag = [options.tag];
-                if (typeof options.tag == 'array') params.tag = options.tag;
 
-                if (typeof options.license == 'string') params.license = options.license;
+                if (typeof options.tags != undefined) params.tags = options.tags;
 
-                if (typeof options.geozone == 'string') params.geozone = options.geozone;
+                if (typeof options.license != undefined) params.license = options.license;
 
-                if (typeof options.granularity == 'string') params.granularity = options.granularity;
+                if (typeof options.geozone != undefined) params.geozone = options.geozone;
 
-                if (typeof options.format == 'string') params.format = options.format;
+                if (typeof options.granularity != undefined) params.granularity = options.granularity;
+
+                if (typeof options.format != undefined) params.format = options.format;
 
 
                 data.sort = options.sort;
@@ -635,6 +644,7 @@ jQuery(document).ready(function ($) {
                 // console.log(params);
                 obj.html(html);
                 updateGeozonesTrans();
+                updateListLimit();
                 scrollTop();
             }).fail(function () {
                 obj.html('<p class="error">Serveur ' + API_ROOT + ' injoignable</p>');
@@ -716,7 +726,7 @@ jQuery(document).ready(function ($) {
                             }],
                             title: ressource_title,
                             sharelink: true,
-                            leafletMapOptions: {
+                            leaflet_map_options: {
                                 scrollWheelZoom: false
                             }
                         }
@@ -770,81 +780,21 @@ jQuery(document).ready(function ($) {
             title: false,
             sharelink: false,
             ressources: [],
-            leafletMapOptions: {},
-            onLoaded: null,
-            backgroundLayers: [
-                /*{
-                title: 'OSM-Fr',
-                layer: L.tileLayer('//tilecache.openstreetmap.fr/osmfr/{z}/{x}/{y}.png'),
-            },
-             {
-                title: 'Positron',
-                layer: L.tileLayer('//cartodb-basemaps-a.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png'),
-            },
-             {
-                title: 'Outdoors (OSM)',
-                layer: L.tileLayer('//{s}.tile.thunderforest.com/outdoors/{z}/{x}/{y}.png'),
-            },
-             {
-                title: 'OSM Roads',
-                layer: L.tileLayer('//korona.geog.uni-heidelberg.de/tiles/roads/x={x}&y={y}&z={z}'),
-            },
-             {
-                title: 'Dark Matter',
-                layer: L.tileLayer('//cartodb-basemaps-a.global.ssl.fastly.net/dark_all/{z}/{x}/{y}.png'),
-            }, */
-                {
+            leaflet_map_options: {},
+            background_layers: [{
                     title: 'OpenStreetMap',
-                    layer: L.tileLayer('//{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'),
+                    url: '//{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
                 },
-                /* {
-                title: 'Toner',
-                layer: L.tileLayer('//{s}.tile.stamen.com/toner-lite/{z}/{x}/{y}.png'),
-            },
-             {
-                title: 'Landscape',
-                layer: L.tileLayer('//{s}.tile3.opencyclemap.org/landscape/{z}/{x}/{y}.png'),
-            },
-             {
-                title: 'Transport',
-                layer: L.tileLayer('//{s}.tile2.opencyclemap.org/transport/{z}/{x}/{y}.png'),
-            },*/
+
                 {
                     title: 'MapQuest Open',
-                    layer: L.tileLayer('//otile1.mqcdn.com/tiles/1.0.0/osm/{z}/{x}/{y}.png'),
+                    url: '//otile1.mqcdn.com/tiles/1.0.0/osm/{z}/{x}/{y}.png'
                 },
-                /* {
-                title: 'HOTOSM style',
-                layer: L.tileLayer('//tilecache.openstreetmap.fr/hot/{z}/{x}/{y}.png'),
-            },
-             {
-                title: 'OpenCycleMap',
-                layer: L.tileLayer('//{s}.tile.opencyclemap.org/cycle/{z}/{x}/{y}.png'),
-            },
-             {
-                title: 'Watercolor',
-                layer: L.tileLayer('//{s}.tile.stamen.com/watercolor/{z}/{x}/{y}.png'),
-            },
-             {
-                title: 'hikebikemap',
-                layer: L.tileLayer('//toolserver.org/tiles/hikebike/{z}/{x}/{y}.png'),
-            },*/
-                {
-                    title: 'OSM-monochrome',
-                    layer: L.tileLayer('//www.toolserver.org/tiles/bw-mapnik/{z}/{x}/{y}.png'),
-                },
-                /* {
-                title: 'Hydda',
-                layer: L.tileLayer('//{s}.tile.openstreetmap.se/hydda/full/{z}/{x}/{y}.png'),
-            },*/
+
                 {
                     title: 'OpenTopoMap',
-                    layer: L.tileLayer('//{s}.tile.opentopomap.org/{z}/{x}/{y}.png'),
-                },
-                /* {
-                title: 'OpenRiverboatMap',
-                layer: L.tileLayer('//tilecache.openstreetmap.fr/openriverboatmap/{z}/{x}/{y}.png'),
-            }*/
+                    url: '//{s}.tile.opentopomap.org/{z}/{x}/{y}.png'
+                }
             ]
         }
 
@@ -852,27 +802,36 @@ jQuery(document).ready(function ($) {
         var loadedLayers = [];
 
 
-        console.dir(ori_options);
         options = jQuery.extend({}, defaults, ori_options || {});
         var map = null;
+
+
+        _uDataMap.addBackground = function (title, layer, show) {
+            backgroundLayers[title] = layer;
+            if (show === true) layer.addTo(map);
+            updateBBoxAndLayerController();
+
+        }
 
         var initMap = function () {
             obj.append(jQuery('<div class="geojson_preview card card-5"><div class="map map_preview"></div>' + (options.title ? '<h4>' + options.title + '</h4>' : '') + '</div>'));
 
-            map = L.map(obj.find('.map')[0], options.leafletMapOptions).setView([0, 0], 1);
+
+            map = L.map(obj.find('.map')[0], options.leaflet_map_options).setView([0, 0], 1);
             map.attributionControl.setPrefix('');
-            for (var i in options.backgroundLayers) {
-                backgroundLayers[options.backgroundLayers[i].title] = options.backgroundLayers[i].layer;
-                if (i == 0) backgroundLayers[options.backgroundLayers[i].title].addTo(map)
-            }
             map.layerController = L.control.layers(backgroundLayers, loadedLayers).addTo(map);
 
+            for (var i in options.background_layers) {
+                var l = L.tileLayer(options.background_layers[i].url);
+                var t = options.background_layers[i].title;
+                _uDataMap.addBackground(t, l, i == 0);
+            }
+
+
             if (options.sharelink) {
-                console.dir(ori_options);
                 ori_options.baseUrl = baseUrl;
                 Template_shareLink = Templates.shareLinkMap;
                 var html = Template_shareLink(ori_options);
-                console.log(html);
                 obj.find('.geojson_preview').append(html);
 
                 obj.on('click', '.uDataMap-shareLink a[href="#"]', function (e) {
@@ -896,7 +855,8 @@ jQuery(document).ready(function ($) {
                     bounds = bounds.extend(loadedLayers[i].getBounds());
                 }
             }
-            map.fitBounds(bounds);
+            if (bounds != null)
+                map.fitBounds(bounds);
 
             map.layerController.removeFrom(map);
             map.layerController = L.control.layers(backgroundLayers, loadedLayers).addTo(map);
@@ -905,8 +865,8 @@ jQuery(document).ready(function ($) {
 
         var default_style = function (feature) {
             return {
-                //fillColor: "#ff7800",
-                // color: "#000",
+                fillColor: "#ff7800",
+                color: "#000",
                 weight: 1,
                 opacity: 1,
                 fillOpacity: 0.5
@@ -951,11 +911,47 @@ jQuery(document).ready(function ($) {
 
                 if (data.features.length > featurelength_limit) {
                     //console.warn('feature count excess: ' + data.features.length + ' (max:' + featurelength_limit + ')');
-                    obj.find('.geojson_loading_' + ressource.id).removeClass('alert-info').addClass('alert-warning').html('<strong><i class="fa fa-info-circle"></i> fichier trop important pour être chargé (>' + featurelength_limit + ' objets)</strong><br><a href="' + geojson_url + '">' + geojson_url + '</a>');
+                    obj.find('.geojson_loading_' + ressource.id) /*.removeClass('alert-info').addClass('alert-warning').html('<strong><i class="fa fa-info-circle"></i> fichier trop important pour être chargé (>' + featurelength_limit + ' objets)</strong><br><a href="' + geojson_url + '">' + geojson_url + '</a>')*/ .slideUp('fast');
                     return false;
                 }
 
                 if (null === map) initMap();
+
+                if (typeof ressource.style == 'string') {
+                    try {
+                        var f = eval(ressource.style);
+                        if (typeof f == 'function') ressource.style = f;
+                    } catch (err) {
+                        console.log(err.message);
+                    }
+                }
+
+
+                if (typeof ressource.template == 'string') {
+                    if (jQuery(ressource.template).length) {
+                        ressource.template = Handlebars.compile(
+                            jQuery(ressource.template).first().html()
+                        );
+                    } else {
+                        try {
+                            var f = eval(ressource.template);
+                            if (typeof f == 'function') ressource.template = f;
+                        } catch (err) {
+                            console.log(err.message);
+                            ressource.template = Handlebars.compile(ressource.template);
+                        }
+                    }
+                }
+
+                if (typeof ressource.pointToLayer == 'string') {
+                    try {
+                        var f = eval(ressource.pointToLayer);
+                        if (typeof f == 'function') ressource.pointToLayer = f;
+                    } catch (err) {
+                        console.log(err.message);
+                    }
+                }
+
 
                 if (ressource.type == 'geojson') {
                     var layer = L.geoJson(data, {
@@ -963,10 +959,13 @@ jQuery(document).ready(function ($) {
                             if (ressource.template) layer.bindPopup(ressource.template(feature, layer));
                         },
                         pointToLayer: function (feature, layer) {
-                            if (ressource.pointToLayer) return ressource.pointToLayer(feature, layer, data.features.length);
+                            if (ressource.pointToLayer) {
+                                return ressource.pointToLayer(feature, layer, data.features.length);
+                            }
                             return false;
                         },
                         style: ressource.style
+
                     });
                 }
 
@@ -980,7 +979,7 @@ jQuery(document).ready(function ($) {
 
             }).fail(function (data) {
                 //console.warn("can't load GeoJson: " + geojson_url);
-                obj.find('.geojson_loading_' + ressource.id).removeClass('alert-info').addClass('alert alert-danger').html('<strong><i class="fa fa-warning"></i> impossible de charger le fichier</strong><br><a href="' + ressource.url + '">' + ressource.url + '</a>');
+                obj.find('.geojson_loading_' + ressource.id) /*.removeClass('alert-info').addClass('alert alert-danger').html('<strong><i class="fa fa-warning"></i> impossible de charger le fichier</strong><br><a href="' + ressource.url + '">' + ressource.url + '</a>')*/ .slideUp('fast');
 
                 return false;
             });
@@ -1416,6 +1415,29 @@ jQuery(document).ready(function ($) {
 
 
 
+
+            updateListLimit = function () {
+                container.find('ul[data-limitlist]').each(function () {
+                    var obj = jQuery(this);
+                    var limit = obj.data('limitlist');
+                    if (obj.find('>a').length > limit) {
+                        obj.find('>a:nth-child(n+' + (limit + 1) + ')').hide();
+                        var openlink = jQuery('<a href="#" class="list-group-item text-right">voir la suite</a>');
+                        obj.find('>a:nth-child(' + (limit) + ')').after(openlink);
+                        openlink.click(function (e) {
+                            e.preventDefault();
+                            obj.find('>a').slideDown();
+                            jQuery(this).slideUp();
+
+
+                        });
+                    }
+
+                });
+
+            }
+
+
             var loadDataSet = function (id) {
 
                 if (jQuery('div.dataset[data-dataset="' + id + '"]').length) {
@@ -1507,7 +1529,10 @@ jQuery(document).ready(function ($) {
                     .on('click', 'a[data-addTag]', function (e) {
                         var tag = jQuery(this).data('addtag');
                         e.preventDefault();
-                        _uData.container.data('tag', tag);
+                        var tags = _uData.container.data('tags');
+                        if (!Array.isArray(tags)) tags = [];
+                        tags.push(tag);
+                        _uData.container.data('tags', tags);
                         loadDataSets();
                     })
                     .on('click', 'a[data-addLicense]', function (e) {
@@ -1542,9 +1567,13 @@ jQuery(document).ready(function ($) {
                     })
                     .on('click', 'a[data-removeTag]', function (e) {
                         e.preventDefault();
-                        //var tag = jQuery(this).data('removetag');
-                        //!TODO gerer des tableaux
-                        _uData.container.removeData('tag');
+                        var tag = jQuery(this).data('removetag');
+                        var tags = _uData.container.data('tags');
+                        var index = jQuery.inArray(tag, tags);
+                        if (index > -1) {
+                            tags.splice(index, 1);
+                        }
+                        _uData.container.data('tags', tags);
                         loadDataSets();
                     });
 
@@ -1564,7 +1593,7 @@ jQuery(document).ready(function ($) {
     };
 
     var jsonfail = function () {
-        _uData.container.html('<p class="error">Serveur www.data.gouv.fr injoignable</p>')
+        _uData.container.html('<p class="error">Serveur ' + API_ROOT + ' injoignable</p>')
     }
 
     var getOrganizationName = function (org) {
