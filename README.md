@@ -263,3 +263,10 @@ voici les identifiants et templates par défaut utilisés:
 ```
 ##  exemple de personnalisation
 http://depthfrance.github.io/udata-js/exemple2.html
+
+
+## Integration carte simple
+
+http://depthfrance.github.io/udata-js/exemple_map.html
+http://depthfrance.github.io/udata-js/exemple_map2.html
+http://depthfrance.github.io/udata-js/exemple_map3.html
