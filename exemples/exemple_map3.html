@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>udata-js exemple carte</title>
+    <link type="text/css" href="./exemple.css" rel="stylesheet">
+    <style>
+        .uData-map .geojson_preview .map{
+            height: 900px;
+        }
+    </style>
+
+
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css" />
+
+</head>
+<body>
+
+ <script>window.jQuery || document.write("<script src='//cdnjs.cloudflare.com/ajax/libs/jquery/2.2.0/jquery.min.js'><\/script>")</script>
+ <script src="//cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/leaflet.js"></script>
+ <script src="//cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.min.js"></script>
+ <script src="../dist/udata.js"></script>
+
+ <script>
+
+    CISmarker= function(feature, latlng) {
+
+        var color='cadetblue';
+
+        switch(feature.properties.CATEGORIE) {
+            case 'CS1':
+            color="green";
+            break;
+            case 'CS2':
+            color="purple";
+            break;
+            case 'CS3':
+            color="orange";
+            break;
+            case 'CSP':
+            color="red";
+            break;
+
+            default:
+             console.log(feature.properties.CATEGORIE+' not found');
+        }
+
+        var redMarker = L.AwesomeMarkers.icon({
+            icon: '',
+            markerColor: color
+        });
+
+
+        return L.marker(latlng,{icon:redMarker});
+    }
+</script>
+
+<div class="uData-map"
+data-ressources='[
+{
+ "url": "https://inspire.data.gouv.fr/api/geogw/services/556c635b330f1fcd48343879/feature-types/sdis81:CIS/download?format=GeoJSON&projection=WGS84",
+ "id": "56e6fb9d-6f32-41b8-9baf-4b7a5147250c",
+ "title": "CIS",
+ "type": "geojson",
+ "marker": "CISmarker"
+},
+{
+    "url": "https://inspire.data.gouv.fr/api/geogw/services/556c635b330f1fcd48343879/feature-types/sdis81:PI/download?format=GeoJSON&projection=WGS84",
+    "id": "1c3e78a6-5537-4e64-b3de-3d06213ad33b",
+    "title": "PI",
+    "type": "geojson",
+    "style": {
+    "fillColor": "#ff0000",
+    "weight": 0,
+    "fillOpacity": 1
+}
+}
+]'
+
+
+data-background_layers= '[
+{
+    "title": "Toner",
+    "url": "//{s}.tile.stamen.com/toner-lite/{z}/{x}/{y}.png"
+},
+{
+    "title": "OSM-monochrome",
+    "url": "//www.toolserver.org/tiles/bw-mapnik/{z}/{x}/{y}.png"
+},
+{
+    "title": "OpenTopoMap",
+    "url": "//{s}.tile.opentopomap.org/{z}/{x}/{y}.png"
+}
+]'
+
+
+data-title='SDIS Tarn'
+
+></div>
+
+</body>
+</html>

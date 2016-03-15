@@ -1,0 +1,109 @@
+ul.tags {
+    list-style:  none;
+    float: left;
+    font-size: 11px;
+    height: 24px;
+    line-height: 24px;
+    position: relative;
+    margin-bottom: 2px;
+
+    li {
+        float: left;
+        font-size: 11px;
+        height: 24px;
+        line-height: 24px;
+        position: relative;
+    }
+
+    a {
+
+        float: left;
+        font-size: 11px;
+        height: 24px;
+        line-height: 24px;
+        position: relative;
+
+
+        background: @primary none repeat scroll 0 0;
+        border-bottom-right-radius: 2px;
+        border-top-right-radius: 2px;
+        color: #fff;
+        margin-left: 20px;
+        padding: 0 10px 0 12px;
+        text-decoration: none;
+
+        &:before {
+            border-color: transparent @primary transparent transparent;
+            border-style: solid;
+            border-width: 12px 12px 12px 0;
+            content: "";
+            float: left;
+            height: 0;
+            left: -12px;
+            position: absolute;
+            top: 0;
+            width: 0;
+        }
+
+        &:after{
+            background: #fff none repeat scroll 0 0;
+            border-radius: 50%;
+            content: "";
+            float: left;
+            height: 5px;
+            left: 0;
+            position: absolute;
+            top: 10px;
+            width: 5px;
+        }
+    }
+}
+
+
+.hidden {
+    display: none;
+}
+
+pre {
+    background-color: #f5f5f5;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    color: #333;
+    display: block;
+    font-size: 13px;
+    line-height: 1.42857;
+    margin: 0 0 10px;
+    padding: 9.5px;
+    word-break: break-all;
+    word-wrap: break-word;
+    overflow: auto;
+    font-family: monospace,monospace;
+    font-size: 1em;
+}
+
+
+.alert {
+    display: block;
+    padding: 8px;
+     &.alert-success {
+        background-color: @brand-success;
+     }
+     &.alert-info {
+        background-color: @brand-info;
+     }
+     &.alert-warning {
+        background-color: @brand-warning;
+     }
+     &.alert-danger {
+        background-color: @brand-danger;
+     }
+}
+
+
+
+.uDataMap-shareLink,.uData-shareLink {
+    color: @black;
+    .linkDiv {
+        text-align: right;
+    }
+}

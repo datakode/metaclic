@@ -1,0 +1,43 @@
+.facet-panel {
+    margin-bottom: 1em;
+    &>* {
+        border: 1px @primary solid;
+    }
+    .facet-panel-heading {
+        background-color: @primary;
+        color: @white;
+        padding: 6px;
+    }
+    &>ul {
+        margin: 0;
+        padding: 0;
+        a {
+            display: block;
+            color: @black;
+            padding: 6px 15px;
+            span {
+             background-color: @primary;
+             border-radius: 1em;
+             float: right;
+             font-size: 0.75em;
+             min-width: 2em;
+             padding: 1px 4px;
+             text-align: center;
+             color: @white;
+         }
+
+         &:hover, &:focus {
+            background-color: @primary-lighten;
+            span {
+             background-color: @white;
+             color: @black;
+            }
+        }
+    }
+
+    a.see-all {
+        text-align:right;
+        background-color: inherit;
+    }
+}
+}

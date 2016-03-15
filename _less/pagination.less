@@ -1,0 +1,23 @@
+.udata-pagination {
+  ul.pagination {
+    list-style: none;
+    li {
+      display: inline-block;
+      border: 1px solid @primary;
+      margin-right: -1px;
+    }
+    a {
+      display: inline-block;
+      padding: 5px;
+      min-width: 1.5em;
+      color: @black;
+      text-align: center;
+    }
+
+    li.active a,
+    li a:hover    {
+     background-color: @primary;
+     color: @white;
+   }
+ }
+}
