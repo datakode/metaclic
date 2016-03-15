@@ -1,5 +1,7 @@
 # udata-js
 
+Librairie JS d'integration du catalogue data.gouv.fr (https://www.data.gouv.fr)
+
 ##  demo
 http://depthfrance.github.io/udata-js/exemples/exemple.html
 
@@ -262,11 +264,14 @@ voici les identifiants et templates par défaut utilisés:
 </script>
 ```
 ##  exemple de personnalisation
+
 http://depthfrance.github.io/udata-js/exemples/exemple2.html
 
 
 ## Integration carte simple
 
 http://depthfrance.github.io/udata-js/exemples/exemple_map.html
+
 http://depthfrance.github.io/udata-js/exemples/exemple_map2.html
+
 http://depthfrance.github.io/udata-js/exemples/exemple_map3.html
