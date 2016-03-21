@@ -1,4 +1,4 @@
-/*! 11-03-2016 */
+/*! 21-03-2016 */
 var uData, uDataUtils = {};
 
 uDataUtils.urlify = function(text) {
@@ -7,6 +7,79 @@ uDataUtils.urlify = function(text) {
     return text.replace(urlRegex, function(url) {
         return '<a href="' + url + '" target="_blank">' + url + "</a>";
     });
+}, uDataUtils.baseLayers = {
+    "OSM-Fr": {
+        title: "OSM-Fr",
+        url: "//tilecache.openstreetmap.fr/osmfr/{z}/{x}/{y}.png"
+    },
+    Positron: {
+        title: "Positron",
+        url: "//cartodb-basemaps-a.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png"
+    },
+    Outdoors_OSM: {
+        title: "Outdoors (OSM)",
+        url: "//{s}.tile.thunderforest.com/outdoors/{z}/{x}/{y}.png"
+    },
+    OSM_Roads: {
+        title: "OSM Roads",
+        url: "//korona.geog.uni-heidelberg.de/tiles/roads/x={x}&y={y}&z={z}"
+    },
+    Dark_Matter: {
+        title: "Dark Matter",
+        url: "//cartodb-basemaps-a.global.ssl.fastly.net/dark_all/{z}/{x}/{y}.png"
+    },
+    OpenStreetMap: {
+        title: "OpenStreetMap",
+        url: "//{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+    },
+    Toner: {
+        title: "Toner",
+        url: "//{s}.tile.stamen.com/toner-lite/{z}/{x}/{y}.png"
+    },
+    Landscape: {
+        title: "Landscape",
+        url: "//{s}.tile3.opencyclemap.org/landscape/{z}/{x}/{y}.png"
+    },
+    Transport: {
+        title: "Transport",
+        url: "//{s}.tile2.opencyclemap.org/transport/{z}/{x}/{y}.png"
+    },
+    MapQuest_Open: {
+        title: "MapQuest Open",
+        url: "//otile1.mqcdn.com/tiles/1.0.0/osm/{z}/{x}/{y}.png"
+    },
+    HOTOSM_style: {
+        title: "HOTOSM style",
+        url: "//tilecache.openstreetmap.fr/hot/{z}/{x}/{y}.png"
+    },
+    OpenCycleMap: {
+        title: "OpenCycleMap",
+        url: "//{s}.tile.opencyclemap.org/cycle/{z}/{x}/{y}.png"
+    },
+    Watercolor: {
+        title: "Watercolor",
+        url: "//{s}.tile.stamen.com/watercolor/{z}/{x}/{y}.png"
+    },
+    hikebikemap: {
+        title: "hikebikemap",
+        url: "//toolserver.org/tiles/hikebike/{z}/{x}/{y}.png"
+    },
+    "OSM-monochrome": {
+        title: "OSM-monochrome",
+        url: "//www.toolserver.org/tiles/bw-mapnik/{z}/{x}/{y}.png"
+    },
+    Hydda: {
+        title: "Hydda",
+        url: "//{s}.tile.openstreetmap.se/hydda/full/{z}/{x}/{y}.png"
+    },
+    OpenTopoMap: {
+        title: "OpenTopoMap",
+        url: "//{s}.tile.opentopomap.org/{z}/{x}/{y}.png"
+    },
+    OpenRiverboatMap: {
+        title: "OpenRiverboatMap",
+        url: "//tilecache.openstreetmap.fr/openriverboatmap/{z}/{x}/{y}.png"
+    }
 }, jQuery(document).ready(function($) {
     var Templates = {}, sortTypes = [ {
         id: "title",
@@ -29,8 +102,9 @@ uDataUtils.urlify = function(text) {
     Templates.datasetsForm = [ '<div class="datasetsForm">', ' <form action="" method="get">', '    <input type="hidden" name="option" value="com_udata"></input>', '    <input type="hidden" name="view" value="udata"></input>', '    <div><label>&nbsp;</label><input type="text" name="q" value="{{q}}" placeholder="Rechercher des données" class="form-control"></input></div>', '        {{#ifCount orgs ">" 1 }}', "    <div>", "        {{else}}", '    <div class="hidden">', "        {{/ifCount}}", '       <label>Organisme</label> <select name="organizations" class="form-control">', "       {{#each orgs}}", '       {{#ifCond id "==" ../organization}}', '       <option value="{{id}}" selected>{{name}}</option>', "       {{else}}", '       <option value="{{id}}">{{name}}</option>', "       {{/ifCond}}", "       {{/each}}", "    </select></div>", "", "    </form>", '    <div class="selected_facets">', '<ul class="tags">', "   {{#if tags}}", "   {{#each tags}}", '       <li><a title="{{_ \'fermer\'}}" href="#" class="facet-remove facet-tag" data-removeTag="{{.}}"><i class="fa fa-tags fa-fw"></i> {{.}} &times;</a></li>', "   {{/each}}", "   {{/if}}", "   {{#if license}}", '       <li><a title="{{_ \'fermer\'}}" href="#" class="facet-remove facet-license" data-removeParam="license"><i class="fa fa-copyright fa-fw"></i> {{license}} &times;</a></li>', "   {{/if}}", "   {{#if geozone}}", '       <li><a title="{{_ \'fermer\'}}" href="#" class="facet-remove facet-geozone" data-removeParam="geozone"><i class="fa fa-map-marker fa-fw"></i> {{geozone}} &times;</a></li>', "   {{/if}}", "   {{#if granularity}}", '       <li><a title="{{_ \'fermer\'}}" href="#" class="facet-remove facet-granularity" data-removeParam="granularity"><i class="fa fa-bullseye  fa-fw"></i> {{granularity}} &times;</a></li>', "   {{/if}}", "   {{#if format}}", '       <li><a title="{{_ \'fermer\'}}" href="#" class="facet-remove facet-format" data-removeParam="format"><i class="fa fa-file fa-fw"></i> {{format}} &times;</a></li>', "   {{/if}}", "   </div>", "   </ul>", "</div>", "    <br>" ], 
     Templates.lastdatasets = [ '<div class="uData-lastdatasets">', "      {{#each data}}", '      <div class="card dataset-card">', '            <a class="card-logo" href="{{ organization.uri }}" target="datagouv">', '                <img alt="{{  organization.name }}" src="{{ organization.logo }}" width="70" height="70">', "            </a>", '        <div class="card-body">', "            <h4>", '                <a href="{{ url }}" title="{{title}}">', "                    {{title}}", "                </a>", "            </h4>", "        </div>", "        <footer>", "            <ul>", "                <li>", '                    <a rel="tooltip" data-placement="top" data-container="body" title="" data-original-title="Réutilisations">', '                        <span class="fa fa-retweet fa-fw"></span>', "                        {{default metrics.reuses 0 }}", "                    </a>", "                </li>", "                <li>", '                    <a rel="tooltip" data-placement="top" data-container="body" title="" data-original-title="Favoris">', '                        <span class="fa fa-star fa-fw"></span>', "                        {{default metrics.followers 0 }}", "                    </a>", "                </li>", "            </ul>", "        </footer>", '        <a href="{{ url }}" title="{{title}}">', "            {{trimString description}}", "        </a>", "        <footer>", "        <ul>", "            {{#if temporal_coverage }}", "            <li>", '                <a rel="tooltip"', '                    data-placement="top" data-container="body"', "                    title=\"{{_ 'Temporal coverage' }}\">", '                    <span class="fa fa-calendar fa-fw"></span>', "                    {{dt temporal_coverage.start format='L' }} {{_ 'to'}} {{dt temporal_coverage.end format='L' }}", "                </a>", "            </li>", "            {{/if}}", "", "            {{#if spatial.granularity }}", "            <li>", '                <a rel="tooltip"', '                    data-placement="top" data-container="body"', "                    title=\"{{_ 'Territorial coverage granularity' }}\">", '                    <span class="fa fa-bullseye fa-fw"></span>', "                    {{_ spatial.granularity }}", "                </a>", "            </li>", "            {{/if}}", "", "            {{#if frequency }}", "            <li>", '                <a rel="tooltip"', '                    data-placement="top" data-container="body"', "                    title=\"{{_ 'Frequency' }}\">", '                    <span class="fa fa-clock-o fa-fw"></span>', "                    {{_ frequency }}", "                </a>", "            </li>", "            {{/if}}", "        </ul>", "        </footer>", "    </div>", "    {{/each}}", "    </div>" ], 
     Templates.shareLink = [ '<div class="uData-shareLink">', '<div class="linkDiv"><a href="#">intégrez cet outil de recherche sur votre site&nbsp;<i class="fa fa-share-alt"></i></a></div>', '<div class="hidden">', "   <h4>Vous pouvez intégrer cet outil de recherche de données sur votre site</h4>", "   <p>Pour ceci collez le code suivant dans le code HTML de votre page</p>", "   <pre>", "&lt;script&gt;window.jQuery || document.write(\"&lt;script src='//cdnjs.cloudflare.com/ajax/libs/jquery/2.2.0/jquery.min.js'&gt;&lt;\\/script&gt;\")&lt;/script&gt;", "", "&lt;!-- chargement feuille de style font-awesome --&gt;", '&lt;link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/css/font-awesome.min.css"&gt;', "", '&lt;script src="{{baseUrl}}udata.js"&gt;&lt;/script&gt;', '&lt;div class="uData-data"', '   data-q="{{q}}"', '   data-organizations="{{organizationList}}"', '   data-organization="{{organization}}"', '   data-page_size="{{page_size}}"', "&gt&lt;/div&gt", "   </pre>", "   <p>vous pouvez trouver plus d'info sur cet outil et son paramétrage à cette adresse: <a href='https://github.com/DepthFrance/udata-js' target='_blank'>https://github.com/DepthFrance/udata-js</a></p>", "</div>", "</div>" ], 
-    Templates.shareLinkMap = [ '<div class="uDataMap-shareLink">', '<div class="linkDiv"><a href="#">intégrez cette carte à votre site&nbsp;<i class="fa fa-share-alt"></i></a></div>', '<div class="hidden">', "   <h4>Vous pouvez intégrer cet carte sur votre site</h4>", "   <p>Pour ceci collez le code suivant dans le code HTML de votre page</p>", "   <pre>", "&lt;script&gt;window.jQuery || document.write(\"&lt;script src='//cdnjs.cloudflare.com/ajax/libs/jquery/2.2.0/jquery.min.js'&gt;&lt;\\/script&gt;\")&lt;/script&gt;", "", '&lt;script src="{{baseUrl}}udata.js"&gt;&lt;/script&gt;', '&lt;div class="uData-map"', "   data-ressources='{{jsonencode ressources}}'", "   data-leaflet_map_options='{{jsonencode leaflet_map_options}}'", "   data-title='{{title}}'", "&gt&lt;/div&gt", "   </pre>", "   <p>vous pouvez trouver plus d'info sur cet outil et son paramétrage à cette adresse: <a href='https://github.com/DepthFrance/udata-js' target='_blank'>https://github.com/DepthFrance/udata-js</a></p>", "</div>", "</div>" ];
-    var baseUrl = jQuery('script[src$="/udata.js"]')[0].src.replace("/udata.js", "/"), _uData = {};
+    Templates.shareLinkMap = [ '<div class="uDataMap-shareLink">', '<div class="linkDiv"><a href="#">intégrez cette carte à votre site&nbsp;<i class="fa fa-share-alt"></i></a></div>', '<div class="hidden">', "   <h4>Vous pouvez intégrer cet carte sur votre site</h4>", "   <p>Pour ceci collez le code suivant dans le code HTML de votre page</p>", "   <pre>", "&lt;script&gt;window.jQuery || document.write(\"&lt;script src='//cdnjs.cloudflare.com/ajax/libs/jquery/2.2.0/jquery.min.js'&gt;&lt;\\/script&gt;\")&lt;/script&gt;", "", '&lt;script src="{{baseUrl}}udata.js"&gt;&lt;/script&gt;', '&lt;div class="uData-map"', "   data-resources='{{jsonencode resources}}'", "   data-title='{{title}}'", "&gt&lt;/div&gt", "   </pre>", "   <p>vous pouvez trouver plus d'info sur cet outil et son paramétrage à cette adresse: <a href='https://github.com/DepthFrance/udata-js' target='_blank'>https://github.com/DepthFrance/udata-js</a></p>", "</div>", "</div>" ], 
+    Templates.li_resource = [ '<li data-id="{{id}}">', '<a href="{{metadata_url}}">{{title}}</a>', '<i class="fa fa-copyright"></i> {{_ license}}', '<p class="organization" data-id="{{organization.id}}" data-slug="{{organization.slug}}">', '<img alt="{{  organization.name }}" src="{{ organization.logo }}" width="70" height="70">', "<span>{{organization.name}}</span>", "</p>", "</li>" ];
+    var baseUrl = "http://lebouzin/udata-js/dist/", _uData = {};
     uData = function(obj, options) {
         options.baseUrl = baseUrl, options.organizationList = [], jQuery.each(_uData.orgs, function(k, v) {
             options.organizationList.push(v.id);
@@ -45,7 +119,7 @@ uDataUtils.urlify = function(text) {
             "undefined" == typeof options2.sort && (options2.sort = sortTypes[0].id), "string" == typeof options2.sort && (options2.sort = options2.sort.replace("-", ""), 
             sortDesc && (options2.sort = "-" + options2.sort)), delete options2.organizations, 
             delete options2.sharelink, delete options2.sharemaps, delete options2.baseUrl, delete options2.organizationList, 
-            void 0 != options2.tags && (options2.tag = options2.tags), console.log(options);
+            void 0 != options2.tags && (options2.tag = options2.tags);
             var url = API_ROOT + "datasets/?" + jQuery.param(options2);
             url = url.replace(/tag%5B%5D/g, "tag"), jQuery.getJSON(url, function(data) {
                 var params = {
@@ -97,19 +171,17 @@ uDataUtils.urlify = function(text) {
                     map.fitBounds(layer.getBounds());
                 });
             }
-        }, addPreviewMap = function(dataset) {
-            var bloc = obj.find('.dataset-result[data-dataset="' + options.dataset + '"]'), geojson_links = bloc.find('.resources-list a[data-format="JSON"],.resources-list a[data-format="GEOJSON"]');
+        }, addPreviewMap = function(dataset_id, datasetdata) {
+            var bloc = obj.find('.dataset-result[data-dataset="' + dataset_id + '"]'), geojson_links = bloc.find('.resources-list a[data-format="JSON"],.resources-list a[data-format="GEOJSON"]');
             geojson_links.each(function() {
-                var geojson_link = jQuery(this), ressource_title = geojson_link.data("title"), map_title = geojson_link.data("map_title"), ressource_id = geojson_link.data("id"), geojson_url = geojson_link.prop("href"), url = API_ROOT + "datasets/checkurl/?url=" + encodeURIComponent(geojson_url) + "&group=" + options.dataset;
+                var geojson_link = jQuery(this), map_title = geojson_link.data("map_title"), resource_id = geojson_link.data("id"), geojson_url = geojson_link.prop("href"), url = API_ROOT + "datasets/checkurl/?url=" + encodeURIComponent(geojson_url) + "&group=" + dataset_id;
                 jQuery.getJSON(url, function(data) {
                     var contentlength = parseInt(data["content-length"]);
                     if (isNaN(contentlength) || contentlength_limit >= contentlength) {
                         var mapOptions = {
-                            ressources: [ {
-                                url: geojson_url,
-                                id: ressource_id,
-                                title: ressource_title,
-                                type: "geojson"
+                            resources: [ {
+                                id: resource_id,
+                                dataset: dataset_id
                             } ],
                             title: map_title,
                             sharelink: !0,
@@ -117,7 +189,7 @@ uDataUtils.urlify = function(text) {
                                 scrollWheelZoom: !1
                             }
                         };
-                        uDataMap(geojson_link.closest("div"), mapOptions);
+                        uDataMap(geojson_link.closest("div"), mapOptions, datasetdata);
                     } else geojson_link.closest("div").find(".geojson_loading").removeClass("alert-info").addClass("alert alert-warning").html('<strong><i class="fa fa-info-circle"></i> fichier trop important pour être chargé (>' + contentlength_limit / 1e3 + 'ko)</strong><br><a href="' + geojson_url + '">' + geojson_url + "</a>");
                 });
             });
@@ -127,27 +199,18 @@ uDataUtils.urlify = function(text) {
             jQuery.getJSON(url, function(data) {
                 obj.find('.dataset-result[data-dataset="' + options.dataset + '"]').append(jQuery(Templates.dataset(data))), 
                 obj.find('div.dataset[data-dataset="' + options.dataset + '"] ').hide().slideDown("slow"), 
-                addSpatialZoneMap(options.dataset), addPreviewMap(options.dataset);
+                addSpatialZoneMap(options.dataset), addPreviewMap(options.dataset, data);
             }).fail(function() {
                 obj.find('.dataset-result[data-dataset="' + options.dataset + '"]').append('<p class="error">Serveur www.data.gouv.fr injoignable</p>');
             });
         }, _uData;
-    }, uDataMap = function(obj, ori_options) {
+    }, uDataMap = function(obj, ori_options, datasetdata) {
         var _uDataMap = {}, defaults = {
             title: !1,
             sharelink: !1,
-            ressources: [],
+            resources: [],
             leaflet_map_options: {},
-            background_layers: [ {
-                title: "OpenStreetMap",
-                url: "//{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            }, {
-                title: "MapQuest Open",
-                url: "//otile1.mqcdn.com/tiles/1.0.0/osm/{z}/{x}/{y}.png"
-            }, {
-                title: "OpenTopoMap",
-                url: "//{s}.tile.opentopomap.org/{z}/{x}/{y}.png"
-            } ]
+            background_layers: [ "OpenStreetMap", "MapQuest_Open", "OpenTopoMap" ]
         }, backgroundLayers = [], loadedLayers = [];
         options = jQuery.extend({}, defaults, ori_options || {});
         var map = null;
@@ -155,11 +218,17 @@ uDataUtils.urlify = function(text) {
             backgroundLayers[title] = layer, show === !0 && layer.addTo(map), updateBBoxAndLayerController();
         };
         var initMap = function() {
-            obj.append(jQuery('<div class="geojson_preview card card-5"><div class="map map_preview"></div>' + (options.title ? "<h4>" + options.title + "</h4>" : "") + "</div>")), 
+            obj.append(jQuery('<div class="geojson_preview card card-5"><div class="map map_preview"></div>' + (options.title ? "<h4>" + options.title + "</h4>" : "") + '<ul class="resources"></ul></div>')), 
             map = L.map(obj.find(".map")[0], options.leaflet_map_options).setView([ 0, 0 ], 1), 
             map.attributionControl.setPrefix(""), map.layerController = L.control.layers(backgroundLayers, loadedLayers).addTo(map);
             for (var i in options.background_layers) {
-                var l = L.tileLayer(options.background_layers[i].url), t = options.background_layers[i].title;
+                var bl = options.background_layers[i];
+                if ("string" == typeof bl) if (void 0 != uDataUtils.baseLayers[bl]) bl = uDataUtils.baseLayers[bl]; else try {
+                    bl = eval(bl);
+                } catch (err) {
+                    console.log(err.message);
+                }
+                var l = L.tileLayer(bl.url), t = bl.title;
                 _uDataMap.addBackground(t, l, 0 == i);
             }
             if (options.sharelink) {
@@ -195,61 +264,75 @@ uDataUtils.urlify = function(text) {
             return L.circleMarker(latlng, geojsonMarkerOptions);
         }, default_marker = function(feature, latlng) {
             return L.marker(latlng);
-        }, loadRessource = function(ressource) {
-            var ressource_defaults = {
-                title: "",
-                type: "geojson",
+        }, addResource = function(resource, data_dataset) {
+            jQuery.each(data_dataset.resources, function(k, val) {
+                val.id == resource.id && (resource.data = val, resource.metadata_url = data_dataset.page, 
+                resource.title = val.title, resource.license = data_dataset.license, resource.organization = data_dataset.organization);
+            }), obj.find(".geojson_loading_" + resource.id).remove(), obj.append(jQuery('<div class="geojson_loading_' + resource.id + ' geojson_loading alert alert-info">' + resource.title + ' - chargement en cours <i class="fa fa-spinner fa-spin"></i></div>')), 
+            jQuery.getJSON(resource.data.url, function(data) {
+                if (data.features.length > featurelength_limit) return obj.find(".geojson_loading_" + resource.id).slideUp("fast"), 
+                !1;
+                if (null === map && initMap(), "string" == typeof resource.style) try {
+                    var f = eval(resource.style);
+                    "function" == typeof f && (resource.style = f);
+                } catch (err) {
+                    console.log(err.message);
+                }
+                if ("string" == typeof resource.marker) try {
+                    var f = eval(resource.marker);
+                    "function" == typeof f && (resource.marker = f);
+                } catch (err) {
+                    console.log(err.message);
+                }
+                if ("string" == typeof resource.template) if (jQuery(resource.template).length) resource.template = Handlebars.compile(jQuery(resource.template).first().html()); else try {
+                    var f = eval(resource.template);
+                    "function" == typeof f && (resource.template = f);
+                } catch (err) {
+                    console.log(err.message), resource.template = Handlebars.compile(resource.template);
+                }
+                if ("string" == typeof resource.pointToLayer) try {
+                    var f = eval(resource.pointToLayer);
+                    "function" == typeof f && (resource.pointToLayer = f);
+                } catch (err) {
+                    console.log(err.message);
+                }
+                if ("JSON" == resource.data.format.toUpperCase()) var layer = L.geoJson(data, {
+                    onEachFeature: function(feature, layer) {
+                        resource.template && layer.bindPopup(resource.template(feature, layer));
+                    },
+                    pointToLayer: function(feature, layer) {
+                        return resource.pointToLayer ? resource.pointToLayer(feature, layer, resource.marker, data.features.length) : !1;
+                    },
+                    style: resource.style
+                });
+                return layer.addTo(map), loadedLayers[resource.title] = layer, updateBBoxAndLayerController(), 
+                obj.find("ul.resources").append(Templates.li_resource(resource)), obj.find(".geojson_loading_" + resource.id).slideUp("slow"), 
+                !0;
+            }).fail(function(data) {
+                return obj.find(".geojson_loading_" + resource.id).slideUp("fast"), !1;
+            });
+        }, loadResource = function(resource) {
+            var resource_defaults = {
+                id: null,
+                dataset: null,
                 style: default_style,
                 template: default_template,
                 pointToLayer: default_pointToLayer,
                 marker: default_marker
             };
-            ressource = jQuery.extend({}, ressource_defaults, ressource || {}), obj.append(jQuery('<div class="geojson_loading_' + ressource.id + ' geojson_loading alert alert-info">' + ressource.title + ' - chargement en cours <i class="fa fa-spinner fa-spin"></i></div>')), 
-            jQuery.getJSON(ressource.url, function(data) {
-                if (data.features.length > featurelength_limit) return obj.find(".geojson_loading_" + ressource.id).slideUp("fast"), 
-                !1;
-                if (null === map && initMap(), "string" == typeof ressource.style) try {
-                    var f = eval(ressource.style);
-                    "function" == typeof f && (ressource.style = f);
-                } catch (err) {
-                    console.log(err.message);
-                }
-                if ("string" == typeof ressource.marker) try {
-                    var f = eval(ressource.marker);
-                    "function" == typeof f && (ressource.marker = f);
-                } catch (err) {
-                    console.log(err.message);
-                }
-                if ("string" == typeof ressource.template) if (jQuery(ressource.template).length) ressource.template = Handlebars.compile(jQuery(ressource.template).first().html()); else try {
-                    var f = eval(ressource.template);
-                    "function" == typeof f && (ressource.template = f);
-                } catch (err) {
-                    console.log(err.message), ressource.template = Handlebars.compile(ressource.template);
-                }
-                if ("string" == typeof ressource.pointToLayer) try {
-                    var f = eval(ressource.pointToLayer);
-                    "function" == typeof f && (ressource.pointToLayer = f);
-                } catch (err) {
-                    console.log(err.message);
-                }
-                if ("geojson" == ressource.type) var layer = L.geoJson(data, {
-                    onEachFeature: function(feature, layer) {
-                        ressource.template && layer.bindPopup(ressource.template(feature, layer));
-                    },
-                    pointToLayer: function(feature, layer) {
-                        return ressource.pointToLayer ? ressource.pointToLayer(feature, layer, ressource.marker, data.features.length) : !1;
-                    },
-                    style: ressource.style
+            if (resource = jQuery.extend({}, resource_defaults, resource || {}), null != datasetdata && datasetdata.id == resource.dataset) addResource(resource, datasetdata); else {
+                obj.append(jQuery('<div class="geojson_loading_' + resource.id + ' geojson_loading alert alert-info">' + resource.id + ' - chargement en cours <i class="fa fa-spinner fa-spin"></i></div>'));
+                var api_dataset_url = API_ROOT + "datasets/" + resource.dataset + "/";
+                jQuery.getJSON(api_dataset_url, function(datasetdata) {
+                    addResource(resource, datasetdata);
+                }).fail(function(data) {
+                    return obj.find(".geojson_loading_" + resource.id).slideUp("fast"), !1;
                 });
-                return layer.addTo(map), loadedLayers[ressource.title] = layer, updateBBoxAndLayerController(), 
-                obj.find(".geojson_loading_" + ressource.id).slideUp("slow"), !0;
-            }).fail(function(data) {
-                return obj.find(".geojson_loading_" + ressource.id).slideUp("fast"), !1;
-            });
+            }
         };
-        for (var i in options.ressources) {
-            var ressource = options.ressources[i];
-            loadRessource(ressource);
+        for (var i in options.resources) {
+            var resource = options.resources[i];
+            loadResource(resource);
         }
         return _uDataMap.map = map, _uDataMap;
     };
@@ -574,7 +657,7 @@ uDataUtils.urlify = function(text) {
                 }), setPage(1);
             }
         }
-        jQuery(".uData-map[data-ressources]").each(function() {
+        jQuery(".uData-map[data-resources]").each(function() {
             uDataMap(jQuery(this), jQuery(this).data());
         });
     }, jsonfail = function() {

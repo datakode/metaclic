@@ -56,19 +56,15 @@
 </script>
 
 <div class="uData-map"
-data-ressources='[
+data-resources='[
 {
- "url": "https://inspire.data.gouv.fr/api/geogw/services/556c635b330f1fcd48343879/feature-types/sdis81:CIS/download?format=GeoJSON&projection=WGS84",
  "id": "56e6fb9d-6f32-41b8-9baf-4b7a5147250c",
- "title": "CIS",
- "type": "geojson",
+ "dataset": "551d22fb88ee383095cf2007",
  "marker": "CISmarker"
 },
 {
-    "url": "https://inspire.data.gouv.fr/api/geogw/services/556c635b330f1fcd48343879/feature-types/sdis81:PI/download?format=GeoJSON&projection=WGS84",
     "id": "1c3e78a6-5537-4e64-b3de-3d06213ad33b",
-    "title": "PI",
-    "type": "geojson",
+    "dataset": "551d22ffc751df126d0cd8a0",
     "style": {
     "fillColor": "#ff0000",
     "weight": 0,
@@ -78,20 +74,7 @@ data-ressources='[
 ]'
 
 
-data-background_layers= '[
-{
-    "title": "Toner",
-    "url": "//{s}.tile.stamen.com/toner-lite/{z}/{x}/{y}.png"
-},
-{
-    "title": "OSM-monochrome",
-    "url": "//www.toolserver.org/tiles/bw-mapnik/{z}/{x}/{y}.png"
-},
-{
-    "title": "OpenTopoMap",
-    "url": "//{s}.tile.opentopomap.org/{z}/{x}/{y}.png"
-}
-]'
+data-background_layers= '["Toner","OSM-monochrome","OpenTopoMap"]'
 
 
 data-title='SDIS Tarn'

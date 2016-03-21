@@ -8,10 +8,9 @@ module.exports = function (grunt) {
         watch: {
             options: {
                 livereload: true,
-                open: 'http://lebouzin/:9000',
             },
             less: {
-                files: ['_less/*'],
+                files: ['less/*'],
                 tasks: ['less:production', 'less:development'],
                 options: {
                     livereload: false
@@ -21,7 +20,7 @@ module.exports = function (grunt) {
                 files: ['dist/*.css']
             },
             js: {
-                files: ['_js/*'],
+                files: ['js/*'],
                 tasks: ['uglify']
             }
         },
@@ -31,19 +30,21 @@ module.exports = function (grunt) {
         less: {
             development: {
                 options: {
-                    paths: ["_less"]
+                    paths: ["less"]
                 },
                 files: {
-                    "dist/udata.css": "_less/main.less"
+                    "dist/udata.css": "less/main.less",
+                    sourceMap: true
                 }
             },
             production: {
                 options: {
-                    paths: ["_less"],
-                    cleancss: true
+                    paths: ["less"],
+                    compress: true,
+                    sourceMap: true
                 },
                 files: {
-                    "dist/udata.min.css": "_less/main.less"
+                    "dist/udata.min.css": "less/main.less"
                 }
             }
         },
@@ -57,7 +58,7 @@ module.exports = function (grunt) {
                 },
                 files: {
                     'dist/udata.min.js': [
-                        '_js/main.js'
+                        'js/main.js'
                     ]
                 }
             },
@@ -72,7 +73,7 @@ module.exports = function (grunt) {
                 },
                 files: {
                     'dist/udata.js': [
-                        '_js/main.js'
+                        'js/main.js'
                     ]
                 }
             },

@@ -12,6 +12,86 @@ uDataUtils.urlify = function (text) {
         // or alternatively
         // return text.replace(urlRegex, '<a href="$1">$1</a>')
 }
+
+
+uDataUtils.baseLayers = {
+    "OSM-Fr": {
+        "title": "OSM-Fr",
+        "url": "//tilecache.openstreetmap.fr/osmfr/{z}/{x}/{y}.png"
+    },
+    "Positron": {
+        "title": "Positron",
+        "url": "//cartodb-basemaps-a.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png"
+    },
+    "Outdoors_OSM": {
+        "title": "Outdoors (OSM)",
+        "url": "//{s}.tile.thunderforest.com/outdoors/{z}/{x}/{y}.png"
+    },
+    "OSM_Roads": {
+        "title": "OSM Roads",
+        "url": "//korona.geog.uni-heidelberg.de/tiles/roads/x={x}&y={y}&z={z}"
+    },
+    "Dark_Matter": {
+        "title": "Dark Matter",
+        "url": "//cartodb-basemaps-a.global.ssl.fastly.net/dark_all/{z}/{x}/{y}.png"
+    },
+    "OpenStreetMap": {
+        "title": "OpenStreetMap",
+        "url": "//{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+    },
+    "Toner": {
+        "title": "Toner",
+        "url": "//{s}.tile.stamen.com/toner-lite/{z}/{x}/{y}.png"
+    },
+    "Landscape": {
+        "title": "Landscape",
+        "url": "//{s}.tile3.opencyclemap.org/landscape/{z}/{x}/{y}.png"
+    },
+    "Transport": {
+        "title": "Transport",
+        "url": "//{s}.tile2.opencyclemap.org/transport/{z}/{x}/{y}.png"
+    },
+    "MapQuest_Open": {
+        "title": "MapQuest Open",
+        "url": "//otile1.mqcdn.com/tiles/1.0.0/osm/{z}/{x}/{y}.png"
+    },
+    "HOTOSM_style": {
+        "title": "HOTOSM style",
+        "url": "//tilecache.openstreetmap.fr/hot/{z}/{x}/{y}.png"
+    },
+    "OpenCycleMap": {
+        "title": "OpenCycleMap",
+        "url": "//{s}.tile.opencyclemap.org/cycle/{z}/{x}/{y}.png"
+    },
+    "Watercolor": {
+        "title": "Watercolor",
+        "url": "//{s}.tile.stamen.com/watercolor/{z}/{x}/{y}.png"
+    },
+    "hikebikemap": {
+        "title": "hikebikemap",
+        "url": "//toolserver.org/tiles/hikebike/{z}/{x}/{y}.png"
+    },
+    "OSM-monochrome": {
+        "title": "OSM-monochrome",
+        "url": "//www.toolserver.org/tiles/bw-mapnik/{z}/{x}/{y}.png"
+    },
+    "Hydda": {
+        "title": "Hydda",
+        "url": "//{s}.tile.openstreetmap.se/hydda/full/{z}/{x}/{y}.png"
+    },
+    "OpenTopoMap": {
+        "title": "OpenTopoMap",
+        "url": "//{s}.tile.opentopomap.org/{z}/{x}/{y}.png"
+    },
+    "OpenRiverboatMap": {
+        "title": "OpenRiverboatMap",
+        "url": "//tilecache.openstreetmap.fr/openriverboatmap/{z}/{x}/{y}.png"
+    }
+};
+
+
+
+
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -533,8 +613,8 @@ jQuery(document).ready(function ($) {
         '',
         '&lt;script src="{{baseUrl}}udata.js"&gt;&lt;/script&gt;',
         '&lt;div class="uData-map"',
-        "   data-ressources='{{jsonencode ressources}}'",
-        "   data-leaflet_map_options='{{jsonencode leaflet_map_options}}'",
+        "   data-resources='{{jsonencode resources}}'",
+        //"   data-leaflet_map_options='{{jsonencode leaflet_map_options}}'",
         "   data-title='{{title}}'",
         '&gt&lt;/div&gt',
         '   </pre>',
@@ -544,9 +624,22 @@ jQuery(document).ready(function ($) {
     ];
 
 
+    Templates.li_resource = [
+        '<li data-id="{{id}}">',
+        '<a href="{{metadata_url}}">{{title}}</a>',
+        '<i class="fa fa-copyright"></i> {{_ license}}',
+        '<p class="organization" data-id="{{organization.id}}" data-slug="{{organization.slug}}">',
+        '<img alt="{{  organization.name }}" src="{{ organization.logo }}" width="70" height="70">',
+        '<span>{{organization.name}}</span>',
+        '</p>',
+        '</li>'
+    ];
 
 
-    var baseUrl = jQuery('script[src$="/udata.js"]')[0].src.replace('/udata.js', '/');
+
+
+    //var baseUrl = jQuery('script[src$="/udata.js"]')[0].src.replace('/udata.js', '/');
+    var baseUrl = 'http://lebouzin/udata-js/dist/';
 
     var _uData = {};
 
@@ -601,7 +694,7 @@ jQuery(document).ready(function ($) {
             if (options2.tags != undefined)
                 options2.tag = options2.tags;
 
-            console.log(options);
+            //console.log(options);
 
             var url = API_ROOT + 'datasets/?' + jQuery.param(options2);
             url = url.replace(/tag%5B%5D/g, 'tag'); // ! a corriger dans l'API pour gerer des vrais get array
@@ -697,45 +790,40 @@ jQuery(document).ready(function ($) {
 
 
 
-        var addPreviewMap = function (dataset) {
-            var bloc = obj.find('.dataset-result[data-dataset="' + options.dataset + '"]');
+        var addPreviewMap = function (dataset_id, datasetdata) {
+            var bloc = obj.find('.dataset-result[data-dataset="' + dataset_id + '"]');
             var geojson_links = bloc.find('.resources-list a[data-format="JSON"],.resources-list a[data-format="GEOJSON"]');
             //console.log(geojson_links);
 
             geojson_links.each(function () {
                 var geojson_link = jQuery(this);
-                var ressource_title = geojson_link.data('title');
                 var map_title = geojson_link.data('map_title');
-                var ressource_id = geojson_link.data('id');
+                var resource_id = geojson_link.data('id');
                 var geojson_url = geojson_link.prop('href');
-                var url = API_ROOT + 'datasets/checkurl/?url=' + encodeURIComponent(geojson_url) + '&group=' + options.dataset;
+                var url = API_ROOT + 'datasets/checkurl/?url=' + encodeURIComponent(geojson_url) + '&group=' + dataset_id;
 
-                //geojson_link.closest('div').append(jQuery('<div class="geojson_loading alert alert-info">chargement en cours <i class="fa fa-spinner fa-spin"></i></div>'));
 
                 jQuery.getJSON(url, function (data) {
                     var contentlength = parseInt(data['content-length']);
-                    // console.log(contentlength);
-                    // que faire des NaN ???
+                    // console.log(contentlength); // que faire des NaN ???
                     if (isNaN(contentlength) || contentlength <= contentlength_limit) {
 
 
                         var mapOptions = {
-                            ressources: [{
-                                url: geojson_url,
-                                id: ressource_id,
-                                title: ressource_title,
-                                type: 'geojson',
-                                //style: test_style,
-                                //template: test_template
+                            resources: [{
+                                id: resource_id,
+                                dataset: dataset_id
                             }],
+
                             title: map_title,
                             sharelink: true,
+
                             leaflet_map_options: {
                                 scrollWheelZoom: false
                             }
                         }
 
-                        uDataMap(geojson_link.closest('div'), mapOptions);
+                        uDataMap(geojson_link.closest('div'), mapOptions, datasetdata);
 
                     } else {
                         //console.warn('content-length excess: ' + contentlength + ' (max:' + contentlength_limit + ')');
@@ -756,7 +844,7 @@ jQuery(document).ready(function ($) {
 
                 obj.find('div.dataset[data-dataset="' + options.dataset + '"] ').hide().slideDown('slow');
                 addSpatialZoneMap(options.dataset);
-                addPreviewMap(options.dataset);
+                addPreviewMap(options.dataset, data);
             }).fail(
                 function () {
                     obj.find('.dataset-result[data-dataset="' + options.dataset + '"]')
@@ -778,28 +866,14 @@ jQuery(document).ready(function ($) {
 
     //////////////////// UDATAMAP
 
-    uDataMap = function (obj, ori_options) {
+    uDataMap = function (obj, ori_options, datasetdata) {
         var _uDataMap = {};
         var defaults = {
             title: false,
             sharelink: false,
-            ressources: [],
+            resources: [],
             leaflet_map_options: {},
-            background_layers: [{
-                    title: 'OpenStreetMap',
-                    url: '//{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
-                },
-
-                {
-                    title: 'MapQuest Open',
-                    url: '//otile1.mqcdn.com/tiles/1.0.0/osm/{z}/{x}/{y}.png'
-                },
-
-                {
-                    title: 'OpenTopoMap',
-                    url: '//{s}.tile.opentopomap.org/{z}/{x}/{y}.png'
-                }
-            ]
+            background_layers: ['OpenStreetMap', 'MapQuest_Open', 'OpenTopoMap']
         }
 
         var backgroundLayers = [];
@@ -818,7 +892,7 @@ jQuery(document).ready(function ($) {
         }
 
         var initMap = function () {
-            obj.append(jQuery('<div class="geojson_preview card card-5"><div class="map map_preview"></div>' + (options.title ? '<h4>' + options.title + '</h4>' : '') + '</div>'));
+            obj.append(jQuery('<div class="geojson_preview card card-5"><div class="map map_preview"></div>' + (options.title ? '<h4>' + options.title + '</h4>' : '') + '<ul class="resources"></ul></div>'));
 
 
             map = L.map(obj.find('.map')[0], options.leaflet_map_options).setView([0, 0], 1);
@@ -826,8 +900,21 @@ jQuery(document).ready(function ($) {
             map.layerController = L.control.layers(backgroundLayers, loadedLayers).addTo(map);
 
             for (var i in options.background_layers) {
-                var l = L.tileLayer(options.background_layers[i].url);
-                var t = options.background_layers[i].title;
+                var bl = options.background_layers[i];
+
+                if (typeof bl == 'string') {
+                    if (uDataUtils.baseLayers[bl] != undefined) {
+                        bl = uDataUtils.baseLayers[bl];
+                    } else {
+                        try {
+                            bl = eval(bl);
+                        } catch (err) {
+                            console.log(err.message);
+                        }
+                    }
+                }
+                var l = L.tileLayer(bl.url);
+                var t = bl.title;
                 _uDataMap.addBackground(t, l, i == 0);
             }
 
@@ -903,112 +990,149 @@ jQuery(document).ready(function ($) {
             return L.marker(latlng)
         }
 
-        var loadRessource = function (ressource) {
+        var addResource = function (resource, data_dataset) {
 
-            var ressource_defaults = {
-                title: '',
-                type: 'geojson',
+            jQuery.each(data_dataset.resources, function (k, val) {
+                if (val.id == resource.id) {
+                    resource.data = val;
+                    resource.metadata_url = data_dataset.page;
+                    resource.title = val.title;
+                    resource.license = data_dataset.license;
+                    resource.organization = data_dataset.organization;
+                }
+            })
+
+            obj.find('.geojson_loading_' + resource.id).remove();
+            obj.append(jQuery('<div class="geojson_loading_' + resource.id + ' geojson_loading alert alert-info">' + resource.title + ' - chargement en cours <i class="fa fa-spinner fa-spin"></i></div>'));
+            jQuery.getJSON(resource.data.url, function (data) {
+
+                if (data.features.length > featurelength_limit) {
+                    //console.warn('feature count excess: ' + data.features.length + ' (max:' + featurelength_limit + ')');
+                    obj.find('.geojson_loading_' + resource.id) /*.removeClass('alert-info').addClass('alert-warning').html('<strong><i class="fa fa-info-circle"></i> fichier trop important pour être chargé (>' + featurelength_limit + ' objets)</strong><br><a href="' + geojson_url + '">' + geojson_url + '</a>')*/ .slideUp('fast');
+                    return false;
+                }
+
+                if (null === map) initMap();
+
+                if (typeof resource.style == 'string') {
+                    try {
+                        var f = eval(resource.style);
+                        if (typeof f == 'function') resource.style = f;
+                    } catch (err) {
+                        console.log(err.message);
+                    }
+                }
+
+
+                if (typeof resource.marker == 'string') {
+                    try {
+                        var f = eval(resource.marker);
+                        if (typeof f == 'function') resource.marker = f;
+                    } catch (err) {
+                        console.log(err.message);
+                    }
+
+                }
+
+
+                if (typeof resource.template == 'string') {
+                    if (jQuery(resource.template).length) {
+                        resource.template = Handlebars.compile(
+                            jQuery(resource.template).first().html()
+                        );
+                    } else {
+                        try {
+                            var f = eval(resource.template);
+                            if (typeof f == 'function') resource.template = f;
+                        } catch (err) {
+                            console.log(err.message);
+                            resource.template = Handlebars.compile(resource.template);
+                        }
+                    }
+                }
+
+                if (typeof resource.pointToLayer == 'string') {
+                    try {
+                        var f = eval(resource.pointToLayer);
+                        if (typeof f == 'function') resource.pointToLayer = f;
+                    } catch (err) {
+                        console.log(err.message);
+                    }
+                }
+
+
+                if (resource.data.format.toUpperCase() == 'JSON') {
+                    var layer = L.geoJson(data, {
+                        onEachFeature: function (feature, layer) {
+                            if (resource.template) layer.bindPopup(resource.template(feature, layer));
+                        },
+                        pointToLayer: function (feature, layer) {
+                            if (resource.pointToLayer) {
+                                return resource.pointToLayer(feature, layer, resource.marker, data.features.length);
+                            }
+                            return false;
+                        },
+                        style: resource.style
+
+                    });
+                }
+
+                layer.addTo(map);
+                loadedLayers[resource.title] = layer;
+
+                updateBBoxAndLayerController();
+
+                obj.find('ul.resources').append(Templates.li_resource(resource));
+
+                obj.find('.geojson_loading_' + resource.id).slideUp('slow');
+                return true;
+
+            }).fail(function (data) {
+                //console.warn("can't load GeoJson: " + geojson_url);
+                obj.find('.geojson_loading_' + resource.id) /*.removeClass('alert-info').addClass('alert alert-danger').html('<strong><i class="fa fa-warning"></i> impossible de charger le fichier</strong><br><a href="' + resource.url + '">' + resource.url + '</a>')*/ .slideUp('fast');
+
+                return false;
+            });
+        }
+
+
+
+        var loadResource = function (resource) {
+
+            var resource_defaults = {
+                id: null,
+                dataset: null,
                 style: default_style,
                 template: default_template,
                 pointToLayer: default_pointToLayer,
                 marker: default_marker
             };
 
-            ressource = jQuery.extend({}, ressource_defaults, ressource || {});
+            resource = jQuery.extend({}, resource_defaults, resource || {});
 
-            obj.append(jQuery('<div class="geojson_loading_' + ressource.id + ' geojson_loading alert alert-info">' + ressource.title + ' - chargement en cours <i class="fa fa-spinner fa-spin"></i></div>'));
-            jQuery.getJSON(ressource.url, function (data) {
 
-                if (data.features.length > featurelength_limit) {
-                    //console.warn('feature count excess: ' + data.features.length + ' (max:' + featurelength_limit + ')');
-                    obj.find('.geojson_loading_' + ressource.id) /*.removeClass('alert-info').addClass('alert-warning').html('<strong><i class="fa fa-info-circle"></i> fichier trop important pour être chargé (>' + featurelength_limit + ' objets)</strong><br><a href="' + geojson_url + '">' + geojson_url + '</a>')*/ .slideUp('fast');
+            if (datasetdata != null && datasetdata.id == resource.dataset) {
+                addResource(resource, datasetdata);
+            } else {
+
+                obj.append(jQuery('<div class="geojson_loading_' + resource.id + ' geojson_loading alert alert-info">' + resource.id + ' - chargement en cours <i class="fa fa-spinner fa-spin"></i></div>'));
+                var api_dataset_url = API_ROOT + 'datasets/' + resource.dataset + '/';
+                jQuery.getJSON(api_dataset_url, function (datasetdata) {
+                    addResource(resource, datasetdata);
+                }).fail(function (data) {
+                    //console.warn("can't load resource dataset: " + resource.dataset);
+                    obj.find('.geojson_loading_' + resource.id) /*.removeClass('alert-info').addClass('alert alert-danger').html('<strong><i class="fa fa-warning"></i> impossible de charger le fichier</strong><br><a href="' + resource.url + '">' + resource.url + '</a>')*/ .slideUp('fast');
+
                     return false;
-                }
+                });
 
-                if (null === map) initMap();
-
-                if (typeof ressource.style == 'string') {
-                    try {
-                        var f = eval(ressource.style);
-                        if (typeof f == 'function') ressource.style = f;
-                    } catch (err) {
-                        console.log(err.message);
-                    }
-                }
+            } //else
+        }; // FIN loadResource
 
 
-                if (typeof ressource.marker == 'string') {
-                    try {
-                        var f = eval(ressource.marker);
-                        if (typeof f == 'function') ressource.marker = f;
-                    } catch (err) {
-                        console.log(err.message);
-                    }
-
-                }
-
-
-                if (typeof ressource.template == 'string') {
-                    if (jQuery(ressource.template).length) {
-                        ressource.template = Handlebars.compile(
-                            jQuery(ressource.template).first().html()
-                        );
-                    } else {
-                        try {
-                            var f = eval(ressource.template);
-                            if (typeof f == 'function') ressource.template = f;
-                        } catch (err) {
-                            console.log(err.message);
-                            ressource.template = Handlebars.compile(ressource.template);
-                        }
-                    }
-                }
-
-                if (typeof ressource.pointToLayer == 'string') {
-                    try {
-                        var f = eval(ressource.pointToLayer);
-                        if (typeof f == 'function') ressource.pointToLayer = f;
-                    } catch (err) {
-                        console.log(err.message);
-                    }
-                }
-
-
-                if (ressource.type == 'geojson') {
-                    var layer = L.geoJson(data, {
-                        onEachFeature: function (feature, layer) {
-                            if (ressource.template) layer.bindPopup(ressource.template(feature, layer));
-                        },
-                        pointToLayer: function (feature, layer) {
-                            if (ressource.pointToLayer) {
-                                return ressource.pointToLayer(feature, layer, ressource.marker, data.features.length);
-                            }
-                            return false;
-                        },
-                        style: ressource.style
-
-                    });
-                }
-
-                layer.addTo(map);
-                loadedLayers[ressource.title] = layer;
-
-                updateBBoxAndLayerController();
-
-                obj.find('.geojson_loading_' + ressource.id).slideUp('slow');
-                return true;
-
-            }).fail(function (data) {
-                //console.warn("can't load GeoJson: " + geojson_url);
-                obj.find('.geojson_loading_' + ressource.id) /*.removeClass('alert-info').addClass('alert alert-danger').html('<strong><i class="fa fa-warning"></i> impossible de charger le fichier</strong><br><a href="' + ressource.url + '">' + ressource.url + '</a>')*/ .slideUp('fast');
-
-                return false;
-            });
-        }; // FIN loadRessource
-
-        for (var i in options.ressources) {
-            var ressource = options.ressources[i];
-            loadRessource(ressource);
+        for (var i in options.resources) {
+            var resource = options.resources[i];
+            loadResource(resource);
         }
 
 
@@ -1606,7 +1730,7 @@ jQuery(document).ready(function ($) {
 
 
 
-        jQuery('.uData-map[data-ressources]').each(function () {
+        jQuery('.uData-map[data-resources]').each(function () {
             uDataMap(jQuery(this), jQuery(this).data())
         });
 
