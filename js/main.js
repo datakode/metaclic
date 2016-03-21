@@ -637,7 +637,6 @@ jQuery(document).ready(function ($) {
 
 
 
-
     var baseUrl = jQuery('script[src$="/udata.js"]')[0].src.replace('/udata.js', '/');
 
     var _uData = {};
