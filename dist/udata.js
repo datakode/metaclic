@@ -1,4 +1,4 @@
-/*! 21-03-2016 */
+/*! 04-04-2016 */
 var uData, uDataUtils = {};
 
 uDataUtils.urlify = function(text) {
@@ -336,7 +336,7 @@ uDataUtils.urlify = function(text) {
         }
         return _uDataMap.map = map, _uDataMap;
     };
-    var API_ROOT = "https://demo.data.gouv.fr/api/1/", contentlength_limit = 25e5, icons_limit = 200, featurelength_limit = 2e5, checklibs = function() {
+    var API_ROOT = "https://www.data.gouv.fr/api/1/", contentlength_limit = 25e5, icons_limit = 200, featurelength_limit = 2e5, checklibs = function() {
         var dependences = {
             Handlebars: "https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.2/handlebars.min.js",
             i18n: "https://cdnjs.cloudflare.com/ajax/libs/i18next/1.6.3/i18next-1.6.3.min.js",

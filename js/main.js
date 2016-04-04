@@ -1149,8 +1149,8 @@ jQuery(document).ready(function ($) {
 
 
 
-    var API_ROOT = "https://demo.data.gouv.fr/api/1/"; //!TODO get from div param
-    //var API_ROOT = "https://www.data.gouv.fr/api/1/";
+    //var API_ROOT = "https://demo.data.gouv.fr/api/1/"; //!TODO get from div param
+    var API_ROOT = "https://www.data.gouv.fr/api/1/";
     var contentlength_limit = 2.5 * 1000000; //2.5Mo
     var icons_limit = 200;
     var featurelength_limit = 2000 * 100; //nb max d'objet geojson
