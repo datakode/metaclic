@@ -19,6 +19,7 @@ http://depthfrance.github.io/udata-js/exemples/exemple.html
           data-organizations="534fffb3a3a7292c64a78129,551959f6c751df6682057c91,534fffb9a3a7292c64a7814f,558bef88c751df1fd9a453b9,55896c18c751df5864a453b9,558bf578c751df2f9ea453ea,534fff4ea3a7292c64a77cab"
           data-organization="551959f6c751df6682057c91"
           data-q="eau"
+          data-facets="all"
           data-page_size="5">
         </div>
 ```

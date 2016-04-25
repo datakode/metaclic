@@ -167,7 +167,7 @@ jQuery(document).ready(function ($) {
         '                    {{#if organization.public_service }}',
         '                        <img alt="certified"',
         '                            class="certified" rel="popover"',
-        '                            data-title="{{_ \'certified_public_service\'}}"',
+    '                            data-title="{{_ \'certified_public_service\'}}"',
         '                            data-content="{{_ \'the_identity_of_this_public_service_public_is_certified_by_etalab\'}}"',
         '                            data-container="body" data-trigger="hover"/>',
         '                        {{/if}}',
