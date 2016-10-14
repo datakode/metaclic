@@ -174,8 +174,8 @@ uDataUtils.urlify = function(text) {
         }, addPreviewMap = function(dataset_id, datasetdata) {
             var bloc = obj.find('.dataset-result[data-dataset="' + dataset_id + '"]'), geojson_links = bloc.find('.resources-list a[data-format="JSON"],.resources-list a[data-format="GEOJSON"]');
             geojson_links.each(function() {
-                /*var geojson_link = jQuery(this), map_title = geojson_link.data("map_title"), resource_id = geojson_link.data("id"), geojson_url = geojson_link.prop("href"), url = API_ROOT + "datasets/checkurl/?url=" + encodeURIComponent(geojson_url) + "&group=" + dataset_id;
-                jQuery.getJSON(url, function(data) {
+                var geojson_link = jQuery(this), map_title = geojson_link.data("map_title"), resource_id = geojson_link.data("id"), geojson_url = geojson_link.prop("href"), url = API_ROOT + "datasets/checkurl/?url=" + encodeURIComponent(geojson_url) + "&group=" + dataset_id;
+                /*jQuery.getJSON(url, function(data) {
                     var contentlength = parseInt(data["content-length"]);
                     if (isNaN(contentlength) || contentlength_limit >= contentlength) {*/
                         var mapOptions = {
