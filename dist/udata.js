@@ -174,10 +174,10 @@ uDataUtils.urlify = function(text) {
         }, addPreviewMap = function(dataset_id, datasetdata) {
             var bloc = obj.find('.dataset-result[data-dataset="' + dataset_id + '"]'), geojson_links = bloc.find('.resources-list a[data-format="JSON"],.resources-list a[data-format="GEOJSON"]');
             geojson_links.each(function() {
-                var geojson_link = jQuery(this), map_title = geojson_link.data("map_title"), resource_id = geojson_link.data("id"), geojson_url = geojson_link.prop("href"), url = API_ROOT + "datasets/checkurl/?url=" + encodeURIComponent(geojson_url) + "&group=" + dataset_id;
+                /*var geojson_link = jQuery(this), map_title = geojson_link.data("map_title"), resource_id = geojson_link.data("id"), geojson_url = geojson_link.prop("href"), url = API_ROOT + "datasets/checkurl/?url=" + encodeURIComponent(geojson_url) + "&group=" + dataset_id;
                 jQuery.getJSON(url, function(data) {
                     var contentlength = parseInt(data["content-length"]);
-                    if (isNaN(contentlength) || contentlength_limit >= contentlength) {
+                    if (isNaN(contentlength) || contentlength_limit >= contentlength) {*/
                         var mapOptions = {
                             resources: [ {
                                 id: resource_id,
@@ -190,8 +190,8 @@ uDataUtils.urlify = function(text) {
                             }
                         };
                         uDataMap(geojson_link.closest("div"), mapOptions, datasetdata);
-                    } else geojson_link.closest("div").find(".geojson_loading").removeClass("alert-info").addClass("alert alert-warning").html('<strong><i class="fa fa-info-circle"></i> fichier trop important pour être chargé (>' + contentlength_limit / 1e3 + 'ko)</strong><br><a href="' + geojson_url + '">' + geojson_url + "</a>");
-                });
+                    /*} else geojson_link.closest("div").find(".geojson_loading").removeClass("alert-info").addClass("alert alert-warning").html('<strong><i class="fa fa-info-circle"></i> fichier trop important pour être chargé (>' + contentlength_limit / 1e3 + 'ko)</strong><br><a href="' + geojson_url + '">' + geojson_url + "</a>");
+                });*/
             });
         };
         return _uData.displayDataset = function() {
