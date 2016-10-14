@@ -296,7 +296,7 @@ uDataUtils.urlify = function(text) {
                 } catch (err) {
                     console.log(err.message);
                 }
-                if ("JSON" == resource.data.format.toUpperCase()) var layer = L.geoJson(data, {
+                if ("JSON" == resource.data.format.toUpperCase() || "GEOJSON" == resource.data.format.toUpperCase()) var layer = L.geoJson(data, {
                     onEachFeature: function(feature, layer) {
                         resource.template && layer.bindPopup(resource.template(feature, layer));
                     },
