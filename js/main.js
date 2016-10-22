@@ -1202,7 +1202,7 @@ jQuery(document).ready(function ($) {
         _uData.lang = lang = 'fr';
 
         i18n.init({
-            resGetPath: baseUrl + 'locales/udata.' + lang + '.json',
+            resGetPath: baseUrl + '../locales/udata.' + lang + '.json',
             lng: lang,
             load: 'unspecific',
             interpolationPrefix: '{',
@@ -1394,7 +1394,7 @@ jQuery(document).ready(function ($) {
         });
 
         Handlebars.registerHelper('placeholder', function (url, type) {
-            return url ? url : baseUrl + 'img/placeholders/' + type + '.png';
+            return url ? url : baseUrl + '../img/placeholders/' + type + '.png';
         });
 
         Handlebars.registerHelper('_', function (value, options) {
