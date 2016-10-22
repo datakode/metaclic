@@ -17,75 +17,75 @@ uDataUtils.urlify = function (text) {
 uDataUtils.baseLayers = {
     "OSM-Fr": {
         "title": "OSM-Fr",
-        "url": "//tilecache.openstreetmap.fr/osmfr/{z}/{x}/{y}.png"
+        "url": "https://tilecache.openstreetmap.fr/osmfr/{z}/{x}/{y}.png"
     },
     "Positron": {
         "title": "Positron",
-        "url": "//cartodb-basemaps-a.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png"
+        "url": "https://cartodb-basemaps-a.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png"
     },
     "Outdoors_OSM": {
         "title": "Outdoors (OSM)",
-        "url": "//{s}.tile.thunderforest.com/outdoors/{z}/{x}/{y}.png"
+        "url": "https://{s}.tile.thunderforest.com/outdoors/{z}/{x}/{y}.png"
     },
     "OSM_Roads": {
         "title": "OSM Roads",
-        "url": "//korona.geog.uni-heidelberg.de/tiles/roads/x={x}&y={y}&z={z}"
+        "url": "https://korona.geog.uni-heidelberg.de/tiles/roads/x={x}&y={y}&z={z}"
     },
     "Dark_Matter": {
         "title": "Dark Matter",
-        "url": "//cartodb-basemaps-a.global.ssl.fastly.net/dark_all/{z}/{x}/{y}.png"
+        "url": "https://cartodb-basemaps-a.global.ssl.fastly.net/dark_all/{z}/{x}/{y}.png"
     },
     "OpenStreetMap": {
         "title": "OpenStreetMap",
-        "url": "//{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        "url": "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
     },
     "Toner": {
         "title": "Toner",
-        "url": "//{s}.tile.stamen.com/toner-lite/{z}/{x}/{y}.png"
+        "url": "https://{s}.tile.stamen.com/toner-lite/{z}/{x}/{y}.png"
     },
     "Landscape": {
         "title": "Landscape",
-        "url": "//{s}.tile3.opencyclemap.org/landscape/{z}/{x}/{y}.png"
+        "url": "https://{s}.tile3.opencyclemap.org/landscape/{z}/{x}/{y}.png"
     },
     "Transport": {
         "title": "Transport",
-        "url": "//{s}.tile2.opencyclemap.org/transport/{z}/{x}/{y}.png"
+        "url": "https://{s}.tile2.opencyclemap.org/transport/{z}/{x}/{y}.png"
     },
     "MapQuest_Open": {
         "title": "MapQuest Open",
-        "url": "//otile1.mqcdn.com/tiles/1.0.0/osm/{z}/{x}/{y}.png"
+        "url": "https://otile1.mqcdn.com/tiles/1.0.0/osm/{z}/{x}/{y}.png"
     },
     "HOTOSM_style": {
         "title": "HOTOSM style",
-        "url": "//tilecache.openstreetmap.fr/hot/{z}/{x}/{y}.png"
+        "url": "https://tilecache.openstreetmap.fr/hot/{z}/{x}/{y}.png"
     },
     "OpenCycleMap": {
         "title": "OpenCycleMap",
-        "url": "//{s}.tile.opencyclemap.org/cycle/{z}/{x}/{y}.png"
+        "url": "https://{s}.tile.opencyclemap.org/cycle/{z}/{x}/{y}.png"
     },
     "Watercolor": {
         "title": "Watercolor",
-        "url": "//{s}.tile.stamen.com/watercolor/{z}/{x}/{y}.png"
+        "url": "https://{s}.tile.stamen.com/watercolor/{z}/{x}/{y}.png"
     },
     "hikebikemap": {
         "title": "hikebikemap",
-        "url": "//toolserver.org/tiles/hikebike/{z}/{x}/{y}.png"
+        "url": "https://toolserver.org/tiles/hikebike/{z}/{x}/{y}.png"
     },
     "OSM-monochrome": {
         "title": "OSM-monochrome",
-        "url": "//www.toolserver.org/tiles/bw-mapnik/{z}/{x}/{y}.png"
+        "url": "https://www.toolserver.org/tiles/bw-mapnik/{z}/{x}/{y}.png"
     },
     "Hydda": {
         "title": "Hydda",
-        "url": "//{s}.tile.openstreetmap.se/hydda/full/{z}/{x}/{y}.png"
+        "url": "https://{s}.tile.openstreetmap.se/hydda/full/{z}/{x}/{y}.png"
     },
     "OpenTopoMap": {
         "title": "OpenTopoMap",
-        "url": "//{s}.tile.opentopomap.org/{z}/{x}/{y}.png"
+        "url": "https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png"
     },
     "OpenRiverboatMap": {
         "title": "OpenRiverboatMap",
-        "url": "//tilecache.openstreetmap.fr/openriverboatmap/{z}/{x}/{y}.png"
+        "url": "https://tilecache.openstreetmap.fr/openriverboatmap/{z}/{x}/{y}.png"
     }
 };
 
@@ -581,10 +581,10 @@ jQuery(document).ready(function ($) {
         '   <h4>Vous pouvez intégrer cet outil de recherche de données sur votre site</h4>',
         '   <p>Pour ceci collez le code suivant dans le code HTML de votre page</p>',
         '   <pre>',
-        '&lt;script&gt;window.jQuery || document.write("&lt;script src=\'//cdnjs.cloudflare.com/ajax/libs/jquery/2.2.0/jquery.min.js\'&gt;&lt;\\\/script&gt;")&lt;/script&gt;',
+        '&lt;script&gt;window.jQuery || document.write("&lt;script src=\'https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.0/jquery.min.js\'&gt;&lt;\\\/script&gt;")&lt;/script&gt;',
         '',
         '&lt;!-- chargement feuille de style font-awesome --&gt;',
-        '&lt;link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/css/font-awesome.min.css"&gt;',
+        '&lt;link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/css/font-awesome.min.css"&gt;',
         '',
         '&lt;script src="{{baseUrl}}udata.js"&gt;&lt;/script&gt;',
         '&lt;div class="uData-data"',
@@ -609,7 +609,7 @@ jQuery(document).ready(function ($) {
         '   <h4>Vous pouvez intégrer cet carte sur votre site</h4>',
         '   <p>Pour ceci collez le code suivant dans le code HTML de votre page</p>',
         '   <pre>',
-        '&lt;script&gt;window.jQuery || document.write("&lt;script src=\'//cdnjs.cloudflare.com/ajax/libs/jquery/2.2.0/jquery.min.js\'&gt;&lt;\\\/script&gt;")&lt;/script&gt;',
+        '&lt;script&gt;window.jQuery || document.write("&lt;script src=\'https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.0/jquery.min.js\'&gt;&lt;\\\/script&gt;")&lt;/script&gt;',
         '',
         '&lt;script src="{{baseUrl}}udata.js"&gt;&lt;/script&gt;',
         '&lt;div class="uData-map"',
