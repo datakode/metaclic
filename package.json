@@ -23,6 +23,11 @@
     "build": "grunt build",
     "prepublish": "npm run build"
   },
+  "files": [
+    "dist",
+    "img",
+    "locales"
+  ],
   "author": "Depth France",
   "license": "ISC"
 }
