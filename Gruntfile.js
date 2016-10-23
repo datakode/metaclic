@@ -34,7 +34,6 @@ module.exports = function (grunt) {
                 },
                 files: {
                     "dist/udata.css": "less/main.less",
-                    sourceMap: true
                 }
             },
             production: {
@@ -91,6 +90,11 @@ module.exports = function (grunt) {
     // Default task(s).
     grunt.registerTask('default', ['watch']);
 
-    grunt.registerTask('build', ['less:production', 'uglify:beautified', 'uglify:minified']);
+    grunt.registerTask('build', [
+      'less:development',
+      'less:production',
+      'uglify:beautified',
+      'uglify:minified',
+    ]);
 
 };
