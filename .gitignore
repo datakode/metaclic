@@ -1,12 +1,15 @@
-#Ignore:
-npm-debug.log
+*.log
+node_modules
+tmp
 
-/node_modules
+dist
 
 # OS
 .DS_Store
 Thumbs.db
+
+# Tools
 .idea/
 vagrant
 .vagrant
-
+.grunt
