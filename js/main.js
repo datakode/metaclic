@@ -798,6 +798,14 @@ jQuery(document).ready(function ($) {
                 var map_title = geojson_link.data('map_title');
                 var resource_id = geojson_link.data('id');
                 var geojson_url = geojson_link.prop('href');
+
+                                    /*
+
+-----------------------------------------
+DESACTIVATION CHECKURL (car probleme API)
+-----------------------------------------
+
+
                 var url = API_ROOT + 'datasets/checkurl/?url=' + encodeURIComponent(geojson_url) + '&group=' + dataset_id;
 
 
@@ -806,7 +814,7 @@ jQuery(document).ready(function ($) {
                     // console.log(contentlength); // que faire des NaN ???
                     if (isNaN(contentlength) || contentlength <= contentlength_limit) {
 
-
+*/
                         var mapOptions = {
                             resources: [{
                                 id: resource_id,
@@ -822,6 +830,12 @@ jQuery(document).ready(function ($) {
                         }
 
                         uDataMap(geojson_link.closest('div'), mapOptions, datasetdata);
+                                            /*
+
+-----------------------------------------
+DESACTIVATION CHECKURL (car probleme API)
+-----------------------------------------
+
 
                     } else {
                         //console.warn('content-length excess: ' + contentlength + ' (max:' + contentlength_limit + ')');
@@ -829,6 +843,7 @@ jQuery(document).ready(function ($) {
                     }
 
                 });
+                */
 
             });
         }
@@ -1059,7 +1074,7 @@ jQuery(document).ready(function ($) {
                 }
 
 
-                if (resource.data.format.toUpperCase() == 'JSON') {
+                if ('JSON' == resource.data.format.toUpperCase() || "GEOJSON" == resource.data.format.toUpperCase()) {
                     var layer = L.geoJson(data, {
                         onEachFeature: function (feature, layer) {
                             if (resource.template) layer.bindPopup(resource.template(feature, layer));
