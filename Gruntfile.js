@@ -57,6 +57,10 @@ module.exports = function (grunt) {
                 },
                 files: {
                     'dist/metaclic.min.js': [
+                        'js/init.js',
+                        'js/params.js',
+                        'js/templates.js',
+                        'js/utils.js',
                         'js/main.js'
                     ]
                 }
@@ -72,6 +76,10 @@ module.exports = function (grunt) {
                 },
                 files: {
                     'dist/metaclic.js': [
+                        'js/init.js',
+                        'js/params.js',
+                        'js/templates.js',
+                        'js/utils.js',
                         'js/main.js'
                     ]
                 }
