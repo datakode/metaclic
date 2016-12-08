@@ -1,9 +1,9 @@
 {
-  "name": "udata-js",
+  "name": "metaclic",
   "version": "0.3.4",
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/DepthFrance/udata-js.git"
+    "url": "git+ssh://git@github.com/datakode/metaclic.git"
   },
   "devDependencies": {
     "grunt": "^0.4.5",
@@ -14,10 +14,10 @@
   },
   "description": "Librairie JS d'integration du catalogue data.gouv.fr",
   "bugs": {
-    "url": "https://github.com/DepthFrance/udata-js/issues"
+    "url": "https://github.com/datakode/metaclic/issues"
   },
-  "homepage": "https://github.com/DepthFrance/udata-js#readme",
-  "main": "dist/udata.js",
+  "homepage": "https://github.com/datakode/metaclic#readme",
+  "main": "dist/metaclic.js",
   "dependencies": {},
   "scripts": {
     "build": "grunt build",
@@ -28,6 +28,6 @@
     "img",
     "locales"
   ],
-  "author": "Depth France",
+  "author": "datakode",
   "license": "ISC"
 }

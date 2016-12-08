@@ -1,9 +1,9 @@
-# udata-js
+# metaclic
 
-Librairie JS d'integration du catalogue data.gouv.fr (https://www.data.gouv.fr)
+Librairie JS d'intégration du catalogue data.gouv.fr (https://www.data.gouv.fr)
 
 ##  demo
-http://depthfrance.github.io/udata-js/exemples/exemple.html
+http://datakode.github.io/metaclic/exemples/exemple.html
 
 ## utilisation
 ```
@@ -15,7 +15,7 @@ http://depthfrance.github.io/udata-js/exemples/exemple.html
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/css/font-awesome.min.css">
 
         <div
-          class="uData-data"
+          class="Metaclic-data"
           data-organizations="534fffb3a3a7292c64a78129,551959f6c751df6682057c91,534fffb9a3a7292c64a7814f,558bef88c751df1fd9a453b9,55896c18c751df5864a453b9,558bf578c751df2f9ea453ea,534fff4ea3a7292c64a77cab"
           data-organization="551959f6c751df6682057c91"
           data-q="eau"
@@ -31,7 +31,7 @@ paramètres:
   - data-sort: tri des résulats, valeurs possibles ['title','created','last_modified','followers','reuses',false] si false le menu est masqué (optionnel, default: title)
   - data-sharelink: boolean si true, affiche le lien de partage (optionnel, default: false)
 
-l'ensemble des paramètres de l'API uData [GET /datasets/](https://www.data.gouv.fr/fr/apidoc/#!/datasets/list_datasets) sont utilisables
+l'ensemble des paramètres de l'API Metaclic [GET /datasets/](https://www.data.gouv.fr/fr/apidoc/#!/datasets/list_datasets) sont utilisables
 
 ex: `data-tag='transport'`
 
@@ -40,9 +40,9 @@ ex: `data-tag='transport'`
 Vous pouvez personnaliser l'affichage en utilisant des templates [handlebars](http://handlebarsjs.com/)
 voici les identifiants et templates par défaut utilisés:
 
- - **udata_template_datasetsForm** (affichage du formulaire de recherche)
+ - **metaclic_template_datasetsForm** (affichage du formulaire de recherche)
 ```
-<script id='udata_template_datasetsForm' type="text/x-handlebars-template">
+<script id='metaclic_template_datasetsForm' type="text/x-handlebars-template">
         <div class="datasetsForm">
                 <form action="" method="get">
                         <div><label></label><input type="text" name="q" value="{{q}}" placeholder="Rechercher des données" class="form-control"></input></div>
@@ -66,9 +66,9 @@ voici les identifiants et templates par défaut utilisés:
 </script>
 ```
 
- - **udata_template_datasets** (affichage de la liste résultat)
+ - **metaclic_template_datasets** (affichage de la liste résultat)
 ```
-<script id='udata_template_datasets' type="text/x-handlebars-template">
+<script id='metaclic_template_datasets' type="text/x-handlebars-template">
         <div class="result-count">{{ total }} résultat(s)</div>
         {{#ifCond sort "!=" false}}
         <div class="result-sort form-inline"><label>Trier par</label>
@@ -186,9 +186,9 @@ voici les identifiants et templates par défaut utilisés:
         </div>
 </script>
 ```
- - **udata_template_dataset** (affichage de la fiche)
+ - **metaclic_template_dataset** (affichage de la fiche)
 ```
-<script id='udata_template_dataset' type="text/x-handlebars-template">
+<script id='metaclic_template_dataset' type="text/x-handlebars-template">
         <div class="dataset" data-dataset="{{id}}">
 
                 <div class='dataset-info'>
@@ -266,13 +266,13 @@ voici les identifiants et templates par défaut utilisés:
 ```
 ##  exemple de personnalisation
 
-http://depthfrance.github.io/udata-js/exemples/exemple2.html
+http://datakode.github.io/metaclic/exemples/exemple2.html
 
 
 ## Integration carte simple
 
-http://depthfrance.github.io/udata-js/exemples/exemple_map.html
+http://datakode.github.io/metaclic/exemples/exemple_map.html
 
-http://depthfrance.github.io/udata-js/exemples/exemple_map2.html
+http://datakode.github.io/metaclic/exemples/exemple_map2.html
 
-http://depthfrance.github.io/udata-js/exemples/exemple_map3.html
+http://datakode.github.io/metaclic/exemples/exemple_map3.html

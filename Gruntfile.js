@@ -33,7 +33,7 @@ module.exports = function (grunt) {
                     paths: ["less"]
                 },
                 files: {
-                    "dist/udata.css": "less/main.less",
+                    "dist/metaclic.css": "less/main.less",
                 }
             },
             production: {
@@ -43,7 +43,7 @@ module.exports = function (grunt) {
                     sourceMap: true
                 },
                 files: {
-                    "dist/udata.min.css": "less/main.less"
+                    "dist/metaclic.min.css": "less/main.less"
                 }
             }
         },
@@ -56,7 +56,7 @@ module.exports = function (grunt) {
                     mangle: false
                 },
                 files: {
-                    'dist/udata.min.js': [
+                    'dist/metaclic.min.js': [
                         'js/main.js'
                     ]
                 }
@@ -71,7 +71,7 @@ module.exports = function (grunt) {
                     }
                 },
                 files: {
-                    'dist/udata.js': [
+                    'dist/metaclic.js': [
                         'js/main.js'
                     ]
                 }

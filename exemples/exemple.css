@@ -6,7 +6,7 @@ body {
   line-height: 18px;
 }
 
-.uData-data {
+.Metaclic-data {
   padding: 10px;
   max-width: 1200px;
   margin: 18px auto;
@@ -15,19 +15,19 @@ body {
 
 }
 
-.uData-data .datasetsForm {
+.Metaclic-data .datasetsForm {
    border: 1px solid #ddd;
     padding: 10px 0;
 }
 
 
-.uData-data .datasetsForm form::after {
+.Metaclic-data .datasetsForm form::after {
   display: block;
   content:"";
   clear: both;
 }
 
-.uData-data .datasetsForm div {
+.Metaclic-data .datasetsForm div {
     box-sizing: border-box;
     float: left;
     padding: 0 20px;
