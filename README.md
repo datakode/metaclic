@@ -8,11 +8,7 @@ http://datakode.github.io/metaclic/exemples/exemple.html
 ## utilisation
 ```
        <script>window.jQuery || document.write("<script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.0/jquery.min.js'><\/script>")</script>
-
-        <!-- chargement feuille de style bootstrap -->
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/css/bootstrap.css">
-        <!-- chargement feuille de style font-awesome -->
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/css/font-awesome.min.css">
+       <script src="https://unpkg.com/metaclic/dist/metaclic.js"></script>
 
         <div
           class="Metaclic-data"

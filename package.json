@@ -29,5 +29,10 @@
     "locales"
   ],
   "author": "datakode",
+  "contributors": [
+    {"name": "Damien Labat", "url": "http://www.datakode.fr"},
+    {"name": "Jérôme Desboeufs"},
+    {"name": "Florian Caperan", "url": "http://www.datakode.fr"}
+  ],
   "license": "ISC"
 }
