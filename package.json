@@ -1,6 +1,6 @@
 {
   "name": "udata-js",
-  "version": "0.3.4",
+  "version": "0.4.0",
   "repository": {
     "type": "git",
     "url": "git+ssh://git@github.com/DepthFrance/udata-js.git"
