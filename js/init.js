@@ -1,0 +1,2 @@
+var Metaclic;
+var MetaclicUtils = {};
