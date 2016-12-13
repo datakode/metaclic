@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>udata-js exemple personnalisation</title>
+    <title>Metaclic exemple personnalisation</title>
     <link type="text/css" href="./exemple2.css" rel="stylesheet">
 
 </head>
@@ -17,11 +17,11 @@
     <script src="https://unpkg.com/metaclic/dist/metaclic.js"></script>
 
 
-    <script id='udata_template_datasetsForm' type="text/x-handlebars-template">
+    <script id='metaclic_template_datasetsForm' type="text/x-handlebars-template">
         <h1>Service départemental d'incendie et de secours du Tarn</h1>
     </script>
 
-    <script id='udata_template_dataset' type="text/x-handlebars-template">
+    <script id='metaclic_template_dataset' type="text/x-handlebars-template">
         <div class="dataset" data-dataset="{{id}}">
             <h2 class='text-center'>{{title}}</h2>
             {{#each resources}}
@@ -34,7 +34,7 @@
     </script>
 
 
-    <script id='udata_template_dataset' type="text/x-handlebars-template">
+    <script id='metaclic_template_dataset' type="text/x-handlebars-template">
         <div class="dataset" data-dataset="{{id}}">
             <h2 class='text-center'>{{title}}</h2>
             {{#each resources}}
@@ -46,7 +46,7 @@
         </div>
     </script>
 
-    <div class="uData-data"
+    <div class="Metaclic-data"
     data-organizations="551959f6c751df6682057c91"
     data-organization="551959f6c751df6682057c91"
     data-sort=""
