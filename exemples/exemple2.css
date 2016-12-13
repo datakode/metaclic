@@ -6,7 +6,7 @@ body {
   line-height: 18px;
 }
 
-.uData-data {
+.Metaclic-data {
   padding: 10px;
   max-width: 900px;
   margin: 18px auto;
@@ -15,17 +15,17 @@ body {
 
 }
 
-.uData-data ul.search-results .dataset {
+.Metaclic-data ul.search-results .dataset {
  border: 1px solid #ddd;
  border-radius: 0;
  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
 }
 
-.uData-data  ul.search-results div.dataset div.resources-list {
+.Metaclic-data  ul.search-results div.dataset div.resources-list {
   background-color: #fff;
 }
 
-.uData-data  .geojson_preview.card {
+.Metaclic-data  .geojson_preview.card {
   box-shadow: none;
 }
 
