@@ -1,18 +1,9 @@
-
-
-
-
-
-
-
-
-
-
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+var data_bool=true;
 jQuery(document).ready(function ($) {
 
     var Templates = MetaclicUtils.Templates;
@@ -47,12 +38,15 @@ jQuery(document).ready(function ($) {
 
 
     Metaclic = function (obj, options) {
-
+        
+        //La
 
         options.baseUrl = baseUrl;
         options.organizationList = [];
         jQuery.each(_Metaclic.orgs, function (k, v) {
-            options.organizationList.push(v.id);
+            if(v.id.indexOf("|")=="-1"){
+                options.organizationList.push(v.id);
+            }
         });
         options.organizationList = options.organizationList.join(',');
 
@@ -75,6 +69,7 @@ jQuery(document).ready(function ($) {
         };
 
         _Metaclic.displayDatasets = function () {
+            console.log('tesr');
             var options2 = jQuery.extend({}, options);
 
             if (typeof options2.sort == 'undefined') {
@@ -87,7 +82,6 @@ jQuery(document).ready(function ($) {
                     options2.sort = '-' + options2.sort;
                 }
             }
-
             delete options2.organizations;
             delete options2.sharelink;
             delete options2.sharemaps;
@@ -111,11 +105,13 @@ jQuery(document).ready(function ($) {
                     sortTypes: sortTypes,
                     sortDesc: sortDesc,
                 };
-
+                
 
                 if (typeof options.tags != undefined) params.tags = options.tags;
 
                 if (typeof options.license != undefined) params.license = options.license;
+
+                if (typeof options.organization_name != undefined) params.organization_name = options.organization_name;
 
                 if (typeof options.geozone != undefined) params.geozone = options.geozone;
 
@@ -149,6 +145,7 @@ jQuery(document).ready(function ($) {
         };
 
         var addSpatialZoneMap = function (dataset) {
+            
             var bloc = obj.find('.dataset-result[data-dataset="' + options.dataset + '"]');
             var zones_li = bloc.find('ul.spatial_zones li');
             bloc.find('ul.spatial_zones').hide();
@@ -284,6 +281,7 @@ DESACTIVATION CHECKURL (car probleme API)
     //////////////////// UDATAMAP
 
     MetaclicMap = function (obj, ori_options, datasetdata) {
+
         var _MetaclicMap = {};
         var defaults = {
             title: false,
@@ -568,8 +566,8 @@ DESACTIVATION CHECKURL (car probleme API)
 
 
 
-    //var API_ROOT = "https://demo.data.gouv.fr/api/1/"; //!TODO get from div param
-    var API_ROOT = "https://www.data.gouv.fr/api/1/";
+    var API_ROOT = "https://demo.data.gouv.fr/api/1/"; //!TODO get from div param
+    //var API_ROOT = "https://www.data.gouv.fr/api/1/";
     var contentlength_limit = 2.5 * 1000000; //2.5Mo
     var icons_limit = 200;
     var featurelength_limit = 2000 * 100; //nb max d'objet geojson
@@ -604,6 +602,7 @@ DESACTIVATION CHECKURL (car probleme API)
             }
         }
         if (ready) {
+            
             start();
         } else {
             setTimeout(checklibs, 100);
@@ -614,7 +613,7 @@ DESACTIVATION CHECKURL (car probleme API)
 
 
     var start = function () {
-
+        
         var container = _Metaclic.container;
 
         /** i18n init  **/
@@ -751,6 +750,12 @@ DESACTIVATION CHECKURL (car probleme API)
             }
         });
 
+        Handlebars.registerHelper('ifNotall', function(v1, v2, options) {
+            if(v1.indexOf(v2)=="-1") {
+                return options.fn(this);
+            }
+            return options.inverse(this);
+        });
 
 
         Handlebars.registerHelper('paginate', function (n, total, page_size) {
@@ -918,7 +923,8 @@ DESACTIVATION CHECKURL (car probleme API)
             for (var i in orgs) {
                 getOrganizationName(orgs[i]);
             }
-
+            
+            
             //_Metaclic.container.data('organization', orgs[0]);
             _Metaclic.container.data('organizations', '');
             _Metaclic.orgs = [];
@@ -928,8 +934,8 @@ DESACTIVATION CHECKURL (car probleme API)
                     id: orgs[i],
                     name: orgs[i]
                 });
+                
             }
-
 
             container.each(function () {
                 var obj = jQuery(this);
@@ -938,6 +944,7 @@ DESACTIVATION CHECKURL (car probleme API)
             });
 
             var loadDataSets = function () {
+                console.log(container);
                 container.each(function () {
                     var obj = jQuery(this);
                     var ud = Metaclic(obj, obj.data());
@@ -957,9 +964,11 @@ DESACTIVATION CHECKURL (car probleme API)
                     var k = obj.data('addgeozone');
 
                     if (geozones_trans[k] == undefined) {
+                        //console.log(k);
                         var url = API_ROOT + 'spatial/zone/' + k;
                         jQuery.getJSON(url, function (data) {
-                            geozones_trans[data.id] = i18n.t(data.name) + ' <i>(' + data.code + ')</i>';
+                            //console.log(data);
+                            geozones_trans[data.id] = i18n.t(data.properties.name) + ' <i>(' + data.properties.code + ')</i>';
                             updateGeozonesTrans();
                         });
                     }
@@ -1047,27 +1056,42 @@ DESACTIVATION CHECKURL (car probleme API)
                 var container = jQuery('div.Metaclic-data');
                 var setPage = function (p) {
                     container.data('page', p);
+                    var organization = jQuery(this).data('addid');
+                    console.log(organization);
+                    if(typeof organization === "undefined"){
+                        var options=_Metaclic.container.data();
+                         var exp = /,/g;
+                         var test = options.organizationList.replace(exp, "|");
+                         organization=test;
+                         _Metaclic.container.data('organization', organization);
+                        console.log(_Metaclic.container.data());
+                    }
+
                     loadDataSets();
                 }
 
                 container.on('click', 'a[data-page]', function (e) {
                     e.preventDefault();
+                    //console.log("&");
                     setPage(jQuery(this).data('page'));
                 })
                     .on('click', 'a[data-dataset]', function (e) {
+                        //console.log("&");
                         e.preventDefault();
                         loadDataSet(jQuery(this).data('dataset'));
                     })
                     .on('click', 'a.reloadDataSets', function (e) {
+                        //console.log("&");
                         e.preventDefault();
                         loadDataSets();
                     })
                     .on('click', '.datasetsForm button', function (e) {
+                        console.log("&");
                         e.preventDefault();
                         updateParams();
                         loadDataSets();
                     })
-                    .on('change', '.datasetsForm *, .result-sort *', function (e) {
+                    .on('change', '.datasetsForm .form-control', function (e) {
                         e.preventDefault();
                         updateParams();
                         loadDataSets();
@@ -1088,6 +1112,19 @@ DESACTIVATION CHECKURL (car probleme API)
                     jQuery('.Metaclic-shareLink  a[href="#"]').fadeOut();
                     e.preventDefault();
                 })
+                    .on('click', 'a[data-addId]', function (e) {
+                        var organization = jQuery(this).data('addid');
+                        e.preventDefault();
+                        console.log(_Metaclic.orgs);
+                        $.each(_Metaclic.orgs, function( index, value ) {
+                            console.log(value);
+                            if (value.id==organization) {
+                                _Metaclic.container.data("organization_name",value.name);
+                            }
+                        });
+                        _Metaclic.container.data('organization', organization);
+                        loadDataSets();
+                    })
                     .on('click', 'a[data-addTag]', function (e) {
                         var tag = jQuery(this).data('addtag');
                         e.preventDefault();
@@ -1125,6 +1162,16 @@ DESACTIVATION CHECKURL (car probleme API)
                         var paramName = jQuery(this).data('removeparam');
                         e.preventDefault();
                         _Metaclic.container.removeData(paramName);
+                        loadDataSets();
+                    })
+                    .on('click', 'a[data-removeOrganization]', function (e) {
+                        var paramName = jQuery(this).data('removeorganization');
+                        e.preventDefault();
+                        var organization = jQuery(this).data('addid');
+                        var options=_Metaclic.container.data();
+                        var exp = /,/g;
+                        organization = options.organizationList.replace(exp, "|");
+                        _Metaclic.container.data('organization', organization);
                         loadDataSets();
                     })
                     .on('click', 'a[data-removeTag]', function (e) {
@@ -1174,8 +1221,10 @@ DESACTIVATION CHECKURL (car probleme API)
                     return 1;
                 return -1;
             });
-
+//ICI
             options = _Metaclic.container.data();
+           
+            //console.log(_Metaclic.orgs);
             var params = {
                 q: options.q,
                 organization: options.organization,
