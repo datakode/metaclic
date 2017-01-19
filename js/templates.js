@@ -130,7 +130,8 @@ MetaclicUtils.Templates.datasets = [
         '{{#ifCond facets "!=" undefined}}',
         '<div class="Metaclic-facets">',
 
-        '{{#ifCond facets.tag "!=" undefined}}',
+        '{{#ifCond facets.organization "!=" undefined}}',
+        '{{#if facets.organization}}',
         '<div class="facet-panel">',
         '    <div class="facet-panel-heading"><i class="fa fa-tags fa-fw"></i> Organisme</div>',
         '    <ul data-limitlist=5>',
@@ -142,9 +143,11 @@ MetaclicUtils.Templates.datasets = [
         '       {{/each}}',
         '    </ul>',
         '</div>',
+        '{{/if}}',
         '{{/ifCond}}',
 
         '{{#ifCond facets.tag "!=" undefined}}',
+        '{{#if facets.tag}}',
         '<div class="facet-panel">',
         '    <div class="facet-panel-heading"><i class="fa fa-tags fa-fw"></i> Tags</div>',
         '    <ul data-limitlist=5>',
@@ -157,9 +160,11 @@ MetaclicUtils.Templates.datasets = [
         '       {{/each}}',
         '    </ul>',
         '</div>',
+        '{{/if}}',
         '{{/ifCond}}',
 
         '{{#ifCond facets.license "!=" undefined}}',
+        '{{#if facets.license}}',
         '<div class="facet-panel">',
         '    <div class="facet-panel-heading"><i class="fa fa-copyright fa-fw"></i> Licences</div>',
         '    <ul data-limitlist=5>',
@@ -172,6 +177,7 @@ MetaclicUtils.Templates.datasets = [
         '       {{/each}}',
         '    </ul>',
         '</div>',
+        '{{/if}}',
         '{{/ifCond}}',
 
         //couverture temporelle
@@ -196,6 +202,7 @@ MetaclicUtils.Templates.datasets = [
 
 
         '{{#ifCond facets.granularity "!=" undefined}}',
+        '{{#if facets.granularity}}',
         '<div class="facet-panel">',
         '    <div class="facet-panel-heading"><i class="fa fa-bullseye fa-fw"></i> Granularité territoriale</div>',
         '    <ul data-limitlist=5>',
@@ -208,6 +215,7 @@ MetaclicUtils.Templates.datasets = [
         '       {{/each}}',
         '    </ul>',
         '</div>',
+        '{{/if}}',
         '{{/ifCond}}',
 
 
