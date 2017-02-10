@@ -3,8 +3,8 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-var data_bool=true;
-jQuery(document).ready(function ($) {
+var data_bool = true;
+jQuery(document).ready(function($) {
 
     var Templates = MetaclicUtils.Templates;
 
@@ -37,14 +37,14 @@ jQuery(document).ready(function ($) {
     var _Metaclic = {};
 
 
-    Metaclic = function (obj, options) {
-        
+    Metaclic = function(obj, options) {
+
         //La
 
         options.baseUrl = baseUrl;
         options.organizationList = [];
-        jQuery.each(_Metaclic.orgs, function (k, v) {
-            if(v.id.indexOf("|")=="-1"){
+        jQuery.each(_Metaclic.orgs, function(k, v) {
+            if (v.id.indexOf("|") == "-1") {
                 options.organizationList.push(v.id);
             }
         });
@@ -54,21 +54,21 @@ jQuery(document).ready(function ($) {
             options.organization = _Metaclic.orgs[0].id;
         }
 
-        var scrollTop = function () {
+        var scrollTop = function() {
             $('html, body').animate({
                 scrollTop: jQuery('div.Metaclic-data').offset().top
             }, 250);
         }
 
 
-        _Metaclic.displayLastDatasets = function () {
+        _Metaclic.displayLastDatasets = function() {
             /*  var url = API_ROOT + 'datasets/?sort=-created&' + jQuery.param(options);
             jQuery.getJSON(url, function (data) {
                 obj.html(Templates.lastdatasets(data));
             });*/
         };
 
-        _Metaclic.displayDatasets = function () {
+        _Metaclic.displayDatasets = function() {
             console.log('tesr');
             var options2 = jQuery.extend({}, options);
 
@@ -94,7 +94,7 @@ jQuery(document).ready(function ($) {
 
             var url = API_ROOT + 'datasets/?' + jQuery.param(options2);
             url = url.replace(/tag%5B%5D/g, 'tag'); // ! a corriger dans l'API pour gerer des vrais get array
-            jQuery.getJSON(url, function (data) {
+            jQuery.getJSON(url, function(data) {
 
 
                 var params = {
@@ -105,7 +105,7 @@ jQuery(document).ready(function ($) {
                     sortTypes: sortTypes,
                     sortDesc: sortDesc,
                 };
-                
+
 
                 if (typeof options.tags != undefined) params.tags = options.tags;
 
@@ -139,18 +139,18 @@ jQuery(document).ready(function ($) {
                 updateGeozonesTrans();
                 updateListLimit();
                 scrollTop();
-            }).fail(function () {
+            }).fail(function() {
                 obj.html('<p class="error">Serveur ' + API_ROOT + ' injoignable</p>');
             });
         };
 
-        var addSpatialZoneMap = function (dataset) {
-            
+        var addSpatialZoneMap = function(dataset) {
+
             var bloc = obj.find('.dataset-result[data-dataset="' + options.dataset + '"]');
             var zones_li = bloc.find('ul.spatial_zones li');
             bloc.find('ul.spatial_zones').hide();
             var list = [];
-            var style = function (feature) {
+            var style = function(feature) {
                 return {
                     weight: 1,
                     opacity: 1,
@@ -158,7 +158,7 @@ jQuery(document).ready(function ($) {
                 };
             };
 
-            zones_li.each(function () {
+            zones_li.each(function() {
                 list.push(jQuery(this).data('zone'));
             });
             if (list.length) {
@@ -168,9 +168,9 @@ jQuery(document).ready(function ($) {
                     scrollWheelZoom: false
                 }).setView([0, 0], 1);
                 L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png').addTo(map);
-                jQuery.getJSON(url, function (data) {
+                jQuery.getJSON(url, function(data) {
                     var layer = L.geoJson(data, {
-                        onEachFeature: function (feature, layer) {
+                        onEachFeature: function(feature, layer) {
                             var html = '<h4>' + feature.properties.name + '</h4>' + feature.properties.population + ' habitants'
                             layer.bindPopup(html);
                         },
@@ -189,18 +189,18 @@ jQuery(document).ready(function ($) {
 
 
 
-        var addPreviewMap = function (dataset_id, datasetdata) {
+        var addPreviewMap = function(dataset_id, datasetdata) {
             var bloc = obj.find('.dataset-result[data-dataset="' + dataset_id + '"]');
             var geojson_links = bloc.find('.resources-list a[data-format="JSON"],.resources-list a[data-format="GEOJSON"]');
             //console.log(geojson_links);
 
-            geojson_links.each(function () {
+            geojson_links.each(function() {
                 var geojson_link = jQuery(this);
                 var map_title = geojson_link.data('map_title');
                 var resource_id = geojson_link.data('id');
                 var geojson_url = geojson_link.prop('href');
 
-                                    /*
+                /*
 
 -----------------------------------------
 DESACTIVATION CHECKURL (car probleme API)
@@ -216,22 +216,22 @@ DESACTIVATION CHECKURL (car probleme API)
                     if (isNaN(contentlength) || contentlength <= contentlength_limit) {
 
 */
-                        var mapOptions = {
-                            resources: [{
-                                id: resource_id,
-                                dataset: dataset_id
-                            }],
+                var mapOptions = {
+                    resources: [{
+                        id: resource_id,
+                        dataset: dataset_id
+                    }],
 
-                            title: map_title,
-                            sharelink: true,
+                    title: map_title,
+                    sharelink: true,
 
-                            leaflet_map_options: {
-                                scrollWheelZoom: false
-                            }
-                        }
+                    leaflet_map_options: {
+                        scrollWheelZoom: false
+                    }
+                }
 
-                        MetaclicMap(geojson_link.closest('div'), mapOptions, datasetdata);
-                                            /*
+                MetaclicMap(geojson_link.closest('div'), mapOptions, datasetdata);
+                /*
 
 -----------------------------------------
 DESACTIVATION CHECKURL (car probleme API)
@@ -250,9 +250,9 @@ DESACTIVATION CHECKURL (car probleme API)
         }
 
 
-        _Metaclic.displayDataset = function () {
+        _Metaclic.displayDataset = function() {
             var url = API_ROOT + 'datasets/' + options.dataset + '/';
-            jQuery.getJSON(url, function (data) {
+            jQuery.getJSON(url, function(data) {
                 obj.find('.dataset-result[data-dataset="' + options.dataset + '"]')
                     .append(jQuery(Templates.dataset(data)));
 
@@ -260,7 +260,7 @@ DESACTIVATION CHECKURL (car probleme API)
                 addSpatialZoneMap(options.dataset);
                 addPreviewMap(options.dataset, data);
             }).fail(
-                function () {
+                function() {
                     obj.find('.dataset-result[data-dataset="' + options.dataset + '"]')
                         .append('<p class="error">Serveur www.data.gouv.fr injoignable</p>');
                 }
@@ -280,7 +280,7 @@ DESACTIVATION CHECKURL (car probleme API)
 
     //////////////////// UDATAMAP
 
-    MetaclicMap = function (obj, ori_options, datasetdata) {
+    MetaclicMap = function(obj, ori_options, datasetdata) {
 
         var _MetaclicMap = {};
         var defaults = {
@@ -299,14 +299,14 @@ DESACTIVATION CHECKURL (car probleme API)
         var map = null;
 
 
-        _MetaclicMap.addBackground = function (title, layer, show) {
+        _MetaclicMap.addBackground = function(title, layer, show) {
             backgroundLayers[title] = layer;
             if (show === true) layer.addTo(map);
             updateBBoxAndLayerController();
 
         }
 
-        var initMap = function () {
+        var initMap = function() {
             obj.append(jQuery('<div class="geojson_preview card card-5"><div class="map map_preview"></div>' + (options.title ? '<h4>' + options.title + '</h4>' : '') + '<ul class="resources"></ul></div>'));
 
 
@@ -340,7 +340,7 @@ DESACTIVATION CHECKURL (car probleme API)
                 var html = Template_shareLink(ori_options);
                 obj.find('.geojson_preview').append(html);
 
-                obj.on('click', '.MetaclicMap-shareLink a[href="#"]', function (e) {
+                obj.on('click', '.MetaclicMap-shareLink a[href="#"]', function(e) {
                     jQuery('.MetaclicMap-shareLink .hidden').removeClass('hidden').hide().slideDown('slow');
                     jQuery('.MetaclicMap-shareLink  a[href="#"]').fadeOut();
                     e.preventDefault();
@@ -352,7 +352,7 @@ DESACTIVATION CHECKURL (car probleme API)
 
 
 
-        var updateBBoxAndLayerController = function () {
+        var updateBBoxAndLayerController = function() {
             var bounds = null;
             for (var i in loadedLayers) {
                 if (null === bounds) {
@@ -369,7 +369,7 @@ DESACTIVATION CHECKURL (car probleme API)
         }; // FIN updateBBoxAndLayerController
 
 
-        var default_style = function (feature) {
+        var default_style = function(feature) {
             return {
                 fillColor: "#ff7800",
                 color: "#000",
@@ -379,9 +379,9 @@ DESACTIVATION CHECKURL (car probleme API)
             }
         };
 
-        var default_template = function (feature) {
+        var default_template = function(feature) {
             var html = '';
-            jQuery.each(feature.properties, function (k, v) {
+            jQuery.each(feature.properties, function(k, v) {
                 html += '<tr><th>' + k + '</th><td>' + MetaclicUtils.urlify(v) + '</td></tr>';
             });
             html = '<table class="table table-hover table-bordered">' + html + '</table>';
@@ -389,7 +389,7 @@ DESACTIVATION CHECKURL (car probleme API)
         };
 
         //var default_pointToLayer = false;
-        var default_pointToLayer = function (feature, latlng, f_marker, featuresCount) {
+        var default_pointToLayer = function(feature, latlng, f_marker, featuresCount) {
 
             if (featuresCount < icons_limit) return f_marker(feature, latlng);
 
@@ -401,13 +401,13 @@ DESACTIVATION CHECKURL (car probleme API)
         };
 
 
-        var default_marker = function (feature, latlng) {
+        var default_marker = function(feature, latlng) {
             return L.marker(latlng)
         }
 
-        var addResource = function (resource, data_dataset) {
+        var addResource = function(resource, data_dataset) {
 
-            jQuery.each(data_dataset.resources, function (k, val) {
+            jQuery.each(data_dataset.resources, function(k, val) {
                 if (val.id == resource.id) {
                     resource.data = val;
                     resource.metadata_url = data_dataset.page;
@@ -419,7 +419,7 @@ DESACTIVATION CHECKURL (car probleme API)
 
             obj.find('.geojson_loading_' + resource.id).remove();
             obj.append(jQuery('<div class="geojson_loading_' + resource.id + ' geojson_loading alert alert-info">' + resource.title + ' - chargement en cours <i class="fa fa-spinner fa-spin"></i></div>'));
-            jQuery.getJSON(resource.data.url, function (data) {
+            jQuery.getJSON(resource.data.url, function(data) {
 
                 if (data.features.length > featurelength_limit) {
                     //console.warn('feature count excess: ' + data.features.length + ' (max:' + featurelength_limit + ')');
@@ -478,10 +478,10 @@ DESACTIVATION CHECKURL (car probleme API)
 
                 if ('JSON' == resource.data.format.toUpperCase() || "GEOJSON" == resource.data.format.toUpperCase()) {
                     var layer = L.geoJson(data, {
-                        onEachFeature: function (feature, layer) {
+                        onEachFeature: function(feature, layer) {
                             if (resource.template) layer.bindPopup(resource.template(feature, layer));
                         },
-                        pointToLayer: function (feature, layer) {
+                        pointToLayer: function(feature, layer) {
                             if (resource.pointToLayer) {
                                 return resource.pointToLayer(feature, layer, resource.marker, data.features.length);
                             }
@@ -502,7 +502,7 @@ DESACTIVATION CHECKURL (car probleme API)
                 obj.find('.geojson_loading_' + resource.id).slideUp('slow');
                 return true;
 
-            }).fail(function (data) {
+            }).fail(function(data) {
                 //console.warn("can't load GeoJson: " + geojson_url);
                 obj.find('.geojson_loading_' + resource.id) /*.removeClass('alert-info').addClass('alert alert-danger').html('<strong><i class="fa fa-warning"></i> impossible de charger le fichier</strong><br><a href="' + resource.url + '">' + resource.url + '</a>')*/ .slideUp('fast');
 
@@ -512,7 +512,7 @@ DESACTIVATION CHECKURL (car probleme API)
 
 
 
-        var loadResource = function (resource) {
+        var loadResource = function(resource) {
 
             var resource_defaults = {
                 id: null,
@@ -532,9 +532,9 @@ DESACTIVATION CHECKURL (car probleme API)
 
                 obj.append(jQuery('<div class="geojson_loading_' + resource.id + ' geojson_loading alert alert-info">' + resource.id + ' - chargement en cours <i class="fa fa-spinner fa-spin"></i></div>'));
                 var api_dataset_url = API_ROOT + 'datasets/' + resource.dataset + '/';
-                jQuery.getJSON(api_dataset_url, function (datasetdata) {
+                jQuery.getJSON(api_dataset_url, function(datasetdata) {
                     addResource(resource, datasetdata);
-                }).fail(function (data) {
+                }).fail(function(data) {
                     //console.warn("can't load resource dataset: " + resource.dataset);
                     obj.find('.geojson_loading_' + resource.id) /*.removeClass('alert-info').addClass('alert alert-danger').html('<strong><i class="fa fa-warning"></i> impossible de charger le fichier</strong><br><a href="' + resource.url + '">' + resource.url + '</a>')*/ .slideUp('fast');
 
@@ -565,16 +565,16 @@ DESACTIVATION CHECKURL (car probleme API)
 
 
 
-
-    var API_ROOT = "https://demo.data.gouv.fr/api/1/"; //!TODO get from div param
-    //var API_ROOT = "https://www.data.gouv.fr/api/1/";
+    var API_ROOT = "https://next.data.gouv.fr/api/1/"
+        //var API_ROOT = "https://demo.data.gouv.fr/api/1/"; //!TODO get from div param
+        //var API_ROOT = "https://www.data.gouv.fr/api/1/";
     var contentlength_limit = 2.5 * 1000000; //2.5Mo
     var icons_limit = 200;
     var featurelength_limit = 2000 * 100; //nb max d'objet geojson
 
 
 
-    var checklibs = function () {
+    var checklibs = function() {
         var dependences = {
             'Handlebars': 'https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.2/handlebars.min.js',
             'i18n': 'https://cdnjs.cloudflare.com/ajax/libs/i18next/1.6.3/i18next-1.6.3.min.js',
@@ -602,7 +602,7 @@ DESACTIVATION CHECKURL (car probleme API)
             }
         }
         if (ready) {
-            
+
             start();
         } else {
             setTimeout(checklibs, 100);
@@ -612,8 +612,8 @@ DESACTIVATION CHECKURL (car probleme API)
 
 
 
-    var start = function () {
-        
+    var start = function() {
+
         var container = _Metaclic.container;
 
         /** i18n init  **/
@@ -630,7 +630,7 @@ DESACTIVATION CHECKURL (car probleme API)
             fallbackOnNull: true,
             nsseparator: '::', // Allow to use real sentences as keys
             keyseparator: '$$', // Allow to use real sentences as keys
-        }, function (err, t) { /* loading done */ });
+        }, function(err, t) { /* loading done */ });
 
 
         /** momentjs init  **/
@@ -672,11 +672,11 @@ DESACTIVATION CHECKURL (car probleme API)
                 yy: "%d années"
             },
             ordinalParse: /\d{1,2}(er|ème)/,
-            ordinal: function (number) {
+            ordinal: function(number) {
                 return number + (number === 1 ? 'er' : 'ème');
             },
             meridiemParse: /PD|MD/,
-            isPM: function (input) {
+            isPM: function(input) {
                 return input.charAt(0) === 'M';
             },
             // in case the meridiem units are not separated around 12, then implement
@@ -684,7 +684,7 @@ DESACTIVATION CHECKURL (car probleme API)
             // meridiemHour : function (hour, meridiem) {
             //     return /* 0-23 hour, given meridiem token and hour 1-12 */
             // },
-            meridiem: function (hours, minutes, isLower) {
+            meridiem: function(hours, minutes, isLower) {
                 return hours < 12 ? 'PD' : 'MD';
             },
             week: {
@@ -698,67 +698,67 @@ DESACTIVATION CHECKURL (car probleme API)
 
         /** Handlebars init  **/
 
-        Handlebars.registerHelper('ifCond', function (v1, operator, v2, options) {
+        Handlebars.registerHelper('ifCond', function(v1, operator, v2, options) {
 
             switch (operator) {
-            case '==':
-                return (v1 == v2) ? options.fn(this) : options.inverse(this);
-            case '!=':
-                return (v1 != v2) ? options.fn(this) : options.inverse(this);
-            case '===':
-                return (v1 === v2) ? options.fn(this) : options.inverse(this);
-            case '<':
-                return (v1 < v2) ? options.fn(this) : options.inverse(this);
-            case '<=':
-                return (v1 <= v2) ? options.fn(this) : options.inverse(this);
-            case '>':
-                return (v1 > v2) ? options.fn(this) : options.inverse(this);
-            case '>=':
-                return (v1 >= v2) ? options.fn(this) : options.inverse(this);
-            case '&&':
-                return (v1 && v2) ? options.fn(this) : options.inverse(this);
-            case '||':
-                return (v1 || v2) ? options.fn(this) : options.inverse(this);
-            default:
-                return options.inverse(this);
+                case '==':
+                    return (v1 == v2) ? options.fn(this) : options.inverse(this);
+                case '!=':
+                    return (v1 != v2) ? options.fn(this) : options.inverse(this);
+                case '===':
+                    return (v1 === v2) ? options.fn(this) : options.inverse(this);
+                case '<':
+                    return (v1 < v2) ? options.fn(this) : options.inverse(this);
+                case '<=':
+                    return (v1 <= v2) ? options.fn(this) : options.inverse(this);
+                case '>':
+                    return (v1 > v2) ? options.fn(this) : options.inverse(this);
+                case '>=':
+                    return (v1 >= v2) ? options.fn(this) : options.inverse(this);
+                case '&&':
+                    return (v1 && v2) ? options.fn(this) : options.inverse(this);
+                case '||':
+                    return (v1 || v2) ? options.fn(this) : options.inverse(this);
+                default:
+                    return options.inverse(this);
             }
         });
 
-        Handlebars.registerHelper('ifCount', function (v1, operator, v2, options) {
+        Handlebars.registerHelper('ifCount', function(v1, operator, v2, options) {
             var v1 = v1.length;
             switch (operator) {
-            case '==':
-                return (v1 == v2) ? options.fn(this) : options.inverse(this);
-            case '!=':
-                return (v1 != v2) ? options.fn(this) : options.inverse(this);
-            case '===':
-                return (v1 === v2) ? options.fn(this) : options.inverse(this);
-            case '<':
-                return (v1 < v2) ? options.fn(this) : options.inverse(this);
-            case '<=':
-                return (v1 <= v2) ? options.fn(this) : options.inverse(this);
-            case '>':
-                return (v1 > v2) ? options.fn(this) : options.inverse(this);
-            case '>=':
-                return (v1 >= v2) ? options.fn(this) : options.inverse(this);
-            case '&&':
-                return (v1 && v2) ? options.fn(this) : options.inverse(this);
-            case '||':
-                return (v1 || v2) ? options.fn(this) : options.inverse(this);
-            default:
-                return options.inverse(this);
+                case '==':
+                    return (v1 == v2) ? options.fn(this) : options.inverse(this);
+                case '!=':
+                    return (v1 != v2) ? options.fn(this) : options.inverse(this);
+                case '===':
+                    return (v1 === v2) ? options.fn(this) : options.inverse(this);
+                case '<':
+                    return (v1 < v2) ? options.fn(this) : options.inverse(this);
+                case '<=':
+                    return (v1 <= v2) ? options.fn(this) : options.inverse(this);
+                case '>':
+                    return (v1 > v2) ? options.fn(this) : options.inverse(this);
+                case '>=':
+                    return (v1 >= v2) ? options.fn(this) : options.inverse(this);
+                case '&&':
+                    return (v1 && v2) ? options.fn(this) : options.inverse(this);
+                case '||':
+                    return (v1 || v2) ? options.fn(this) : options.inverse(this);
+                default:
+                    return options.inverse(this);
             }
         });
 
         Handlebars.registerHelper('ifNotall', function(v1, v2, options) {
-            if(v1.indexOf(v2)=="-1") {
+            if (v1.indexOf(v2) == "-1") {
                 return options.fn(this);
             }
             return options.inverse(this);
         });
 
 
-        Handlebars.registerHelper('paginate', function (n, total, page_size) {
+        Handlebars.registerHelper('paginate', function(n, total, page_size) {
 
             var res = '';
             var nPage = Math.ceil(total / page_size);
@@ -770,7 +770,7 @@ DESACTIVATION CHECKURL (car probleme API)
             return '<nav><ul class="pagination">' + res + '</ul></nav>';
         });
 
-        Handlebars.registerHelper('taglist', function (tags) {
+        Handlebars.registerHelper('taglist', function(tags) {
             var res = '';
             for (var i in tags) {
                 res += "<span class='label label-primary' >" + tags[i] + '</span> ';
@@ -778,7 +778,7 @@ DESACTIVATION CHECKURL (car probleme API)
             return res;
         });
 
-        Handlebars.registerHelper('trimString', function (passedString) {
+        Handlebars.registerHelper('trimString', function(passedString) {
             if (passedString.length > 150) {
                 var theString = passedString.substring(0, 150) + '...';
                 return new Handlebars.SafeString(theString);
@@ -789,11 +789,11 @@ DESACTIVATION CHECKURL (car probleme API)
         });
 
 
-        Handlebars.registerHelper('uppercase', function (passedString) {
+        Handlebars.registerHelper('uppercase', function(passedString) {
             return passedString.toUpperCase();
         });
 
-        Handlebars.registerHelper('truncate', function (str, len) {
+        Handlebars.registerHelper('truncate', function(str, len) {
             if (str && str.length > len && str.length > 0) {
                 var new_str = str + " ";
                 new_str = str.substr(0, len);
@@ -805,7 +805,7 @@ DESACTIVATION CHECKURL (car probleme API)
             return str;
         });
 
-        Handlebars.registerHelper('default', function (value, defaultValue) {
+        Handlebars.registerHelper('default', function(value, defaultValue) {
             if (value != null) {
                 return value
             } else {
@@ -813,15 +813,15 @@ DESACTIVATION CHECKURL (car probleme API)
             }
         });
 
-        Handlebars.registerHelper('dt', function (value, options) {
+        Handlebars.registerHelper('dt', function(value, options) {
             return moment(value).format(options.hash['format'] || 'LLL');
         });
 
-        Handlebars.registerHelper('placeholder', function (url, type) {
+        Handlebars.registerHelper('placeholder', function(url, type) {
             return url ? url : baseUrl + '../img/placeholders/' + type + '.png';
         });
 
-        Handlebars.registerHelper('_', function (value, options) {
+        Handlebars.registerHelper('_', function(value, options) {
             if (!value || typeof value !== 'string') {
                 return '';
             }
@@ -847,13 +847,13 @@ DESACTIVATION CHECKURL (car probleme API)
         });
 
 
-        Handlebars.registerHelper('md', function (value) {
+        Handlebars.registerHelper('md', function(value) {
             return new Handlebars.SafeString(marked(value));
         });
 
 
 
-        Handlebars.registerHelper('mdshort', function (value, length) {
+        Handlebars.registerHelper('mdshort', function(value, length) {
             if (!value) {
                 return;
             }
@@ -876,18 +876,18 @@ DESACTIVATION CHECKURL (car probleme API)
         });
 
 
-        Handlebars.registerHelper('theme', function (value) {
+        Handlebars.registerHelper('theme', function(value) {
             return new Handlebars.SafeString(baseUrl + '' + value);
         });
 
 
-        Handlebars.registerHelper('fulllogo', function (value) {
+        Handlebars.registerHelper('fulllogo', function(value) {
             //   value = value.replace('-100.png', '.png'); // BAD IDEA can be .png or .jpg
             return new Handlebars.SafeString(value);
         });
 
 
-        Handlebars.registerHelper('jsonencode', function (value) {
+        Handlebars.registerHelper('jsonencode', function(value) {
 
             return JSON.stringify(value, null, 4);
         });
@@ -923,8 +923,8 @@ DESACTIVATION CHECKURL (car probleme API)
             for (var i in orgs) {
                 getOrganizationName(orgs[i]);
             }
-            
-            
+
+
             //_Metaclic.container.data('organization', orgs[0]);
             _Metaclic.container.data('organizations', '');
             _Metaclic.orgs = [];
@@ -934,18 +934,18 @@ DESACTIVATION CHECKURL (car probleme API)
                     id: orgs[i],
                     name: orgs[i]
                 });
-                
+
             }
 
-            container.each(function () {
+            container.each(function() {
                 var obj = jQuery(this);
                 var ud = Metaclic(obj, obj.data());
                 ud.displayLastDatasets();
             });
 
-            var loadDataSets = function () {
+            var loadDataSets = function() {
                 console.log(container);
-                container.each(function () {
+                container.each(function() {
                     var obj = jQuery(this);
                     var ud = Metaclic(obj, obj.data());
                     ud.displayDatasets();
@@ -954,10 +954,10 @@ DESACTIVATION CHECKURL (car probleme API)
             }
 
 
-            updateGeozonesTrans = function () {
+            updateGeozonesTrans = function() {
 
 
-                container.find('.geozone-to-load').each(function () {
+                container.find('.geozone-to-load').each(function() {
 
                     var obj = jQuery(this);
                     obj.removeClass('geozone-to-load').addClass('geozone-to-update');
@@ -966,7 +966,7 @@ DESACTIVATION CHECKURL (car probleme API)
                     if (geozones_trans[k] == undefined) {
                         //console.log(k);
                         var url = API_ROOT + 'spatial/zone/' + k;
-                        jQuery.getJSON(url, function (data) {
+                        jQuery.getJSON(url, function(data) {
                             //console.log(data);
                             geozones_trans[data.id] = i18n.t(data.properties.name) + ' <i>(' + data.properties.code + ')</i>';
                             updateGeozonesTrans();
@@ -974,7 +974,7 @@ DESACTIVATION CHECKURL (car probleme API)
                     }
                 });
 
-                container.find('.geozone-to-update').each(function () {
+                container.find('.geozone-to-update').each(function() {
                     var obj = jQuery(this);
                     var k = obj.data('addgeozone');
                     if (geozones_trans[k] != undefined) {
@@ -987,15 +987,15 @@ DESACTIVATION CHECKURL (car probleme API)
 
 
 
-            updateListLimit = function () {
-                container.find('ul[data-limitlist]').each(function () {
+            updateListLimit = function() {
+                container.find('ul[data-limitlist]').each(function() {
                     var obj = jQuery(this);
                     var limit = obj.data('limitlist');
                     if (obj.find('>a').length > limit) {
                         obj.find('>a:nth-child(n+' + (limit + 1) + ')').hide();
                         var openlink = jQuery('<a href="#" class="see-all">voir la suite</a>');
                         obj.find('>a:nth-child(' + (limit) + ')').after(openlink);
-                        openlink.click(function (e) {
+                        openlink.click(function(e) {
                             e.preventDefault();
                             obj.find('>a').slideDown();
                             jQuery(this).slideUp();
@@ -1009,13 +1009,13 @@ DESACTIVATION CHECKURL (car probleme API)
             }
 
 
-            var loadDataSet = function (id) {
+            var loadDataSet = function(id) {
 
                 if (jQuery('div.dataset[data-dataset="' + id + '"]').length) {
                     jQuery('div.dataset[data-dataset="' + id + '"] ').slideToggle();
                 } else {
 
-                    container.each(function () {
+                    container.each(function() {
                         var obj = jQuery(this);
                         var ud = Metaclic(obj, {
                             dataset: id
@@ -1034,13 +1034,13 @@ DESACTIVATION CHECKURL (car probleme API)
         });*/
 
 
-            var scrollTop = function () {
+            var scrollTop = function() {
                 $('html, body').animate({
                     scrollTop: jQuery('div.Metaclic-data').offset().top
                 }, 250);
             }
 
-            var updateParams = function () {
+            var updateParams = function() {
                 var q = container.find('.datasetsForm input[name="q"]').val();
                 _Metaclic.container.data('q', q);
                 var organization = container.find('.datasetsForm select[name="organizations"] option:selected').val();
@@ -1054,127 +1054,138 @@ DESACTIVATION CHECKURL (car probleme API)
             if (jQuery('div.Metaclic-data').length) {
 
                 var container = jQuery('div.Metaclic-data');
-                var setPage = function (p) {
+                var setPage = function(p) {
                     container.data('page', p);
                     var organization = jQuery(this).data('addid');
                     console.log(organization);
-                    if(typeof organization === "undefined"){
-                        var options=_Metaclic.container.data();
-                         var exp = /,/g;
-                         var test = options.organizationList.replace(exp, "|");
-                         organization=test;
-                         _Metaclic.container.data('organization', organization);
+                    if (typeof organization === "undefined") {
+                        var options = _Metaclic.container.data();
+                        var exp = /,/g;
+                        var test = options.organizationList.replace(exp, "|");
+                        organization = test;
+                        _Metaclic.container.data('organization', organization);
                         console.log(_Metaclic.container.data());
                     }
 
                     loadDataSets();
                 }
 
-                container.on('click', 'a[data-page]', function (e) {
-                    e.preventDefault();
-                    //console.log("&");
-                    setPage(jQuery(this).data('page'));
-                })
-                    .on('click', 'a[data-dataset]', function (e) {
+                container.on('click', 'a[data-page]', function(e) {
+                        e.preventDefault();
+                        //console.log("&");
+                        setPage(jQuery(this).data('page'));
+                    })
+                    .on('click', 'a[data-dataset]', function(e) {
                         //console.log("&");
                         e.preventDefault();
                         loadDataSet(jQuery(this).data('dataset'));
                     })
-                    .on('click', 'a.reloadDataSets', function (e) {
+                    .on('click', 'a.reloadDataSets', function(e) {
                         //console.log("&");
                         e.preventDefault();
                         loadDataSets();
                     })
-                    .on('click', '.datasetsForm button', function (e) {
+                    .on('click', '.datasetsForm button', function(e) {
                         console.log("&");
                         e.preventDefault();
                         updateParams();
                         loadDataSets();
                     })
-                    .on('change', '.datasetsForm .form-control', function (e) {
+                    .on('change', '.datasetsForm .form-control', function(e) {
                         e.preventDefault();
                         updateParams();
                         loadDataSets();
                     })
-                    .on('click', '.result-sort a.sortdirection', function (e) {
+                    .on('click', '.result-sort a.sortdirection', function(e) {
                         e.preventDefault();
                         sortDesc = !sortDesc;
                         updateParams();
                         loadDataSets();
                     })
-                    .on('submit', '.datasetsForm form', function (e) {
+                    .on('submit', '.datasetsForm form', function(e) {
                         e.preventDefault();
                         updateParams();
                         loadDataSets();
                     }).
-                on('click', '.Metaclic-shareLink a[href="#"]', function (e) {
-                    jQuery('.Metaclic-shareLink .hidden').removeClass('hidden').hide().slideDown('slow');
-                    jQuery('.Metaclic-shareLink  a[href="#"]').fadeOut();
-                    e.preventDefault();
-                })
-                    .on('click', 'a[data-addId]', function (e) {
+                on('click', '.Metaclic-shareLink a[href="#"]', function(e) {
+                        jQuery('.Metaclic-shareLink .hidden').removeClass('hidden').hide().slideDown('slow');
+                        jQuery('.Metaclic-shareLink  a[href="#"]').fadeOut();
+                        e.preventDefault();
+                    })
+                    .on('click', 'a[data-addId]', function(e) {
                         var organization = jQuery(this).data('addid');
                         e.preventDefault();
                         console.log(_Metaclic.orgs);
-                        $.each(_Metaclic.orgs, function( index, value ) {
+                        $.each(_Metaclic.orgs, function(index, value) {
                             console.log(value);
-                            if (value.id==organization) {
-                                _Metaclic.container.data("organization_name",value.name);
+                            if (value.id == organization) {
+                                _Metaclic.container.data("organization_name", value.name);
                             }
                         });
                         _Metaclic.container.data('organization', organization);
                         loadDataSets();
                     })
-                    .on('click', 'a[data-addTag]', function (e) {
+                    .on('click', 'a[data-addTag]', function(e) {
                         var tag = jQuery(this).data('addtag');
+                        console.log(tag)
                         e.preventDefault();
                         var tags = _Metaclic.container.data('tags');
+                        console.log(tags);
                         if (!Array.isArray(tags)) tags = [];
-                        tags.push(tag);
-                        _Metaclic.container.data('tags', tags);
-                        loadDataSets();
+                        var unique = true;
+                        for (var index = 0; index < tags.length; index++) {
+                            var element = tags[index];
+                            if (element == tag) {
+                                unique = false;
+                            }
+                        }
+                        if (unique) {
+                            tags.push(tag);
+                            _Metaclic.container.data('tags', tags);
+                            loadDataSets();
+                        }
                     })
-                    .on('click', 'a[data-addLicense]', function (e) {
+                    .on('click', 'a[data-addLicense]', function(e) {
                         var license = jQuery(this).data('addlicense');
                         e.preventDefault();
                         _Metaclic.container.data('license', license);
                         loadDataSets();
                     })
-                    .on('click', 'a[data-addGeozone]', function (e) {
+                    .on('click', 'a[data-addGeozone]', function(e) {
                         var geozone = jQuery(this).data('addgeozone');
                         e.preventDefault();
                         _Metaclic.container.data('geozone', geozone);
                         loadDataSets();
                     })
-                    .on('click', 'a[data-addGranularity]', function (e) {
+                    .on('click', 'a[data-addGranularity]', function(e) {
                         var granularity = jQuery(this).data('addgranularity');
                         e.preventDefault();
                         _Metaclic.container.data('granularity', granularity);
                         loadDataSets();
                     })
-                    .on('click', 'a[data-addFormat]', function (e) {
+                    .on('click', 'a[data-addFormat]', function(e) {
                         var format = jQuery(this).data('addformat');
                         e.preventDefault();
                         _Metaclic.container.data('format', format);
                         loadDataSets();
                     })
-                    .on('click', 'a[data-removeParam]', function (e) {
+                    .on('click', 'a[data-removeParam]', function(e) {
                         var paramName = jQuery(this).data('removeparam');
                         e.preventDefault();
                         _Metaclic.container.removeData(paramName);
                         loadDataSets();
                     })
-                    .on('click', 'a[data-removeOrganization]', function (e) {
+                    .on('click', 'a[data-removeOrganization]', function(e) {
                         var paramName = jQuery(this).data('removeorganization');
                         e.preventDefault();
                         var organization = jQuery(this).data('addid');
-                        var options=_Metaclic.container.data();
+                        var options = _Metaclic.container.data();
                         var exp = /,/g;
                         organization = options.organizationList.replace(exp, "|");
                         _Metaclic.container.data('organization', organization);
                         loadDataSets();
                     })
-                    .on('click', 'a[data-removeTag]', function (e) {
+                    .on('click', 'a[data-removeTag]', function(e) {
                         e.preventDefault();
                         var tag = jQuery(this).data('removetag');
                         var tags = _Metaclic.container.data('tags');
@@ -1194,20 +1205,20 @@ DESACTIVATION CHECKURL (car probleme API)
 
 
 
-        jQuery('.Metaclic-map[data-resources]').each(function () {
+        jQuery('.Metaclic-map[data-resources]').each(function() {
             MetaclicMap(jQuery(this), jQuery(this).data())
         });
 
 
     };
 
-    var jsonfail = function () {
+    var jsonfail = function() {
         _Metaclic.container.html('<p class="error">Serveur ' + API_ROOT + ' injoignable</p>')
     }
 
-    var getOrganizationName = function (org) {
+    var getOrganizationName = function(org) {
         var url = API_ROOT + 'organizations/' + org + '/';
-        jQuery.getJSON(url, function (data) {
+        jQuery.getJSON(url, function(data) {
             for (var i in _Metaclic.orgs) {
                 var o = _Metaclic.orgs[i];
                 if (o.id == data.id) {
@@ -1216,14 +1227,14 @@ DESACTIVATION CHECKURL (car probleme API)
             }
 
             //tri par nom
-            _Metaclic.orgs.sort(function (a, b) {
+            _Metaclic.orgs.sort(function(a, b) {
                 if (a.name > b.name)
                     return 1;
                 return -1;
             });
-//ICI
+            //ICI
             options = _Metaclic.container.data();
-           
+
             //console.log(_Metaclic.orgs);
             var params = {
                 q: options.q,
