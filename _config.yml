@@ -2,7 +2,7 @@ title: Metaclic
 description: Librairie JS d'intégration du catalogue data.gouv.fr
 google_analytics: 
 show_downloads: true
-theme: jekyll-theme-cayman
+theme: jekyll-theme-slate
 
 gems:
   - jekyll-mentions
