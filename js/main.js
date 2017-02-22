@@ -68,8 +68,7 @@ jQuery(document).ready(function($) {
             });*/
         };
 
-        _Metaclic.displayDatasets = function() {
-            console.log('tesr');
+        _Metaclic.displayDatasets = function() {            
             var options2 = jQuery.extend({}, options);
 
             if (typeof options2.sort == 'undefined') {
@@ -90,7 +89,6 @@ jQuery(document).ready(function($) {
             if (options2.tags != undefined)
                 options2.tag = options2.tags;
 
-            //console.log(options);
 
             var url = API_ROOT + 'datasets/?' + jQuery.param(options2);
             url = url.replace(/tag%5B%5D/g, 'tag'); // ! a corriger dans l'API pour gerer des vrais get array
@@ -134,7 +132,6 @@ jQuery(document).ready(function($) {
                     html += Templates.shareLink(options);
                 }
 
-                // console.log(params);
                 obj.html(html);
                 updateGeozonesTrans();
                 updateListLimit();
@@ -192,7 +189,6 @@ jQuery(document).ready(function($) {
         var addPreviewMap = function(dataset_id, datasetdata) {
             var bloc = obj.find('.dataset-result[data-dataset="' + dataset_id + '"]');
             var geojson_links = bloc.find('.resources-list a[data-format="JSON"],.resources-list a[data-format="GEOJSON"]');
-            //console.log(geojson_links);
 
             geojson_links.each(function() {
                 var geojson_link = jQuery(this);
@@ -839,7 +835,7 @@ DESACTIVATION CHECKURL (car probleme API)
                 res = res.charAt(0).toLowerCase() + res.slice(1);
             }
             if (res == '???') {
-                console.warn('i18n "' + value + '" NOT FOUND')
+                console.info('i18n "' + value + '" NOT FOUND');
                 return value;
             }
 
@@ -944,7 +940,6 @@ DESACTIVATION CHECKURL (car probleme API)
             });
 
             var loadDataSets = function() {
-                console.log(container);
                 container.each(function() {
                     var obj = jQuery(this);
                     var ud = Metaclic(obj, obj.data());
@@ -964,10 +959,8 @@ DESACTIVATION CHECKURL (car probleme API)
                     var k = obj.data('addgeozone');
 
                     if (geozones_trans[k] == undefined) {
-                        //console.log(k);
                         var url = API_ROOT + 'spatial/zone/' + k;
                         jQuery.getJSON(url, function(data) {
-                            //console.log(data);
                             geozones_trans[data.id] = i18n.t(data.properties.name) + ' <i>(' + data.properties.code + ')</i>';
                             updateGeozonesTrans();
                         });
@@ -1057,14 +1050,12 @@ DESACTIVATION CHECKURL (car probleme API)
                 var setPage = function(p) {
                     container.data('page', p);
                     var organization = jQuery(this).data('addid');
-                    console.log(organization);
                     if (typeof organization === "undefined") {
                         var options = _Metaclic.container.data();
                         var exp = /,/g;
                         var test = options.organizationList.replace(exp, "|");
                         organization = test;
                         _Metaclic.container.data('organization', organization);
-                        console.log(_Metaclic.container.data());
                     }
 
                     loadDataSets();
@@ -1072,21 +1063,17 @@ DESACTIVATION CHECKURL (car probleme API)
 
                 container.on('click', 'a[data-page]', function(e) {
                         e.preventDefault();
-                        //console.log("&");
                         setPage(jQuery(this).data('page'));
                     })
                     .on('click', 'a[data-dataset]', function(e) {
-                        //console.log("&");
                         e.preventDefault();
                         loadDataSet(jQuery(this).data('dataset'));
                     })
                     .on('click', 'a.reloadDataSets', function(e) {
-                        //console.log("&");
                         e.preventDefault();
                         loadDataSets();
                     })
-                    .on('click', '.datasetsForm button', function(e) {
-                        console.log("&");
+                    .on('click', '.datasetsForm button', function(e) {                        
                         e.preventDefault();
                         updateParams();
                         loadDataSets();
@@ -1115,9 +1102,7 @@ DESACTIVATION CHECKURL (car probleme API)
                     .on('click', 'a[data-addId]', function(e) {
                         var organization = jQuery(this).data('addid');
                         e.preventDefault();
-                        console.log(_Metaclic.orgs);
                         $.each(_Metaclic.orgs, function(index, value) {
-                            console.log(value);
                             if (value.id == organization) {
                                 _Metaclic.container.data("organization_name", value.name);
                             }
@@ -1127,10 +1112,8 @@ DESACTIVATION CHECKURL (car probleme API)
                     })
                     .on('click', 'a[data-addTag]', function(e) {
                         var tag = jQuery(this).data('addtag');
-                        console.log(tag)
                         e.preventDefault();
                         var tags = _Metaclic.container.data('tags');
-                        console.log(tags);
                         if (!Array.isArray(tags)) tags = [];
                         var unique = true;
                         for (var index = 0; index < tags.length; index++) {
@@ -1235,7 +1218,6 @@ DESACTIVATION CHECKURL (car probleme API)
             //ICI
             options = _Metaclic.container.data();
 
-            //console.log(_Metaclic.orgs);
             var params = {
                 q: options.q,
                 organization: options.organization,
