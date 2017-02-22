@@ -1,4 +1,4 @@
-# metaclic
+# Metaclic
 
 Librairie JS d'intégration du catalogue data.gouv.fr (https://www.data.gouv.fr)
 
