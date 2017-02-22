@@ -1,105 +1,12 @@
-var uData;
-
-
-var uDataUtils = {};
-
-uDataUtils.urlify = function (text) {
-    if ('string' != typeof text) return text;
-    var urlRegex = /(https?:\/\/[^\s]+)/g;
-    return text.replace(urlRegex, function (url) {
-            return '<a href="' + url + '" target="_blank">' + url + '</a>';
-        })
-        // or alternatively
-        // return text.replace(urlRegex, '<a href="$1">$1</a>')
-}
-
-
-uDataUtils.baseLayers = {
-    "OSM-Fr": {
-        "title": "OSM-Fr",
-        "url": "//tilecache.openstreetmap.fr/osmfr/{z}/{x}/{y}.png"
-    },
-    "Positron": {
-        "title": "Positron",
-        "url": "//cartodb-basemaps-a.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png"
-    },
-    "Outdoors_OSM": {
-        "title": "Outdoors (OSM)",
-        "url": "//{s}.tile.thunderforest.com/outdoors/{z}/{x}/{y}.png"
-    },
-    "OSM_Roads": {
-        "title": "OSM Roads",
-        "url": "//korona.geog.uni-heidelberg.de/tiles/roads/x={x}&y={y}&z={z}"
-    },
-    "Dark_Matter": {
-        "title": "Dark Matter",
-        "url": "//cartodb-basemaps-a.global.ssl.fastly.net/dark_all/{z}/{x}/{y}.png"
-    },
-    "OpenStreetMap": {
-        "title": "OpenStreetMap",
-        "url": "//{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-    },
-    "Toner": {
-        "title": "Toner",
-        "url": "//{s}.tile.stamen.com/toner-lite/{z}/{x}/{y}.png"
-    },
-    "Landscape": {
-        "title": "Landscape",
-        "url": "//{s}.tile3.opencyclemap.org/landscape/{z}/{x}/{y}.png"
-    },
-    "Transport": {
-        "title": "Transport",
-        "url": "//{s}.tile2.opencyclemap.org/transport/{z}/{x}/{y}.png"
-    },
-    "MapQuest_Open": {
-        "title": "MapQuest Open",
-        "url": "//otile1.mqcdn.com/tiles/1.0.0/osm/{z}/{x}/{y}.png"
-    },
-    "HOTOSM_style": {
-        "title": "HOTOSM style",
-        "url": "//tilecache.openstreetmap.fr/hot/{z}/{x}/{y}.png"
-    },
-    "OpenCycleMap": {
-        "title": "OpenCycleMap",
-        "url": "//{s}.tile.opencyclemap.org/cycle/{z}/{x}/{y}.png"
-    },
-    "Watercolor": {
-        "title": "Watercolor",
-        "url": "//{s}.tile.stamen.com/watercolor/{z}/{x}/{y}.png"
-    },
-    "hikebikemap": {
-        "title": "hikebikemap",
-        "url": "//toolserver.org/tiles/hikebike/{z}/{x}/{y}.png"
-    },
-    "OSM-monochrome": {
-        "title": "OSM-monochrome",
-        "url": "//www.toolserver.org/tiles/bw-mapnik/{z}/{x}/{y}.png"
-    },
-    "Hydda": {
-        "title": "Hydda",
-        "url": "//{s}.tile.openstreetmap.se/hydda/full/{z}/{x}/{y}.png"
-    },
-    "OpenTopoMap": {
-        "title": "OpenTopoMap",
-        "url": "//{s}.tile.opentopomap.org/{z}/{x}/{y}.png"
-    },
-    "OpenRiverboatMap": {
-        "title": "OpenRiverboatMap",
-        "url": "//tilecache.openstreetmap.fr/openriverboatmap/{z}/{x}/{y}.png"
-    }
-};
-
-
-
-
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-jQuery(document).ready(function ($) {
+var data_bool = true;
+jQuery(document).ready(function($) {
 
-    var Templates = {};
+    var Templates = MetaclicUtils.Templates;
 
     var sortTypes = [{
         id: 'title',
@@ -121,556 +28,47 @@ jQuery(document).ready(function ($) {
     var sortDesc = false;
 
 
-    Templates.datasets = [
-
-        ' {{#ifCond sort "!=" false}}',
-        '    <div class="result-sort"><label>Trier par</label>',
-        '       <select name="sort" class="form-control">',
-        '            {{#each sortTypes}}',
-
-        '            {{#ifCond id "==" ../sort}}',
-        '            <option value="{{id}}" selected>{{name}}</option>',
-        '            {{else}}',
-        '            <option value="{{id}}">{{name}}</option>',
-        '            {{/ifCond}}',
-
-        '            {{/each}}',
-        '       </select>',
-        '       <a href="#" class="sortdirection">',
-        '            {{#ifCond sortDesc "==" true}}',
-        '            <i class="fa fa-sort-alpha-desc"></i>',
-        '            {{else}}',
-        '            <i class="fa fa-sort-alpha-asc"></i>',
-        '            {{/ifCond}}',
-        '       </a>',
-        '</div>',
-        '{{/ifCond}}',
-
-        '<div class="result-count">{{ total }} résultat(s)</div>',
-
-        '<div class="udata-row">',
-        '{{#ifCond facets "!=" undefined}}',
-        '<div class="uData-results">',
-        '{{else}}',
-        '<div class="uData-results uData-results-full">',
-        '{{/ifCond}}',
-
-
-        '    <ul class="search-results">',
-        '        {{#each data}}',
-        '        <li class="search-result dataset-result" data-dataset="{{id}}">',
-        '            <a href="{{ page }}" title="{{  organization.name }}"  data-dataset="{{id}}">',
-        '',
-        '                <div class="result-logo">',
-        '                    <img alt="" src="{{organization.logo}}" width="70" height="70">',
-        '                </div>',
-        '                    {{#if organization.public_service }}',
-        '                        <img alt="certified"',
-        '                            class="certified" rel="popover"',
-    '                            data-title="{{_ \'certified_public_service\'}}"',
-        '                            data-content="{{_ \'the_identity_of_this_public_service_public_is_certified_by_etalab\'}}"',
-        '                            data-container="body" data-trigger="hover"/>',
-        '                        {{/if}}',
-        '                <div class="result-body">',
-        '                    <h4 class="result-title">{{title}}</h4>',
-        '',
-        '                    <div class="result-description">',
-        '                        {{mdshort description 128}}</div></div>',
-        '',
-        '                </a><ul class="result-infos">',
-        '',
-        '                    {{#if temporal_coverage }}',
-        '                        <li>',
-        '                            <span rel="tooltip"',
-        '                                data-placement="top" data-container="body"',
-        '                                title="{{_ \'temporal_coverage\'}}">',
-        '                                <span class="fa fa-calendar fa-fw"></span>',
-        '                                {{dt temporal_coverage.start format=\'L\' }} {{_ \'to\'}} {{dt temporal_coverage.end format=\'L\' }}',
-        '                            </span>',
-        '                        </li>',
-        '                    {{/if}}',
-        '',
-        '                    {{#if frequency }}',
-        '                        <li>',
-        '                            <span rel="tooltip"',
-        '                                data-placement="top" data-container="body"',
-        '                                title="{{_ \'Update frequency\' }}">',
-        '                                <span class="fa fa-clock-o fa-fw"></span>',
-        '                                {{_ frequency }}',
-        '                            </span>',
-        '                        </li>',
-        '                    {{/if}}',
-        '',
-        '                    {{#if spatial.territories }}',
-        '                        <li>',
-        '                            <span rel="tooltip"',
-        '                                data-placement="top" data-container="body"',
-        '                                title="{{_ \'Spatial coverage\'}}">',
-        '                                <span class="fa fa-map-marker fa-fw"></span>',
-        '                                {{_ spatial.territories.0.name }}',
-        '                            </span>',
-        '                        </li>',
-        '                    {{/if}}',
-        '',
-        '                    {{#if spatial.granularity }}',
-        '                        <li>',
-        '                            <span rel="tooltip"',
-        '                                data-placement="top" data-container="body"',
-        '                                title="{{_ \'Spatial granularity\'}}">',
-        '                                <span class="fa fa-bullseye fa-fw"></span>',
-        '                                {{_ spatial.granularity }}',
-        '                            </span>',
-        '                        </li>',
-        '                    {{/if}}',
-        '',
-        '                    <li>',
-        '                        <span rel="tooltip"',
-        '                            data-placement="top" data-container="body"',
-        '                            title="{{_ \'Reuses\'}}">',
-        '                            <span class="fa fa-retweet fa-fw"></span>',
-        '                            {{default metrics.reuses 0 }}',
-        '                        </span>',
-        '                    </li>',
-        '',
-        '                    <li>',
-        '                        <span rel="tooltip"',
-        '                            data-placement="top" data-container="body"',
-        '                            title="{{_ \'Followers\'}}">',
-        '                            <span class="fa fa-star fa-fw"></span>',
-        '                            {{default metrics.followers 0 }}',
-        '                        </span>',
-        '                    </li>',
-        '',
-        '                </ul>',
-        '        </li>',
-        '    {{/each}}',
-        '    </ul>',
-        '</div>',
-
-        '{{#ifCond facets "!=" undefined}}',
-        '<div class="uData-facets">',
-
-        '{{#ifCond facets.tag "!=" undefined}}',
-        '{{#if facets.tag.terms}}',
-        '<div class="facet-panel">',
-        '    <div class="facet-panel-heading"><i class="fa fa-tags fa-fw"></i> Tags</div>',
-        '    <ul data-limitlist=5>',
-        '       {{#each facets.tag.terms}}',
-
-        '       <a href="#" data-addTag="{{this.[0]}}">',
-        '       <span>{{this.[1]}}</span>',
-        '       {{this.[0]}}',
-        '       </a>',
-        '       {{/each}}',
-        '    </ul>',
-        '</div>',
-        '{{/if}}',
-        '{{/ifCond}}',
-
-
-        '{{#ifCond facets.license "!=" undefined}}',
-        '{{#if facets.license.models}}',
-        '<div class="facet-panel">',
-        '    <div class="facet-panel-heading"><i class="fa fa-copyright fa-fw"></i> Licences</div>',
-        '    <ul data-limitlist=5>',
-        '       {{#each facets.license.models}}',
-
-        '       <a href="#" data-addLicense="{{this.[0].id}}">',
-        '       <span>{{this.[1]}}</span>',
-        '       {{_ this.[0].id}}',
-        '       </a>',
-        '       {{/each}}',
-        '    </ul>',
-        '</div>',
-        '{{/if}}',
-        '{{/ifCond}}',
-
-        //couverture temporelle
-
-        '{{#ifCond facets.geozone "!=" undefined}}',
-        '{{#if facets.geozone.models}}',
-        '<div class="facet-panel">',
-        '    <div class="facet-panel-heading"><i class="fa fa-map-marker fa-fw"></i> Couverture spatiale</div>',
-        '    <ul data-limitlist=5>',
-        '       {{#each facets.geozone.models}}',
-
-        '       <a class="geozone-to-load" href="#" data-addGeozone="{{this.[0].id}}">',
-        '       <span>{{this.[1]}}</span>',
-        '       {{this.[0].id}}',
-        '       </a>',
-        '       {{/each}}',
-        '    </ul>',
-        '</div>',
-        '{{/if}}',
-        '{{/ifCond}}',
-
-
-
-        '{{#ifCond facets.granularity "!=" undefined}}',
-        '{{#if facets.granularity.terms}}',
-        '<div class="facet-panel">',
-        '    <div class="facet-panel-heading"><i class="fa fa-bullseye fa-fw"></i> Granularité territoriale</div>',
-        '    <ul data-limitlist=5>',
-        '       {{#each facets.granularity.terms}}',
-
-        '       <a href="#" data-addGranularity="{{this.[0]}}">',
-        '       <span>{{this.[1]}}</span>',
-        '       {{_ this.[0]}}',
-        '       </a>',
-        '       {{/each}}',
-        '    </ul>',
-        '</div>',
-        '{{/if}}',
-        '{{/ifCond}}',
-
-
-        '{{#ifCond facets.format "!=" undefined}}',
-        '{{#if facets.format.terms}}',
-        '<div class="facet-panel">',
-        '    <div class="facet-panel-heading"><i class="fa fa-file fa-fw"></i> Formats</div>',
-        '    <ul data-limitlist=5>',
-        '       {{#each facets.format.terms}}',
-
-        '       <a href="#" data-addFormat="{{this.[0]}}">',
-        '       <span>{{this.[1]}}</span>',
-        '       {{_ this.[0]}}',
-        '       </a>',
-        '       {{/each}}',
-        '    </ul>',
-        '</div>',
-        '{{/if}}',
-        '{{/ifCond}}',
-
-        // reuse
-
-
-        '</div>',
-        '{{/ifCond}}',
-
-        '</div>',
-
-        '        <div class="udata-pagination">',
-        '            {{{ paginate page total page_size }}}',
-        '        </div>',
-    ];
-
-
-
-    Templates.dataset = [
-        '<div class="dataset" data-dataset="{{id}}">',
-        '',
-        '        <div class=\'dataset-info\'>',
-        '            <blockquote>{{md description }}</blockquote>',
-        '             {{#if extras.remote_url}}',
-        '            <a class="site_link" href="{{extras.remote_url}}" target=_blank>',
-        '                Voir le site original',
-        '            </a>',
-        '             {{/if}}',
-        '            <p class="published_on">',
-        '                {{_ \'published_on\' }} {{dt created_at}}',
-        '                {{_ \'and_modified_on\'}} {{dt last_modified}}',
-        '                {{_ \'by\'}} <a title="{{organization.name}}" href="{{organization.page}}">{{organization.name}}</a>',
-        '            </p>',
-        '        </div>',
-        '',
-        '        <div class="resources-list">',
-        '            <h3>{{_ \'Resources\'}}</h3>',
-        '            {{#each resources}}',
-        '            <div data-checkurl="/api/1/datasets/checkurl/" itemtype="http://schema.org/DataDownload" itemscope="itemscope" id="resource-{{id}}">',
-        '',
-        '                <a href="{{url}}" data-size="{{filesize}}" data-format="{{uppercase format}}" data-map_title="{{../title}}" data-title="{{title}}" data-id="{{id}}" itemprop="url" target=_blank>',
-        '                    <h4>',
-        '                        <span data-format="{{uppercase format}}">',
-        '                            {{uppercase format}}',
-        '                        </span>',
-        '                        {{title}}',
-        '                        <p>',
-        '                            Dernière modification le {{dt last_modified}}',
-        '                        </p>',
-        '                    </h4>',
-        '                </a>',
-        '',
-        '            </div>',
-        '            {{/each}}',
-        '        </div>',
-        '',
-        '        <div class="meta">',
-        '',
-        '            <div class="producer">',
-        '                <h3>{{_ \'Producer\'}}</h3>',
-        '                <a title="{{organization.name}}" href="{{organization.page}}">',
-        '                    <img class="organization-logo producer" alt="{{organization.name}}" src="{{fulllogo organization.logo}}"><br>',
-        '                    <span class="name">',
-        '                        {{organization.name}}',
-        '                    </span>',
-        '                </a>',
-        '            </div>',
-        '',
-        '',
-        '            <div class="info">',
-        '                <h3>{{_ \'Informations\'}}</h3>',
-        '                <ul>',
-        '                    <li title="{{_ \'License\'}}" rel="tooltip">',
-        '                        <i class="fa fa-copyright"></i>',
-        '                        <!--a href="http://opendatacommons.org/licenses/odbl/summary/"-->',
-        '                        {{_ license}}',
-        '                        <!--/a-->',
-        '                    </li>',
-        '                    <li title="{{_ \'Frequency\'}}" rel="tooltip">',
-        '                        <span class="fa fa-clock-o"></span>',
-        '                        {{_ frequency}}',
-        '                    </li>',
-        '                    <li title="{{_ \'Spatial granularity\'}}"  rel="tooltip">',
-        '                        <span class="fa fa-bullseye"></span>',
-        '                        {{_ spatial.granularity}}',
-        '                    </li>',
-        '                </ul>',
-        '                <ul class="spatial_zones">',
-        '                    {{#each spatial.zones}}',
-        '                    <li data-zone="{{.}}">{{.}}</li>',
-        '                    {{/each}}',
-        '               </ul>',
-        '                <ul class="tags">',
-        '                    {{#each tags}}',
-        '                    <li><a title="{{.}}" href="https://www.data.gouv.fr/fr/search/?tag={{.}}">',
-        '                        {{.}}',
-        '                    </a>',
-        '                </li>',
-        '                {{/each}}',
-        '            </ul>',
-        '        </div>',
-        '',
-        '',
-        '    </div>'
-    ];
-
-
-    Templates.datasetsForm = [
-        '<div class="datasetsForm">',
-        ' <form action="" method="get">',
-        '    <input type="hidden" name="option" value="com_udata"></input>',
-        '    <input type="hidden" name="view" value="udata"></input>',
-        '    <div><label>&nbsp;</label><input type="text" name="q" value="{{q}}" placeholder="Rechercher des données" class="form-control"></input></div>',
-        '        {{#ifCount orgs ">" 1 }}',
-        '    <div>',
-        '        {{else}}',
-        '    <div class="hidden">',
-        '        {{/ifCount}}',
-        '       <label>Organisme</label> <select name="organizations" class="form-control">',
-        '       {{#each orgs}}',
-        '       {{#ifCond id "==" ../organization}}',
-        '       <option value="{{id}}" selected>{{name}}</option>',
-        '       {{else}}',
-        '       <option value="{{id}}">{{name}}</option>',
-        '       {{/ifCond}}',
-        '       {{/each}}',
-        '    </select></div>',
-        '',
-        //'    <div><label></label><input type="submit" value="ok"></input></div>',
-        '    </form>',
-        '    <div class="selected_facets">',
-        '<ul class="tags">',
-        '   {{#if tags}}',
-        '   {{#each tags}}',
-        '       <li><a title="{{_ \'fermer\'}}" href="#" class="facet-remove facet-tag" data-removeTag="{{.}}"><i class="fa fa-tags fa-fw"></i> {{.}} &times;</a></li>',
-        '   {{/each}}',
-        '   {{/if}}',
-        '   {{#if license}}',
-        '       <li><a title="{{_ \'fermer\'}}" href="#" class="facet-remove facet-license" data-removeParam="license"><i class="fa fa-copyright fa-fw"></i> {{license}} &times;</a></li>',
-        '   {{/if}}',
-        '   {{#if geozone}}',
-        '       <li><a title="{{_ \'fermer\'}}" href="#" class="facet-remove facet-geozone" data-removeParam="geozone"><i class="fa fa-map-marker fa-fw"></i> {{geozone}} &times;</a></li>',
-        '   {{/if}}',
-        '   {{#if granularity}}',
-        '       <li><a title="{{_ \'fermer\'}}" href="#" class="facet-remove facet-granularity" data-removeParam="granularity"><i class="fa fa-bullseye  fa-fw"></i> {{granularity}} &times;</a></li>',
-        '   {{/if}}',
-        '   {{#if format}}',
-        '       <li><a title="{{_ \'fermer\'}}" href="#" class="facet-remove facet-format" data-removeParam="format"><i class="fa fa-file fa-fw"></i> {{format}} &times;</a></li>',
-        '   {{/if}}',
-        '   </div>',
-        '   </ul>',
-        '</div>',
-        '    <br>'
-    ];
 
 
 
 
-    Templates.lastdatasets = [
-        '<div class="uData-lastdatasets">',
-        '      {{#each data}}',
-        '      <div class="card dataset-card">',
-        '            <a class="card-logo" href="{{ organization.uri }}" target="datagouv">',
-        '                <img alt="{{  organization.name }}" src="{{ organization.logo }}" width="70" height="70">',
-        '            </a>',
-        '        <div class="card-body">',
-        '            <h4>',
-        '                <a href="{{ url }}" title="{{title}}">',
-        '                    {{title}}',
-        '                </a>',
-        '            </h4>',
-        '        </div>',
-        '        <footer>',
-        '            <ul>',
-        '                <li>',
-        '                    <a rel="tooltip" data-placement="top" data-container="body" title="" data-original-title="Réutilisations">',
-        '                        <span class="fa fa-retweet fa-fw"></span>',
-        '                        {{default metrics.reuses 0 }}',
-        '                    </a>',
-        '                </li>',
-        '                <li>',
-        '                    <a rel="tooltip" data-placement="top" data-container="body" title="" data-original-title="Favoris">',
-        '                        <span class="fa fa-star fa-fw"></span>',
-        '                        {{default metrics.followers 0 }}',
-        '                    </a>',
-        '                </li>',
-        '            </ul>',
-        '        </footer>',
-        '        <a href="{{ url }}" title="{{title}}">',
-        '            {{trimString description}}',
-        '        </a>',
-        '        <footer>',
-        '        <ul>',
-        '            {{#if temporal_coverage }}',
-        '            <li>',
-        '                <a rel="tooltip"',
-        '                    data-placement="top" data-container="body"',
-        '                    title="{{_ \'Temporal coverage\' }}">',
-        '                    <span class="fa fa-calendar fa-fw"></span>',
-        '                    {{dt temporal_coverage.start format=\'L\' }} {{_ \'to\'}} {{dt temporal_coverage.end format=\'L\' }}',
-        '                </a>',
-        '            </li>',
-        '            {{/if}}',
-        '',
-        '            {{#if spatial.granularity }}',
-        '            <li>',
-        '                <a rel="tooltip"',
-        '                    data-placement="top" data-container="body"',
-        '                    title="{{_ \'Territorial coverage granularity\' }}">',
-        '                    <span class="fa fa-bullseye fa-fw"></span>',
-        '                    {{_ spatial.granularity }}',
-        '                </a>',
-        '            </li>',
-        '            {{/if}}',
-        '',
-        '            {{#if frequency }}',
-        '            <li>',
-        '                <a rel="tooltip"',
-        '                    data-placement="top" data-container="body"',
-        '                    title="{{_ \'Frequency\' }}">',
-        '                    <span class="fa fa-clock-o fa-fw"></span>',
-        '                    {{_ frequency }}',
-        '                </a>',
-        '            </li>',
-        '            {{/if}}',
-        '        </ul>',
-        '        </footer>',
-        '    </div>',
-        '    {{/each}}',
-        '    </div>'
-    ];
+    var baseUrl = jQuery('script[src$="/metaclic.js"]')[0].src.replace('/metaclic.js', '/');
+
+    var _Metaclic = {};
 
 
+    Metaclic = function(obj, options) {
 
-
-
-    Templates.shareLink = [
-        '<div class="uData-shareLink">',
-        '<div class="linkDiv"><a href="#">intégrez cet outil de recherche sur votre site&nbsp;<i class="fa fa-share-alt"></i></a></div>',
-        '<div class="hidden">',
-        '   <h4>Vous pouvez intégrer cet outil de recherche de données sur votre site</h4>',
-        '   <p>Pour ceci collez le code suivant dans le code HTML de votre page</p>',
-        '   <pre>',
-        '&lt;script&gt;window.jQuery || document.write("&lt;script src=\'//cdnjs.cloudflare.com/ajax/libs/jquery/2.2.0/jquery.min.js\'&gt;&lt;\\\/script&gt;")&lt;/script&gt;',
-        '',
-        '&lt;!-- chargement feuille de style font-awesome --&gt;',
-        '&lt;link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/css/font-awesome.min.css"&gt;',
-        '',
-        '&lt;script src="{{baseUrl}}udata.js"&gt;&lt;/script&gt;',
-        '&lt;div class="uData-data"',
-        '   data-q="{{q}}"',
-        '   data-organizations="{{organizationList}}"',
-        '   data-organization="{{organization}}"',
-        '   data-page_size="{{page_size}}"',
-        '&gt&lt;/div&gt',
-        '   </pre>',
-        "   <p>vous pouvez trouver plus d'info sur cet outil et son paramétrage à cette adresse: <a href='https://github.com/DepthFrance/udata-js' target='_blank'>https://github.com/DepthFrance/udata-js</a></p>",
-        '</div>',
-        '</div>',
-    ];
-
-
-
-
-    Templates.shareLinkMap = [
-        '<div class="uDataMap-shareLink">',
-        '<div class="linkDiv"><a href="#">intégrez cette carte à votre site&nbsp;<i class="fa fa-share-alt"></i></a></div>',
-        '<div class="hidden">',
-        '   <h4>Vous pouvez intégrer cet carte sur votre site</h4>',
-        '   <p>Pour ceci collez le code suivant dans le code HTML de votre page</p>',
-        '   <pre>',
-        '&lt;script&gt;window.jQuery || document.write("&lt;script src=\'//cdnjs.cloudflare.com/ajax/libs/jquery/2.2.0/jquery.min.js\'&gt;&lt;\\\/script&gt;")&lt;/script&gt;',
-        '',
-        '&lt;script src="{{baseUrl}}udata.js"&gt;&lt;/script&gt;',
-        '&lt;div class="uData-map"',
-        "   data-resources='{{jsonencode resources}}'",
-        //"   data-leaflet_map_options='{{jsonencode leaflet_map_options}}'",
-        "   data-title='{{title}}'",
-        '&gt&lt;/div&gt',
-        '   </pre>',
-        "   <p>vous pouvez trouver plus d'info sur cet outil et son paramétrage à cette adresse: <a href='https://github.com/DepthFrance/udata-js' target='_blank'>https://github.com/DepthFrance/udata-js</a></p>",
-        '</div>',
-        '</div>',
-    ];
-
-
-    Templates.li_resource = [
-        '<li data-id="{{id}}">',
-        '<a href="{{metadata_url}}">{{title}}</a>',
-        '<i class="fa fa-copyright"></i> {{_ license}}',
-        '<p class="organization" data-id="{{organization.id}}" data-slug="{{organization.slug}}">',
-        '<img alt="{{  organization.name }}" src="{{ organization.logo }}" width="70" height="70">',
-        '<span>{{organization.name}}</span>',
-        '</p>',
-        '</li>'
-    ];
-
-
-
-    var baseUrl = jQuery('script[src$="/udata.js"]')[0].src.replace('/udata.js', '/');
-
-    var _uData = {};
-
-
-    uData = function (obj, options) {
-
+        //La
 
         options.baseUrl = baseUrl;
         options.organizationList = [];
-        jQuery.each(_uData.orgs, function (k, v) {
-            options.organizationList.push(v.id);
+        jQuery.each(_Metaclic.orgs, function(k, v) {
+            if (v.id.indexOf("|") == "-1") {
+                options.organizationList.push(v.id);
+            }
         });
         options.organizationList = options.organizationList.join(',');
 
         if (options.organization == '') {
-            options.organization = _uData.orgs[0].id;
+            options.organization = _Metaclic.orgs[0].id;
         }
 
-        var scrollTop = function () {
+        var scrollTop = function() {
             $('html, body').animate({
-                scrollTop: jQuery('div.uData-data').offset().top
+                scrollTop: jQuery('div.Metaclic-data').offset().top
             }, 250);
         }
 
 
-        _uData.displayLastDatasets = function () {
+        _Metaclic.displayLastDatasets = function() {
             /*  var url = API_ROOT + 'datasets/?sort=-created&' + jQuery.param(options);
             jQuery.getJSON(url, function (data) {
                 obj.html(Templates.lastdatasets(data));
             });*/
         };
 
-        _uData.displayDatasets = function () {
+        _Metaclic.displayDatasets = function() {            
             var options2 = jQuery.extend({}, options);
 
             if (typeof options2.sort == 'undefined') {
@@ -683,7 +81,6 @@ jQuery(document).ready(function ($) {
                     options2.sort = '-' + options2.sort;
                 }
             }
-
             delete options2.organizations;
             delete options2.sharelink;
             delete options2.sharemaps;
@@ -692,17 +89,16 @@ jQuery(document).ready(function ($) {
             if (options2.tags != undefined)
                 options2.tag = options2.tags;
 
-            //console.log(options);
 
             var url = API_ROOT + 'datasets/?' + jQuery.param(options2);
             url = url.replace(/tag%5B%5D/g, 'tag'); // ! a corriger dans l'API pour gerer des vrais get array
-            jQuery.getJSON(url, function (data) {
+            jQuery.getJSON(url, function(data) {
 
 
                 var params = {
                     q: options.q,
                     organization: options.organization,
-                    orgs: _uData.orgs,
+                    orgs: _Metaclic.orgs,
                     sort: options.sort,
                     sortTypes: sortTypes,
                     sortDesc: sortDesc,
@@ -712,6 +108,8 @@ jQuery(document).ready(function ($) {
                 if (typeof options.tags != undefined) params.tags = options.tags;
 
                 if (typeof options.license != undefined) params.license = options.license;
+
+                if (typeof options.organization_name != undefined) params.organization_name = options.organization_name;
 
                 if (typeof options.geozone != undefined) params.geozone = options.geozone;
 
@@ -734,22 +132,22 @@ jQuery(document).ready(function ($) {
                     html += Templates.shareLink(options);
                 }
 
-                // console.log(params);
                 obj.html(html);
                 updateGeozonesTrans();
                 updateListLimit();
                 scrollTop();
-            }).fail(function () {
+            }).fail(function() {
                 obj.html('<p class="error">Serveur ' + API_ROOT + ' injoignable</p>');
             });
         };
 
-        var addSpatialZoneMap = function (dataset) {
+        var addSpatialZoneMap = function(dataset) {
+
             var bloc = obj.find('.dataset-result[data-dataset="' + options.dataset + '"]');
             var zones_li = bloc.find('ul.spatial_zones li');
             bloc.find('ul.spatial_zones').hide();
             var list = [];
-            var style = function (feature) {
+            var style = function(feature) {
                 return {
                     weight: 1,
                     opacity: 1,
@@ -757,7 +155,7 @@ jQuery(document).ready(function ($) {
                 };
             };
 
-            zones_li.each(function () {
+            zones_li.each(function() {
                 list.push(jQuery(this).data('zone'));
             });
             if (list.length) {
@@ -767,9 +165,9 @@ jQuery(document).ready(function ($) {
                     scrollWheelZoom: false
                 }).setView([0, 0], 1);
                 L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png').addTo(map);
-                jQuery.getJSON(url, function (data) {
+                jQuery.getJSON(url, function(data) {
                     var layer = L.geoJson(data, {
-                        onEachFeature: function (feature, layer) {
+                        onEachFeature: function(feature, layer) {
                             var html = '<h4>' + feature.properties.name + '</h4>' + feature.properties.population + ' habitants'
                             layer.bindPopup(html);
                         },
@@ -788,16 +186,23 @@ jQuery(document).ready(function ($) {
 
 
 
-        var addPreviewMap = function (dataset_id, datasetdata) {
+        var addPreviewMap = function(dataset_id, datasetdata) {
             var bloc = obj.find('.dataset-result[data-dataset="' + dataset_id + '"]');
             var geojson_links = bloc.find('.resources-list a[data-format="JSON"],.resources-list a[data-format="GEOJSON"]');
-            //console.log(geojson_links);
 
-            geojson_links.each(function () {
+            geojson_links.each(function() {
                 var geojson_link = jQuery(this);
                 var map_title = geojson_link.data('map_title');
                 var resource_id = geojson_link.data('id');
                 var geojson_url = geojson_link.prop('href');
+
+                /*
+
+-----------------------------------------
+DESACTIVATION CHECKURL (car probleme API)
+-----------------------------------------
+
+
                 var url = API_ROOT + 'datasets/checkurl/?url=' + encodeURIComponent(geojson_url) + '&group=' + dataset_id;
 
 
@@ -806,22 +211,28 @@ jQuery(document).ready(function ($) {
                     // console.log(contentlength); // que faire des NaN ???
                     if (isNaN(contentlength) || contentlength <= contentlength_limit) {
 
+*/
+                var mapOptions = {
+                    resources: [{
+                        id: resource_id,
+                        dataset: dataset_id
+                    }],
 
-                        var mapOptions = {
-                            resources: [{
-                                id: resource_id,
-                                dataset: dataset_id
-                            }],
+                    title: map_title,
+                    sharelink: true,
 
-                            title: map_title,
-                            sharelink: true,
+                    leaflet_map_options: {
+                        scrollWheelZoom: false
+                    }
+                }
 
-                            leaflet_map_options: {
-                                scrollWheelZoom: false
-                            }
-                        }
+                MetaclicMap(geojson_link.closest('div'), mapOptions, datasetdata);
+                /*
 
-                        uDataMap(geojson_link.closest('div'), mapOptions, datasetdata);
+-----------------------------------------
+DESACTIVATION CHECKURL (car probleme API)
+-----------------------------------------
+
 
                     } else {
                         //console.warn('content-length excess: ' + contentlength + ' (max:' + contentlength_limit + ')');
@@ -829,14 +240,15 @@ jQuery(document).ready(function ($) {
                     }
 
                 });
+                */
 
             });
         }
 
 
-        _uData.displayDataset = function () {
+        _Metaclic.displayDataset = function() {
             var url = API_ROOT + 'datasets/' + options.dataset + '/';
-            jQuery.getJSON(url, function (data) {
+            jQuery.getJSON(url, function(data) {
                 obj.find('.dataset-result[data-dataset="' + options.dataset + '"]')
                     .append(jQuery(Templates.dataset(data)));
 
@@ -844,14 +256,14 @@ jQuery(document).ready(function ($) {
                 addSpatialZoneMap(options.dataset);
                 addPreviewMap(options.dataset, data);
             }).fail(
-                function () {
+                function() {
                     obj.find('.dataset-result[data-dataset="' + options.dataset + '"]')
                         .append('<p class="error">Serveur www.data.gouv.fr injoignable</p>');
                 }
             );
         };
 
-        /*    _uData.displayLastReuses = function () {
+        /*    _Metaclic.displayLastReuses = function () {
             var url = API_ROOT + 'reuses/?' + jQuery.param(options);
             jQuery.getJSON(url, function (data) {
                 var t = Handlebars.compile($("#reuse-template").html());
@@ -859,13 +271,14 @@ jQuery(document).ready(function ($) {
             });
 };*/
 
-        return _uData;
+        return _Metaclic;
     };
 
     //////////////////// UDATAMAP
 
-    uDataMap = function (obj, ori_options, datasetdata) {
-        var _uDataMap = {};
+    MetaclicMap = function(obj, ori_options, datasetdata) {
+
+        var _MetaclicMap = {};
         var defaults = {
             title: false,
             sharelink: false,
@@ -882,14 +295,14 @@ jQuery(document).ready(function ($) {
         var map = null;
 
 
-        _uDataMap.addBackground = function (title, layer, show) {
+        _MetaclicMap.addBackground = function(title, layer, show) {
             backgroundLayers[title] = layer;
             if (show === true) layer.addTo(map);
             updateBBoxAndLayerController();
 
         }
 
-        var initMap = function () {
+        var initMap = function() {
             obj.append(jQuery('<div class="geojson_preview card card-5"><div class="map map_preview"></div>' + (options.title ? '<h4>' + options.title + '</h4>' : '') + '<ul class="resources"></ul></div>'));
 
 
@@ -901,8 +314,8 @@ jQuery(document).ready(function ($) {
                 var bl = options.background_layers[i];
 
                 if (typeof bl == 'string') {
-                    if (uDataUtils.baseLayers[bl] != undefined) {
-                        bl = uDataUtils.baseLayers[bl];
+                    if (MetaclicUtils.baseLayers[bl] != undefined) {
+                        bl = MetaclicUtils.baseLayers[bl];
                     } else {
                         try {
                             bl = eval(bl);
@@ -913,7 +326,7 @@ jQuery(document).ready(function ($) {
                 }
                 var l = L.tileLayer(bl.url);
                 var t = bl.title;
-                _uDataMap.addBackground(t, l, i == 0);
+                _MetaclicMap.addBackground(t, l, i == 0);
             }
 
 
@@ -923,9 +336,9 @@ jQuery(document).ready(function ($) {
                 var html = Template_shareLink(ori_options);
                 obj.find('.geojson_preview').append(html);
 
-                obj.on('click', '.uDataMap-shareLink a[href="#"]', function (e) {
-                    jQuery('.uDataMap-shareLink .hidden').removeClass('hidden').hide().slideDown('slow');
-                    jQuery('.uDataMap-shareLink  a[href="#"]').fadeOut();
+                obj.on('click', '.MetaclicMap-shareLink a[href="#"]', function(e) {
+                    jQuery('.MetaclicMap-shareLink .hidden').removeClass('hidden').hide().slideDown('slow');
+                    jQuery('.MetaclicMap-shareLink  a[href="#"]').fadeOut();
                     e.preventDefault();
                 })
             }
@@ -935,7 +348,7 @@ jQuery(document).ready(function ($) {
 
 
 
-        var updateBBoxAndLayerController = function () {
+        var updateBBoxAndLayerController = function() {
             var bounds = null;
             for (var i in loadedLayers) {
                 if (null === bounds) {
@@ -952,7 +365,7 @@ jQuery(document).ready(function ($) {
         }; // FIN updateBBoxAndLayerController
 
 
-        var default_style = function (feature) {
+        var default_style = function(feature) {
             return {
                 fillColor: "#ff7800",
                 color: "#000",
@@ -962,17 +375,17 @@ jQuery(document).ready(function ($) {
             }
         };
 
-        var default_template = function (feature) {
+        var default_template = function(feature) {
             var html = '';
-            jQuery.each(feature.properties, function (k, v) {
-                html += '<tr><th>' + k + '</th><td>' + uDataUtils.urlify(v) + '</td></tr>';
+            jQuery.each(feature.properties, function(k, v) {
+                html += '<tr><th>' + k + '</th><td>' + MetaclicUtils.urlify(v) + '</td></tr>';
             });
             html = '<table class="table table-hover table-bordered">' + html + '</table>';
             return html;
         };
 
         //var default_pointToLayer = false;
-        var default_pointToLayer = function (feature, latlng, f_marker, featuresCount) {
+        var default_pointToLayer = function(feature, latlng, f_marker, featuresCount) {
 
             if (featuresCount < icons_limit) return f_marker(feature, latlng);
 
@@ -984,13 +397,13 @@ jQuery(document).ready(function ($) {
         };
 
 
-        var default_marker = function (feature, latlng) {
+        var default_marker = function(feature, latlng) {
             return L.marker(latlng)
         }
 
-        var addResource = function (resource, data_dataset) {
+        var addResource = function(resource, data_dataset) {
 
-            jQuery.each(data_dataset.resources, function (k, val) {
+            jQuery.each(data_dataset.resources, function(k, val) {
                 if (val.id == resource.id) {
                     resource.data = val;
                     resource.metadata_url = data_dataset.page;
@@ -1002,7 +415,7 @@ jQuery(document).ready(function ($) {
 
             obj.find('.geojson_loading_' + resource.id).remove();
             obj.append(jQuery('<div class="geojson_loading_' + resource.id + ' geojson_loading alert alert-info">' + resource.title + ' - chargement en cours <i class="fa fa-spinner fa-spin"></i></div>'));
-            jQuery.getJSON(resource.data.url, function (data) {
+            jQuery.getJSON(resource.data.url, function(data) {
 
                 if (data.features.length > featurelength_limit) {
                     //console.warn('feature count excess: ' + data.features.length + ' (max:' + featurelength_limit + ')');
@@ -1059,12 +472,12 @@ jQuery(document).ready(function ($) {
                 }
 
 
-                if (resource.data.format.toUpperCase() == 'JSON') {
+                if ('JSON' == resource.data.format.toUpperCase() || "GEOJSON" == resource.data.format.toUpperCase()) {
                     var layer = L.geoJson(data, {
-                        onEachFeature: function (feature, layer) {
+                        onEachFeature: function(feature, layer) {
                             if (resource.template) layer.bindPopup(resource.template(feature, layer));
                         },
-                        pointToLayer: function (feature, layer) {
+                        pointToLayer: function(feature, layer) {
                             if (resource.pointToLayer) {
                                 return resource.pointToLayer(feature, layer, resource.marker, data.features.length);
                             }
@@ -1085,7 +498,7 @@ jQuery(document).ready(function ($) {
                 obj.find('.geojson_loading_' + resource.id).slideUp('slow');
                 return true;
 
-            }).fail(function (data) {
+            }).fail(function(data) {
                 //console.warn("can't load GeoJson: " + geojson_url);
                 obj.find('.geojson_loading_' + resource.id) /*.removeClass('alert-info').addClass('alert alert-danger').html('<strong><i class="fa fa-warning"></i> impossible de charger le fichier</strong><br><a href="' + resource.url + '">' + resource.url + '</a>')*/ .slideUp('fast');
 
@@ -1095,7 +508,7 @@ jQuery(document).ready(function ($) {
 
 
 
-        var loadResource = function (resource) {
+        var loadResource = function(resource) {
 
             var resource_defaults = {
                 id: null,
@@ -1115,9 +528,9 @@ jQuery(document).ready(function ($) {
 
                 obj.append(jQuery('<div class="geojson_loading_' + resource.id + ' geojson_loading alert alert-info">' + resource.id + ' - chargement en cours <i class="fa fa-spinner fa-spin"></i></div>'));
                 var api_dataset_url = API_ROOT + 'datasets/' + resource.dataset + '/';
-                jQuery.getJSON(api_dataset_url, function (datasetdata) {
+                jQuery.getJSON(api_dataset_url, function(datasetdata) {
                     addResource(resource, datasetdata);
-                }).fail(function (data) {
+                }).fail(function(data) {
                     //console.warn("can't load resource dataset: " + resource.dataset);
                     obj.find('.geojson_loading_' + resource.id) /*.removeClass('alert-info').addClass('alert alert-danger').html('<strong><i class="fa fa-warning"></i> impossible de charger le fichier</strong><br><a href="' + resource.url + '">' + resource.url + '</a>')*/ .slideUp('fast');
 
@@ -1137,9 +550,9 @@ jQuery(document).ready(function ($) {
 
 
 
-        _uDataMap.map = map;
-        return _uDataMap;
-    }; // FIN uDataMap
+        _MetaclicMap.map = map;
+        return _MetaclicMap;
+    }; // FIN MetaclicMap
 
 
 
@@ -1148,8 +561,8 @@ jQuery(document).ready(function ($) {
 
 
 
-
-    //var API_ROOT = "https://demo.data.gouv.fr/api/1/"; //!TODO get from div param
+        //var API_ROOT = "https://next.data.gouv.fr/api/1/"
+        //var API_ROOT = "https://demo.data.gouv.fr/api/1/"; //!TODO get from div param
     var API_ROOT = "https://www.data.gouv.fr/api/1/";
     var contentlength_limit = 2.5 * 1000000; //2.5Mo
     var icons_limit = 200;
@@ -1157,7 +570,7 @@ jQuery(document).ready(function ($) {
 
 
 
-    var checklibs = function () {
+    var checklibs = function() {
         var dependences = {
             'Handlebars': 'https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.2/handlebars.min.js',
             'i18n': 'https://cdnjs.cloudflare.com/ajax/libs/i18next/1.6.3/i18next-1.6.3.min.js',
@@ -1185,6 +598,7 @@ jQuery(document).ready(function ($) {
             }
         }
         if (ready) {
+
             start();
         } else {
             setTimeout(checklibs, 100);
@@ -1194,15 +608,15 @@ jQuery(document).ready(function ($) {
 
 
 
-    var start = function () {
+    var start = function() {
 
-        var container = _uData.container;
+        var container = _Metaclic.container;
 
         /** i18n init  **/
-        _uData.lang = lang = 'fr';
+        _Metaclic.lang = lang = 'fr';
 
         i18n.init({
-            resGetPath: baseUrl + 'locales/udata.' + lang + '.json',
+            resGetPath: baseUrl + '../locales/metaclic.' + lang + '.json',
             lng: lang,
             load: 'unspecific',
             interpolationPrefix: '{',
@@ -1212,7 +626,7 @@ jQuery(document).ready(function ($) {
             fallbackOnNull: true,
             nsseparator: '::', // Allow to use real sentences as keys
             keyseparator: '$$', // Allow to use real sentences as keys
-        }, function (err, t) { /* loading done */ });
+        }, function(err, t) { /* loading done */ });
 
 
         /** momentjs init  **/
@@ -1254,11 +668,11 @@ jQuery(document).ready(function ($) {
                 yy: "%d années"
             },
             ordinalParse: /\d{1,2}(er|ème)/,
-            ordinal: function (number) {
+            ordinal: function(number) {
                 return number + (number === 1 ? 'er' : 'ème');
             },
             meridiemParse: /PD|MD/,
-            isPM: function (input) {
+            isPM: function(input) {
                 return input.charAt(0) === 'M';
             },
             // in case the meridiem units are not separated around 12, then implement
@@ -1266,7 +680,7 @@ jQuery(document).ready(function ($) {
             // meridiemHour : function (hour, meridiem) {
             //     return /* 0-23 hour, given meridiem token and hour 1-12 */
             // },
-            meridiem: function (hours, minutes, isLower) {
+            meridiem: function(hours, minutes, isLower) {
                 return hours < 12 ? 'PD' : 'MD';
             },
             week: {
@@ -1280,61 +694,67 @@ jQuery(document).ready(function ($) {
 
         /** Handlebars init  **/
 
-        Handlebars.registerHelper('ifCond', function (v1, operator, v2, options) {
+        Handlebars.registerHelper('ifCond', function(v1, operator, v2, options) {
 
             switch (operator) {
-            case '==':
-                return (v1 == v2) ? options.fn(this) : options.inverse(this);
-            case '!=':
-                return (v1 != v2) ? options.fn(this) : options.inverse(this);
-            case '===':
-                return (v1 === v2) ? options.fn(this) : options.inverse(this);
-            case '<':
-                return (v1 < v2) ? options.fn(this) : options.inverse(this);
-            case '<=':
-                return (v1 <= v2) ? options.fn(this) : options.inverse(this);
-            case '>':
-                return (v1 > v2) ? options.fn(this) : options.inverse(this);
-            case '>=':
-                return (v1 >= v2) ? options.fn(this) : options.inverse(this);
-            case '&&':
-                return (v1 && v2) ? options.fn(this) : options.inverse(this);
-            case '||':
-                return (v1 || v2) ? options.fn(this) : options.inverse(this);
-            default:
-                return options.inverse(this);
+                case '==':
+                    return (v1 == v2) ? options.fn(this) : options.inverse(this);
+                case '!=':
+                    return (v1 != v2) ? options.fn(this) : options.inverse(this);
+                case '===':
+                    return (v1 === v2) ? options.fn(this) : options.inverse(this);
+                case '<':
+                    return (v1 < v2) ? options.fn(this) : options.inverse(this);
+                case '<=':
+                    return (v1 <= v2) ? options.fn(this) : options.inverse(this);
+                case '>':
+                    return (v1 > v2) ? options.fn(this) : options.inverse(this);
+                case '>=':
+                    return (v1 >= v2) ? options.fn(this) : options.inverse(this);
+                case '&&':
+                    return (v1 && v2) ? options.fn(this) : options.inverse(this);
+                case '||':
+                    return (v1 || v2) ? options.fn(this) : options.inverse(this);
+                default:
+                    return options.inverse(this);
             }
         });
 
-        Handlebars.registerHelper('ifCount', function (v1, operator, v2, options) {
+        Handlebars.registerHelper('ifCount', function(v1, operator, v2, options) {
             var v1 = v1.length;
             switch (operator) {
-            case '==':
-                return (v1 == v2) ? options.fn(this) : options.inverse(this);
-            case '!=':
-                return (v1 != v2) ? options.fn(this) : options.inverse(this);
-            case '===':
-                return (v1 === v2) ? options.fn(this) : options.inverse(this);
-            case '<':
-                return (v1 < v2) ? options.fn(this) : options.inverse(this);
-            case '<=':
-                return (v1 <= v2) ? options.fn(this) : options.inverse(this);
-            case '>':
-                return (v1 > v2) ? options.fn(this) : options.inverse(this);
-            case '>=':
-                return (v1 >= v2) ? options.fn(this) : options.inverse(this);
-            case '&&':
-                return (v1 && v2) ? options.fn(this) : options.inverse(this);
-            case '||':
-                return (v1 || v2) ? options.fn(this) : options.inverse(this);
-            default:
-                return options.inverse(this);
+                case '==':
+                    return (v1 == v2) ? options.fn(this) : options.inverse(this);
+                case '!=':
+                    return (v1 != v2) ? options.fn(this) : options.inverse(this);
+                case '===':
+                    return (v1 === v2) ? options.fn(this) : options.inverse(this);
+                case '<':
+                    return (v1 < v2) ? options.fn(this) : options.inverse(this);
+                case '<=':
+                    return (v1 <= v2) ? options.fn(this) : options.inverse(this);
+                case '>':
+                    return (v1 > v2) ? options.fn(this) : options.inverse(this);
+                case '>=':
+                    return (v1 >= v2) ? options.fn(this) : options.inverse(this);
+                case '&&':
+                    return (v1 && v2) ? options.fn(this) : options.inverse(this);
+                case '||':
+                    return (v1 || v2) ? options.fn(this) : options.inverse(this);
+                default:
+                    return options.inverse(this);
             }
         });
 
+        Handlebars.registerHelper('ifNotall', function(v1, v2, options) {
+            if (v1.indexOf(v2) == "-1") {
+                return options.fn(this);
+            }
+            return options.inverse(this);
+        });
 
 
-        Handlebars.registerHelper('paginate', function (n, total, page_size) {
+        Handlebars.registerHelper('paginate', function(n, total, page_size) {
 
             var res = '';
             var nPage = Math.ceil(total / page_size);
@@ -1346,7 +766,7 @@ jQuery(document).ready(function ($) {
             return '<nav><ul class="pagination">' + res + '</ul></nav>';
         });
 
-        Handlebars.registerHelper('taglist', function (tags) {
+        Handlebars.registerHelper('taglist', function(tags) {
             var res = '';
             for (var i in tags) {
                 res += "<span class='label label-primary' >" + tags[i] + '</span> ';
@@ -1354,7 +774,7 @@ jQuery(document).ready(function ($) {
             return res;
         });
 
-        Handlebars.registerHelper('trimString', function (passedString) {
+        Handlebars.registerHelper('trimString', function(passedString) {
             if (passedString.length > 150) {
                 var theString = passedString.substring(0, 150) + '...';
                 return new Handlebars.SafeString(theString);
@@ -1365,11 +785,11 @@ jQuery(document).ready(function ($) {
         });
 
 
-        Handlebars.registerHelper('uppercase', function (passedString) {
+        Handlebars.registerHelper('uppercase', function(passedString) {
             return passedString.toUpperCase();
         });
 
-        Handlebars.registerHelper('truncate', function (str, len) {
+        Handlebars.registerHelper('truncate', function(str, len) {
             if (str && str.length > len && str.length > 0) {
                 var new_str = str + " ";
                 new_str = str.substr(0, len);
@@ -1381,7 +801,7 @@ jQuery(document).ready(function ($) {
             return str;
         });
 
-        Handlebars.registerHelper('default', function (value, defaultValue) {
+        Handlebars.registerHelper('default', function(value, defaultValue) {
             if (value != null) {
                 return value
             } else {
@@ -1389,15 +809,15 @@ jQuery(document).ready(function ($) {
             }
         });
 
-        Handlebars.registerHelper('dt', function (value, options) {
+        Handlebars.registerHelper('dt', function(value, options) {
             return moment(value).format(options.hash['format'] || 'LLL');
         });
 
-        Handlebars.registerHelper('placeholder', function (url, type) {
-            return url ? url : baseUrl + 'img/placeholders/' + type + '.png';
+        Handlebars.registerHelper('placeholder', function(url, type) {
+            return url ? url : baseUrl + '../img/placeholders/' + type + '.png';
         });
 
-        Handlebars.registerHelper('_', function (value, options) {
+        Handlebars.registerHelper('_', function(value, options) {
             if (!value || typeof value !== 'string') {
                 return '';
             }
@@ -1415,7 +835,7 @@ jQuery(document).ready(function ($) {
                 res = res.charAt(0).toLowerCase() + res.slice(1);
             }
             if (res == '???') {
-                console.warn('i18n "' + value + '" NOT FOUND')
+                console.info('i18n "' + value + '" NOT FOUND');
                 return value;
             }
 
@@ -1423,13 +843,13 @@ jQuery(document).ready(function ($) {
         });
 
 
-        Handlebars.registerHelper('md', function (value) {
+        Handlebars.registerHelper('md', function(value) {
             return new Handlebars.SafeString(marked(value));
         });
 
 
 
-        Handlebars.registerHelper('mdshort', function (value, length) {
+        Handlebars.registerHelper('mdshort', function(value, length) {
             if (!value) {
                 return;
             }
@@ -1452,24 +872,24 @@ jQuery(document).ready(function ($) {
         });
 
 
-        Handlebars.registerHelper('theme', function (value) {
+        Handlebars.registerHelper('theme', function(value) {
             return new Handlebars.SafeString(baseUrl + '' + value);
         });
 
 
-        Handlebars.registerHelper('fulllogo', function (value) {
+        Handlebars.registerHelper('fulllogo', function(value) {
             //   value = value.replace('-100.png', '.png'); // BAD IDEA can be .png or .jpg
             return new Handlebars.SafeString(value);
         });
 
 
-        Handlebars.registerHelper('jsonencode', function (value) {
+        Handlebars.registerHelper('jsonencode', function(value) {
 
             return JSON.stringify(value, null, 4);
         });
 
         for (var tmpl in Templates) {
-            var template_surcharge_id = 'udata_template_' + tmpl;
+            var template_surcharge_id = 'metaclic_template_' + tmpl;
             console.info('load template: #' + template_surcharge_id);
             var t = jQuery('#' + template_surcharge_id).first();
             if (t.length) {
@@ -1486,52 +906,53 @@ jQuery(document).ready(function ($) {
 
         /** init  **/
 
-        window._uData = {};
-        container = _uData.container = jQuery('div.uData-data[data-organizations]');
+        window._Metaclic = {};
+        container = _Metaclic.container = jQuery('div.Metaclic-data[data-organizations]');
         if (container.length) {
 
 
-            var orgs = _uData.container.data('organizations').split(',');
+            var orgs = _Metaclic.container.data('organizations').split(',');
             var geozones_trans = {};
 
-            _uData.container.html('<p class="loading">chargement en cours</p>');
+            _Metaclic.container.html('<p class="loading">chargement en cours</p>');
 
             for (var i in orgs) {
                 getOrganizationName(orgs[i]);
             }
 
-            //_uData.container.data('organization', orgs[0]);
-            _uData.container.data('organizations', '');
-            _uData.orgs = [];
+
+            //_Metaclic.container.data('organization', orgs[0]);
+            _Metaclic.container.data('organizations', '');
+            _Metaclic.orgs = [];
 
             for (var i in orgs) {
-                _uData.orgs.push({
+                _Metaclic.orgs.push({
                     id: orgs[i],
                     name: orgs[i]
                 });
+
             }
 
-
-            container.each(function () {
+            container.each(function() {
                 var obj = jQuery(this);
-                var ud = uData(obj, obj.data());
+                var ud = Metaclic(obj, obj.data());
                 ud.displayLastDatasets();
             });
 
-            var loadDataSets = function () {
-                container.each(function () {
+            var loadDataSets = function() {
+                container.each(function() {
                     var obj = jQuery(this);
-                    var ud = uData(obj, obj.data());
+                    var ud = Metaclic(obj, obj.data());
                     ud.displayDatasets();
                 });
 
             }
 
 
-            updateGeozonesTrans = function () {
+            updateGeozonesTrans = function() {
 
 
-                container.find('.geozone-to-load').each(function () {
+                container.find('.geozone-to-load').each(function() {
 
                     var obj = jQuery(this);
                     obj.removeClass('geozone-to-load').addClass('geozone-to-update');
@@ -1539,14 +960,14 @@ jQuery(document).ready(function ($) {
 
                     if (geozones_trans[k] == undefined) {
                         var url = API_ROOT + 'spatial/zone/' + k;
-                        jQuery.getJSON(url, function (data) {
-                            geozones_trans[data.id] = i18n.t(data.name) + ' <i>(' + data.code + ')</i>';
+                        jQuery.getJSON(url, function(data) {
+                            geozones_trans[data.id] = i18n.t(data.properties.name) + ' <i>(' + data.properties.code + ')</i>';
                             updateGeozonesTrans();
                         });
                     }
                 });
 
-                container.find('.geozone-to-update').each(function () {
+                container.find('.geozone-to-update').each(function() {
                     var obj = jQuery(this);
                     var k = obj.data('addgeozone');
                     if (geozones_trans[k] != undefined) {
@@ -1559,15 +980,15 @@ jQuery(document).ready(function ($) {
 
 
 
-            updateListLimit = function () {
-                container.find('ul[data-limitlist]').each(function () {
+            updateListLimit = function() {
+                container.find('ul[data-limitlist]').each(function() {
                     var obj = jQuery(this);
                     var limit = obj.data('limitlist');
                     if (obj.find('>a').length > limit) {
                         obj.find('>a:nth-child(n+' + (limit + 1) + ')').hide();
                         var openlink = jQuery('<a href="#" class="see-all">voir la suite</a>');
                         obj.find('>a:nth-child(' + (limit) + ')').after(openlink);
-                        openlink.click(function (e) {
+                        openlink.click(function(e) {
                             e.preventDefault();
                             obj.find('>a').slideDown();
                             jQuery(this).slideUp();
@@ -1581,15 +1002,15 @@ jQuery(document).ready(function ($) {
             }
 
 
-            var loadDataSet = function (id) {
+            var loadDataSet = function(id) {
 
                 if (jQuery('div.dataset[data-dataset="' + id + '"]').length) {
                     jQuery('div.dataset[data-dataset="' + id + '"] ').slideToggle();
                 } else {
 
-                    container.each(function () {
+                    container.each(function() {
                         var obj = jQuery(this);
-                        var ud = uData(obj, {
+                        var ud = Metaclic(obj, {
                             dataset: id
                         });
                         ud.displayDataset();
@@ -1601,122 +1022,161 @@ jQuery(document).ready(function ($) {
 
             /*   container.each(function () {
             var obj = jQuery(this);
-            var ud = uData(obj, obj.data());
+            var ud = Metaclic(obj, obj.data());
             ud.displayLastReuses();
         });*/
 
 
-            var scrollTop = function () {
+            var scrollTop = function() {
                 $('html, body').animate({
-                    scrollTop: jQuery('div.uData-data').offset().top
+                    scrollTop: jQuery('div.Metaclic-data').offset().top
                 }, 250);
             }
 
-            var updateParams = function () {
+            var updateParams = function() {
                 var q = container.find('.datasetsForm input[name="q"]').val();
-                _uData.container.data('q', q);
+                _Metaclic.container.data('q', q);
                 var organization = container.find('.datasetsForm select[name="organizations"] option:selected').val();
-                _uData.container.data('organization', organization);
+                _Metaclic.container.data('organization', organization);
                 var sort = container.find('.result-sort select[name="sort"] option:selected').val();
-                _uData.container.data('sort', sort);
-                _uData.container.data('page', 1);
+                _Metaclic.container.data('sort', sort);
+                _Metaclic.container.data('page', 1);
             }
 
 
-            if (jQuery('div.uData-data').length) {
+            if (jQuery('div.Metaclic-data').length) {
 
-                var container = jQuery('div.uData-data');
-                var setPage = function (p) {
+                var container = jQuery('div.Metaclic-data');
+                var setPage = function(p) {
                     container.data('page', p);
+                    var organization = jQuery(this).data('addid');
+                    if (typeof organization === "undefined") {
+                        var options = _Metaclic.container.data();
+                        var exp = /,/g;
+                        var test = options.organizationList.replace(exp, "|");
+                        organization = test;
+                        _Metaclic.container.data('organization', organization);
+                    }
+
                     loadDataSets();
                 }
 
-                container.on('click', 'a[data-page]', function (e) {
-                    e.preventDefault();
-                    setPage(jQuery(this).data('page'));
-                })
-                    .on('click', 'a[data-dataset]', function (e) {
+                container.on('click', 'a[data-page]', function(e) {
+                        e.preventDefault();
+                        setPage(jQuery(this).data('page'));
+                    })
+                    .on('click', 'a[data-dataset]', function(e) {
                         e.preventDefault();
                         loadDataSet(jQuery(this).data('dataset'));
                     })
-                    .on('click', 'a.reloadDataSets', function (e) {
+                    .on('click', 'a.reloadDataSets', function(e) {
                         e.preventDefault();
                         loadDataSets();
                     })
-                    .on('click', '.datasetsForm button', function (e) {
-                        e.preventDefault();
-                        updateParams();
-                        loadDataSets();
-                    })
-                    .on('change', '.datasetsForm *, .result-sort *', function (e) {
+                    .on('click', '.datasetsForm button', function(e) {                        
                         e.preventDefault();
                         updateParams();
                         loadDataSets();
                     })
-                    .on('click', '.result-sort a.sortdirection', function (e) {
+                    .on('change', '.datasetsForm .form-control', function(e) {
+                        e.preventDefault();
+                        updateParams();
+                        loadDataSets();
+                    })
+                    .on('click', '.result-sort a.sortdirection', function(e) {
                         e.preventDefault();
                         sortDesc = !sortDesc;
                         updateParams();
                         loadDataSets();
                     })
-                    .on('submit', '.datasetsForm form', function (e) {
+                    .on('submit', '.datasetsForm form', function(e) {
                         e.preventDefault();
                         updateParams();
                         loadDataSets();
                     }).
-                on('click', '.uData-shareLink a[href="#"]', function (e) {
-                    jQuery('.uData-shareLink .hidden').removeClass('hidden').hide().slideDown('slow');
-                    jQuery('.uData-shareLink  a[href="#"]').fadeOut();
-                    e.preventDefault();
-                })
-                    .on('click', 'a[data-addTag]', function (e) {
+                on('click', '.Metaclic-shareLink a[href="#"]', function(e) {
+                        jQuery('.Metaclic-shareLink .hidden').removeClass('hidden').hide().slideDown('slow');
+                        jQuery('.Metaclic-shareLink  a[href="#"]').fadeOut();
+                        e.preventDefault();
+                    })
+                    .on('click', 'a[data-addId]', function(e) {
+                        var organization = jQuery(this).data('addid');
+                        e.preventDefault();
+                        $.each(_Metaclic.orgs, function(index, value) {
+                            if (value.id == organization) {
+                                _Metaclic.container.data("organization_name", value.name);
+                            }
+                        });
+                        _Metaclic.container.data('organization', organization);
+                        loadDataSets();
+                    })
+                    .on('click', 'a[data-addTag]', function(e) {
                         var tag = jQuery(this).data('addtag');
                         e.preventDefault();
-                        var tags = _uData.container.data('tags');
+                        var tags = _Metaclic.container.data('tags');
                         if (!Array.isArray(tags)) tags = [];
-                        tags.push(tag);
-                        _uData.container.data('tags', tags);
-                        loadDataSets();
+                        var unique = true;
+                        for (var index = 0; index < tags.length; index++) {
+                            var element = tags[index];
+                            if (element == tag) {
+                                unique = false;
+                            }
+                        }
+                        if (unique) {
+                            tags.push(tag);
+                            _Metaclic.container.data('tags', tags);
+                            loadDataSets();
+                        }
                     })
-                    .on('click', 'a[data-addLicense]', function (e) {
+                    .on('click', 'a[data-addLicense]', function(e) {
                         var license = jQuery(this).data('addlicense');
                         e.preventDefault();
-                        _uData.container.data('license', license);
+                        _Metaclic.container.data('license', license);
                         loadDataSets();
                     })
-                    .on('click', 'a[data-addGeozone]', function (e) {
+                    .on('click', 'a[data-addGeozone]', function(e) {
                         var geozone = jQuery(this).data('addgeozone');
                         e.preventDefault();
-                        _uData.container.data('geozone', geozone);
+                        _Metaclic.container.data('geozone', geozone);
                         loadDataSets();
                     })
-                    .on('click', 'a[data-addGranularity]', function (e) {
+                    .on('click', 'a[data-addGranularity]', function(e) {
                         var granularity = jQuery(this).data('addgranularity');
                         e.preventDefault();
-                        _uData.container.data('granularity', granularity);
+                        _Metaclic.container.data('granularity', granularity);
                         loadDataSets();
                     })
-                    .on('click', 'a[data-addFormat]', function (e) {
+                    .on('click', 'a[data-addFormat]', function(e) {
                         var format = jQuery(this).data('addformat');
                         e.preventDefault();
-                        _uData.container.data('format', format);
+                        _Metaclic.container.data('format', format);
                         loadDataSets();
                     })
-                    .on('click', 'a[data-removeParam]', function (e) {
+                    .on('click', 'a[data-removeParam]', function(e) {
                         var paramName = jQuery(this).data('removeparam');
                         e.preventDefault();
-                        _uData.container.removeData(paramName);
+                        _Metaclic.container.removeData(paramName);
                         loadDataSets();
                     })
-                    .on('click', 'a[data-removeTag]', function (e) {
+                    .on('click', 'a[data-removeOrganization]', function(e) {
+                        var paramName = jQuery(this).data('removeorganization');
+                        e.preventDefault();
+                        var organization = jQuery(this).data('addid');
+                        var options = _Metaclic.container.data();
+                        var exp = /,/g;
+                        organization = options.organizationList.replace(exp, "|");
+                        _Metaclic.container.data('organization', organization);
+                        loadDataSets();
+                    })
+                    .on('click', 'a[data-removeTag]', function(e) {
                         e.preventDefault();
                         var tag = jQuery(this).data('removetag');
-                        var tags = _uData.container.data('tags');
+                        var tags = _Metaclic.container.data('tags');
                         var index = jQuery.inArray(tag, tags);
                         if (index > -1) {
                             tags.splice(index, 1);
                         }
-                        _uData.container.data('tags', tags);
+                        _Metaclic.container.data('tags', tags);
                         loadDataSets();
                     });
 
@@ -1728,39 +1188,40 @@ jQuery(document).ready(function ($) {
 
 
 
-        jQuery('.uData-map[data-resources]').each(function () {
-            uDataMap(jQuery(this), jQuery(this).data())
+        jQuery('.Metaclic-map[data-resources]').each(function() {
+            MetaclicMap(jQuery(this), jQuery(this).data())
         });
 
 
     };
 
-    var jsonfail = function () {
-        _uData.container.html('<p class="error">Serveur ' + API_ROOT + ' injoignable</p>')
+    var jsonfail = function() {
+        _Metaclic.container.html('<p class="error">Serveur ' + API_ROOT + ' injoignable</p>')
     }
 
-    var getOrganizationName = function (org) {
+    var getOrganizationName = function(org) {
         var url = API_ROOT + 'organizations/' + org + '/';
-        jQuery.getJSON(url, function (data) {
-            for (var i in _uData.orgs) {
-                var o = _uData.orgs[i];
+        jQuery.getJSON(url, function(data) {
+            for (var i in _Metaclic.orgs) {
+                var o = _Metaclic.orgs[i];
                 if (o.id == data.id) {
-                    _uData.orgs[i] = data;
+                    _Metaclic.orgs[i] = data;
                 }
             }
 
             //tri par nom
-            _uData.orgs.sort(function (a, b) {
+            _Metaclic.orgs.sort(function(a, b) {
                 if (a.name > b.name)
                     return 1;
                 return -1;
             });
+            //ICI
+            options = _Metaclic.container.data();
 
-            options = _uData.container.data();
             var params = {
                 q: options.q,
                 organization: options.organization,
-                orgs: _uData.orgs,
+                orgs: _Metaclic.orgs,
                 sort: options.sort,
                 sortTypes: sortTypes,
                 sortDesc: sortDesc,
@@ -1773,8 +1234,8 @@ jQuery(document).ready(function ($) {
     }
 
     /* START */
-    if (jQuery('link[href$="udata.css"]').length == 0)
-        jQuery('<link type="text/css" href="' + baseUrl + 'udata.css" rel="stylesheet">').appendTo('head');
+    if (jQuery('link[href$="metaclic.css"]').length == 0)
+        jQuery('<link type="text/css" href="' + baseUrl + 'metaclic.css" rel="stylesheet">').appendTo('head');
 
     checklibs();
 
