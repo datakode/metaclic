@@ -8,7 +8,7 @@ http://datakode.github.io/metaclic/exemples/exemple.html
 ## utilisation
 ```
        <script>window.jQuery || document.write("<script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.0/jquery.min.js'><\/script>")</script>
-       <script src="https://unpkg.com/metaclic@0.5.0/dist/metaclic.js"></script>
+       <script src="https://unpkg.com/metaclic/dist/metaclic.js"></script>
 
         <div
           class="Metaclic-data"
