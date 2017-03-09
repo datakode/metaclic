@@ -332,6 +332,8 @@ MetaclicUtils.Templates.dataset = [
     '                </li>',
     '                {{/each}}',
     '            </ul>',
+    '<div class="Metaclic-clear">',
+    '</div>',
     '        </div>',
     '',
     '',
