@@ -1,6 +1,6 @@
 {
   "name": "metaclic",
-  "version": "0.4.1",
+  "version": "0.5.0",
   "repository": {
     "type": "git",
     "url": "git+ssh://git@github.com/datakode/metaclic.git"
@@ -30,9 +30,17 @@
   ],
   "author": "datakode",
   "contributors": [
-    {"name": "Damien Labat", "url": "http://www.datakode.fr"},
-    {"name": "Jérôme Desboeufs"},
-    {"name": "Florian Caperan", "url": "http://www.datakode.fr"}
+    {
+      "name": "Damien Labat",
+      "url": "http://www.datakode.fr"
+    },
+    {
+      "name": "Jérôme Desboeufs"
+    },
+    {
+      "name": "Florian Caperan",
+      "url": "http://www.datakode.fr"
+    }
   ],
   "license": "ISC"
 }
