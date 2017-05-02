@@ -332,12 +332,15 @@ MetaclicUtils.Templates.dataset = [
     '                </li>',
     '                {{/each}}',
     '            </ul>',
+    '            <div class="Metaclic-clear">',
+    '            </div>',
+      '        </div>',
     '        </div>',
     '',
     '',
     '    </div>'
 ];
-
+ 
 
 MetaclicUtils.Templates.datasetsForm = [
     '<div class="datasetsForm">',
@@ -349,7 +352,7 @@ MetaclicUtils.Templates.datasetsForm = [
     '    <div>',
     '        {{else}}',
     '    <div class="hidden">',
-    '        {{/ifCount}}',
+    '        {{/ifCount}}', 
     '       </div>',
     //'    <div><label></label><input type="submit" value="ok"></input></div>',
     '    </form>',
