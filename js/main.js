@@ -164,7 +164,9 @@ jQuery(document).ready(function($) {
                 var map = L.map('map' + options.dataset + '_zones', {
                     scrollWheelZoom: false
                 }).setView([0, 0], 1);
-                L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png').addTo(map);
+                L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png',{
+                    attribution: ' &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors' 
+                }).addTo(map);
                 jQuery.getJSON(url, function(data) {
                     var layer = L.geoJson(data, {
                         onEachFeature: function(feature, layer) {
@@ -324,7 +326,9 @@ DESACTIVATION CHECKURL (car probleme API)
                         }
                     }
                 }
-                var l = L.tileLayer(bl.url);
+                var l = L.tileLayer(bl.url,{
+                    attribution: ' &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors ' 
+                });
                 var t = bl.title;
                 _MetaclicMap.addBackground(t, l, i == 0);
             }
