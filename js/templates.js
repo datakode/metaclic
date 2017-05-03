@@ -344,12 +344,16 @@ MetaclicUtils.Templates.dataset = [
 
 MetaclicUtils.Templates.datasetsForm = [
     '<div class="datasetsForm">',
+    '<input type="text" id="metaclic-autocomplete-input" list="metaclic-autocomplete-list" placeholder="Organisation">',
+    '<datalist id="metaclic-autocomplete-list">',
+    '</datalist>',
+    '<p class="metaclic-organizations-list"></p>',
     ' <form action="" method="get">',
     '    <input type="hidden" name="option" value="com_metaclic"></input>',
     '    <input type="hidden" name="view" value="metaclic"></input>',
     '    <div><label>&nbsp;</label><input type="text" name="q" value="{{q}}" placeholder="Rechercher des données" class="form-control"></input></div>',
     '        {{#ifCount orgs ">" 1 }}',
-    '    <div>',
+    '    <div>', 
     '        {{else}}',
     '    <div class="hidden">',
     '        {{/ifCount}}', 

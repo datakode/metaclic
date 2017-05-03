@@ -4,6 +4,10 @@
  * and open the template in the editor.
  */
 var data_bool = true;
+
+var data_organizations=[];//TODO
+
+
 jQuery(document).ready(function($) {
 
     var Templates = MetaclicUtils.Templates;
@@ -1059,6 +1063,8 @@ DESACTIVATION CHECKURL (car probleme API)
                     loadDataSets();
                 }
 
+                
+
                 container.on('click', 'a[data-page]', function(e) {
                         e.preventDefault();
                         setPage(jQuery(this).data('page'));
@@ -1080,6 +1086,45 @@ DESACTIVATION CHECKURL (car probleme API)
                         e.preventDefault();
                         updateParams();
                         loadDataSets();
+                    })
+                    .on('keyup', '#metaclic-autocomplete-input', function(e) {
+                        	var key_code=e.keyCode;
+                        	var organizations = container[0].dataset.organizations;
+                        	organizations=organizations.split(",");
+                        	//console.log(JSON.parse('{}'));
+                        	$('#metaclic-autocomplete-list').empty();
+                        	var research =$('#metaclic-autocomplete-input').val();
+                              var jqxhr = $.get("https://www.data.gouv.fr/api/1/organizations/suggest/?q="+research+"&size=10");
+                            	  jqxhr.done(function(result) {
+                            	    result.forEach(function(element) {
+                            		  if(key_code==13){
+                            		  	if(research==element.name){
+                            		  		$('#metaclic-autocomplete-input').val("");
+                            		  		var is_unique=true;
+                            		  		 organizations.forEach(function(organization) {
+                            		  		 	if(organization.id==element.id){
+                            		  		 		is_unique=false;
+                            		  		 	}
+                            		  		 });
+                            		  		 if(is_unique){
+                            		  		 	organizations.push(element.id);
+                            		  		 	 _Metaclic.orgs.push(element);
+                            		  		 	container[0].dataset.organizations=organizations.toString();
+                            		  		 	var exp = /,/g;
+                                                var organization = container[0].dataset.organizations.replace(exp, "|");
+                                                _Metaclic.container.data('organization', organization);
+                                                loadDataSets();
+                            		  		 }
+                            		  	}
+                            		  } else {
+                            		  	$('#metaclic-autocomplete-list').append('<option value="'+element.name+'" />')
+                            		  }
+                            		});
+                            	  })
+                            	  console.log(research);
+                            	  jqxhr.fail(function() {
+                            	    alert( "error" );
+                            	  })
                     })
                     .on('click', '.result-sort a.sortdirection', function(e) {
                         e.preventDefault();
@@ -1237,5 +1282,7 @@ DESACTIVATION CHECKURL (car probleme API)
 
     checklibs();
 
+    var data_organizations=[];
 
+    
 });
