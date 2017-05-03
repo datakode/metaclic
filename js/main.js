@@ -5,7 +5,6 @@
  */
 var data_bool = true;
 
-var data_organizations=[];//TODO
 
 
 jQuery(document).ready(function($) {
@@ -52,8 +51,9 @@ jQuery(document).ready(function($) {
                 options.organizationList.push(v.id);
             }
         });
+        console.log(options.organizationList);
         options.organizationList = options.organizationList.join(',');
-
+        
         if (options.organization == '') {
             options.organization = _Metaclic.orgs[0].id;
         }
@@ -93,11 +93,33 @@ jQuery(document).ready(function($) {
             if (options2.tags != undefined)
                 options2.tag = options2.tags;
 
+            console.log(options2.organization);
+            if(!options2.organization){
+                var params = {
+                    q: options.q,
+                    organization: options.organization,
+                    orgs: _Metaclic.orgs,
+                    sort: options.sort,
+                    sortTypes: sortTypes,
+                    sortDesc: sortDesc,
+                };
+                var html = Templates.datasetsForm(params);
 
+                if (options.sharelink) {
+                    html += Templates.shareLink(options);
+                }
+
+                obj.html(html);
+                updateGeozonesTrans();
+                updateListLimit();
+                scrollTop();
+                return false;
+            }
             var url = API_ROOT + 'datasets/?' + jQuery.param(options2);
             url = url.replace(/tag%5B%5D/g, 'tag'); // ! a corriger dans l'API pour gerer des vrais get array
             jQuery.getJSON(url, function(data) {
-
+            
+            
 
                 var params = {
                     q: options.q,
@@ -291,7 +313,6 @@ DESACTIVATION CHECKURL (car probleme API)
 
 
         options = jQuery.extend({}, defaults, ori_options || {});
-        console.log(options);
         var map = null;
 
 
@@ -1108,6 +1129,11 @@ DESACTIVATION CHECKURL (car probleme API)
                             		  		 });
                             		  		 if(is_unique){
                             		  		 	organizations.push(element.id);
+                            		  		 	if(_Metaclic.orgs.length==1){
+                            		  		 	    if (_Metaclic.orgs[0].id=="") {
+                            		  		 	       _Metaclic.orgs=[]
+                            		  		 	    }
+                            		  		 	}
                             		  		 	 _Metaclic.orgs.push(element);
                             		  		 	container[0].dataset.organizations=organizations.toString();
                             		  		 	var exp = /,/g;
@@ -1121,7 +1147,6 @@ DESACTIVATION CHECKURL (car probleme API)
                             		  }
                             		});
                             	  })
-                            	  console.log(research);
                             	  jqxhr.fail(function() {
                             	    alert( "error" );
                             	  })
@@ -1282,7 +1307,6 @@ DESACTIVATION CHECKURL (car probleme API)
 
     checklibs();
 
-    var data_organizations=[];
 
     
 });
