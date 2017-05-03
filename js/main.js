@@ -188,6 +188,29 @@ jQuery(document).ready(function($) {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         var addPreviewMap = function(dataset_id, datasetdata) {
             var bloc = obj.find('.dataset-result[data-dataset="' + dataset_id + '"]');
             var geojson_links = bloc.find('.resources-list a[data-format="JSON"],.resources-list a[data-format="GEOJSON"]');
@@ -286,7 +309,8 @@ DESACTIVATION CHECKURL (car probleme API)
             sharelink: false,
             resources: [],
             leaflet_map_options: {},
-            background_layers: ['OpenStreetMap', 'MapQuest_Open', 'OpenTopoMap']
+            background_layers: ["OSM-Fr","Positron","Outdoors_OSM","Dark_Matter","OpenStreetMap","HOTOSM_style","hikebikemap","OSM-monochrome","Hydda","OpenTopoMap",
+"OpenRiverboatMap"]
         }
 
         var backgroundLayers = [];
@@ -294,6 +318,7 @@ DESACTIVATION CHECKURL (car probleme API)
 
 
         options = jQuery.extend({}, defaults, ori_options || {});
+        console.log(options);
         var map = null;
 
 
@@ -327,7 +352,7 @@ DESACTIVATION CHECKURL (car probleme API)
                     }
                 }
                 var l = L.tileLayer(bl.url,{
-                    attribution: ' &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors ' 
+                    attribution: ' &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors test ' 
                 });
                 var t = bl.title;
                 _MetaclicMap.addBackground(t, l, i == 0);
