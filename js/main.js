@@ -180,37 +180,6 @@ jQuery(document).ready(function($) {
 
             }
         }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         var addPreviewMap = function(dataset_id, datasetdata) {
             var bloc = obj.find('.dataset-result[data-dataset="' + dataset_id + '"]');
             var geojson_links = bloc.find('.resources-list a[data-format="JSON"],.resources-list a[data-format="GEOJSON"]');
@@ -352,7 +321,7 @@ DESACTIVATION CHECKURL (car probleme API)
                     }
                 }
                 var l = L.tileLayer(bl.url,{
-                    attribution: ' &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors test ' 
+                    attribution: ' &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors' 
                 });
                 var t = bl.title;
                 _MetaclicMap.addBackground(t, l, i == 0);
