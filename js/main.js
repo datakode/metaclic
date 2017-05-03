@@ -157,8 +157,8 @@ jQuery(document).ready(function($) {
                 if (options.sharelink) {
                     html += Templates.shareLink(options);
                 }
-
                 obj.html(html);
+                console.log(options);
                 updateGeozonesTrans();
                 updateListLimit();
                 scrollTop();
