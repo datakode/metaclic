@@ -1142,14 +1142,18 @@ DESACTIVATION CHECKURL (car probleme API)
                         organizations=organizations.split(",");
                         $('#metaclic-autocomplete-list').empty();
                         var research =$('#metaclic-autocomplete-input').val();
-                        var jqxhr = $.get("https://www.data.gouv.fr/api/1/organizations/suggest/?q="+research+"&size=10");
+                        var research_uri = encodeURIComponent(research).replace(/[!'()]/g, escape).replace(/\*/g, "%2A");
+                        var url = API_ROOT+"organizations/suggest/?q="+research_uri+"&size=10"
+                        console.log(url)
+                        var jqxhr = $.get(url);
                         jqxhr.done(function(result) {
                             result.forEach(function(element) {
                                 if(research==element.name){
                                     $('#metaclic-autocomplete-input').val("");
                                 	var is_unique=true;
                                 	organizations.forEach(function(organization) {
-                                    	if(organization.id==element.id){
+                                	    console.log(organization)
+                                    	if(organization==element.id){
                                     		is_unique=false;
                                     	}
                                     });
@@ -1190,7 +1194,9 @@ DESACTIVATION CHECKURL (car probleme API)
                     .on('keyup', '#metaclic-autocomplete-input', function(e) {
                         	$('#metaclic-autocomplete-list').empty();
                         	var research =$('#metaclic-autocomplete-input').val();
-                              var jqxhr = $.get("https://www.data.gouv.fr/api/1/organizations/suggest/?q="+research+"&size=10");
+                        	var research_uri = encodeURIComponent(research).replace(/[!'()]/g, escape).replace(/\*/g, "%2A");
+                        	 var url = API_ROOT+"organizations/suggest/?q="+research_uri+"&size=10"
+                              var jqxhr = $.get(url);
                             	  jqxhr.done(function(result) {
                             	    result.forEach(function(element) {
                             		  	$('#metaclic-autocomplete-list').append('<option value="'+element.name+'" />')
