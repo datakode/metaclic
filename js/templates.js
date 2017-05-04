@@ -345,7 +345,7 @@ MetaclicUtils.Templates.dataset = [
 MetaclicUtils.Templates.datasetsForm = [
     '<div class="datasetsForm">',
     '{{#if production}}',
-    '   <input type="text" id="metaclic-autocomplete-input" list="metaclic-autocomplete-list" placeholder="Organisation">',
+    '   <input type="text" id="metaclic-autocomplete-input" list="metaclic-autocomplete-list" class="form-control" placeholder="Organisation">',
     '   <button type="button" class="btn btn-default">Ajouter</button>',
     '   <datalist id="metaclic-autocomplete-list">',
     '   </datalist>',
@@ -486,8 +486,8 @@ MetaclicUtils.Templates.lastdatasets = [
 
 MetaclicUtils.Templates.shareLink = [
     '<div class="Metaclic-shareLink">',
-    '<div class="linkDiv"><a href="#">intégrez cet outil de recherche sur votre site&nbsp;<i class="fa fa-share-alt"></i></a></div>',
-    '<div class="hidden">',
+    //'<div class="linkDiv"><a href="#">intégrez cet outil de recherche sur votre site&nbsp;<i class="fa fa-share-alt"></i></a></div>',
+    '<div>',
     '   <h4>Vous pouvez intégrer cet outil de recherche de données sur votre site</h4>',
     '   <p>Pour ceci collez le code suivant dans le code HTML de votre page</p>',
     '   <pre>',

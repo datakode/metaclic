@@ -152,13 +152,16 @@ jQuery(document).ready(function($) {
                 }
                 data.sortDesc = sortDesc;
                 data.sortTypes = sortTypes;
-
-
-                var html = Templates.datasetsForm(params) + Templates.datasets(data);
-
+                var html;
                 if (options.sharelink) {
-                    html += Templates.shareLink(options);
+                    html = Templates.datasetsForm(params) +Templates.shareLink(options)+ Templates.datasets(data);
+                } else {
+                    html = Templates.datasetsForm(params) + Templates.datasets(data);
                 }
+
+                //html += Templates.datasetsForm(params) + Templates.datasets(data);
+
+                
                 obj.html(html);
                 updateGeozonesTrans();
                 updateListLimit();
@@ -1241,12 +1244,12 @@ DESACTIVATION CHECKURL (car probleme API)
                         e.preventDefault();
                         updateParams();
                         loadDataSets();
-                    }).
-                on('click', '.Metaclic-shareLink a[href="#"]', function(e) {
+                    })
+                /*.on('click', '.Metaclic-shareLink a[href="#"]', function(e) {
                         jQuery('.Metaclic-shareLink .hidden').removeClass('hidden').hide().slideDown('slow');
                         jQuery('.Metaclic-shareLink  a[href="#"]').fadeOut();
                         e.preventDefault();
-                    })
+                    })*/
                     .on('click', 'a[data-addId]', function(e) {
                         var organization = jQuery(this).data('addid');
                         e.preventDefault();
