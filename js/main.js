@@ -9,6 +9,9 @@ var data_bool = true;
 
 jQuery(document).ready(function($) {
 
+    
+
+
     var Templates = MetaclicUtils.Templates;
 
     var sortTypes = [{
@@ -51,10 +54,9 @@ jQuery(document).ready(function($) {
                 options.organizationList.push(v.id);
             }
         });
-        console.log(options.organizationList);
         options.organizationList = options.organizationList.join(',');
         
-        if (options.organization == '') {
+        if (options.organization == '' && _Metaclic.orgs[0]) {
             options.organization = _Metaclic.orgs[0].id;
         }
 
@@ -93,7 +95,6 @@ jQuery(document).ready(function($) {
             if (options2.tags != undefined)
                 options2.tag = options2.tags;
 
-            console.log(options2.organization);
             if(!options2.organization){
                 var params = {
                     q: options.q,
@@ -102,7 +103,9 @@ jQuery(document).ready(function($) {
                     sort: options.sort,
                     sortTypes: sortTypes,
                     sortDesc: sortDesc,
+                    production: options.production,
                 };
+                
                 var html = Templates.datasetsForm(params);
 
                 if (options.sharelink) {
@@ -128,6 +131,7 @@ jQuery(document).ready(function($) {
                     sort: options.sort,
                     sortTypes: sortTypes,
                     sortDesc: sortDesc,
+                    production: options.production,
                 };
 
 
@@ -158,7 +162,6 @@ jQuery(document).ready(function($) {
                     html += Templates.shareLink(options);
                 }
                 obj.html(html);
-                console.log(options);
                 updateGeozonesTrans();
                 updateListLimit();
                 scrollTop();
@@ -187,12 +190,47 @@ jQuery(document).ready(function($) {
             if (list.length) {
                 var url = API_ROOT + 'spatial/zones/' + list.join(',');
                 bloc.find('.info').append(jQuery('<h3>Couverture spatiale</h3><div class="spatial_zones"><div class="map map_zones" id="map' + options.dataset + '_zones"></div></div>'));
+                
+                
+                
                 var map = L.map('map' + options.dataset + '_zones', {
-                    scrollWheelZoom: false
+                    scrollWheelZoom: false,
+                    
                 }).setView([0, 0], 1);
-                L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png',{
-                    attribution: ' &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors' 
-                }).addTo(map);
+                
+                
+                
+                ///////
+                //LA///
+                ///////
+                
+                var layers=JSON.parse(obj.find('.Metaclic-data[data-dataset=" background_layers"]').context.dataset.background_layers);
+                var baseMaps = {};
+                var default_layer;
+                var attribution= ' &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors'
+                for (var a  in layers) {
+                    if (MetaclicUtils.baseLayers[layers[a]].title!="OSM-Fr") {
+                        baseMaps[MetaclicUtils.baseLayers[layers[a]].title]=L.tileLayer(MetaclicUtils.baseLayers[layers[a]].url,{ attribution: attribution });
+                    } else {
+                        default_layer=L.tileLayer(MetaclicUtils.baseLayers[layers[a]].url,{ attribution: attribution });
+                        default_layer.addTo(map);
+                        baseMaps[MetaclicUtils.baseLayers[layers[a]].title]=default_layer;
+                    }
+                }
+                //default_layer.addTo(map);
+                map.addControl(new L.Control.Layers(baseMaps));
+
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+
                 jQuery.getJSON(url, function(data) {
                     var layer = L.geoJson(data, {
                         onEachFeature: function(feature, layer) {
@@ -1112,7 +1150,6 @@ DESACTIVATION CHECKURL (car probleme API)
                         	var key_code=e.keyCode;
                         	var organizations = container[0].dataset.organizations;
                         	organizations=organizations.split(",");
-                        	//console.log(JSON.parse('{}'));
                         	$('#metaclic-autocomplete-list').empty();
                         	var research =$('#metaclic-autocomplete-input').val();
                               var jqxhr = $.get("https://www.data.gouv.fr/api/1/organizations/suggest/?q="+research+"&size=10");
@@ -1150,6 +1187,31 @@ DESACTIVATION CHECKURL (car probleme API)
                             	  jqxhr.fail(function() {
                             	    alert( "error" );
                             	  })
+                    })
+                    .on('click', 'a[data-removeOrganizationToOrigin]', function(e) {
+                        var paramName = jQuery(this).data('removeorganization');
+                        e.preventDefault();
+                        var id =e.target.dataset.id;
+                        var organizations = container[0].dataset.organizations;
+                        organizations=organizations.split(",");
+                        for (var k = 0; k < organizations.length; k++) {
+                            organizations[k];
+                            if (organizations[k] == id) {
+                                organizations.splice(k, 1);
+                            }
+                        }
+                        for (var k = 0; k < _Metaclic.orgs.length; k++) {
+                            _Metaclic.orgs[k];
+                            if (_Metaclic.orgs[k].id == id) {
+                                _Metaclic.orgs.splice(k, 1);
+                            }
+                        }
+                        container[0].dataset.organizations=organizations.toString();
+                        var exp = /,/g;
+                        var organization = container[0].dataset.organizations.replace(exp, "|");
+                        _Metaclic.container.data('organization', organization);
+                        loadDataSets();
+                        
                     })
                     .on('click', '.result-sort a.sortdirection', function(e) {
                         e.preventDefault();
@@ -1193,7 +1255,7 @@ DESACTIVATION CHECKURL (car probleme API)
                         if (unique) {
                             tags.push(tag);
                             _Metaclic.container.data('tags', tags);
-                            loadDataSets();
+                            //loadDataSets();
                         }
                     })
                     .on('click', 'a[data-addLicense]', function(e) {
@@ -1285,16 +1347,15 @@ DESACTIVATION CHECKURL (car probleme API)
             });
             //ICI
             options = _Metaclic.container.data();
-
             var params = {
                 q: options.q,
                 organization: options.organization,
+                production: options.production,
                 orgs: _Metaclic.orgs,
                 sort: options.sort,
                 sortTypes: sortTypes,
                 sortDesc: sortDesc,
             };
-
             var html = Templates.datasetsForm(params);
             jQuery('.datasetsForm').replaceWith(html);
 
