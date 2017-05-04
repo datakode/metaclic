@@ -205,7 +205,6 @@ jQuery(document).ready(function($) {
                 //LA///
                 ///////
 
-                console.log("test 1")
                 var layers=_Metaclic.container.data("background_layers")
                 if (!layers) {
                     layers=["OSM-Fr","Positron","Outdoors_OSM","Hydda"];
@@ -342,7 +341,6 @@ DESACTIVATION CHECKURL (car probleme API)
     MetaclicMap = function(obj, ori_options, datasetdata) {
 
         var _MetaclicMap = {};
-        console.log("test 2")
         var layers=_Metaclic.container.data("background_layers")
         if (!layers) {
             layers=["OSM-Fr","Positron","Outdoors_OSM","Hydda"];
@@ -1132,7 +1130,6 @@ DESACTIVATION CHECKURL (car probleme API)
                     loadDataSets();
                 }
 
-
                 var last_research_list = [];
                 container.on('click', 'a[data-page]', function(e) {
                         e.preventDefault();
@@ -1146,19 +1143,48 @@ DESACTIVATION CHECKURL (car probleme API)
                         e.preventDefault();
                         loadDataSets();
                     })
-                    .on('click', '.datasetsForm button', function(e) {
+                    
+
+                    .on('click', '.datasetsForm button', function(e) {                        
                         e.preventDefault();
-                        var organizations = container[0].dataset.organizations;
-                        organizations = organizations.split(",");
-                        $('#metaclic-autocomplete-list').empty();
-                        var research = $('#metaclic-autocomplete-input').val();
-                        last_research_list.forEach(function(element) {
+                        updateParams();
+                        loadDataSets();
+                    })
+                    .on('change', '.datasetsForm .form-control', function(e) {
+                        e.preventDefault();
+                        updateParams();
+                        loadDataSets();
+                    })
+                    .on('keyup', 'input[name="research"]', function(e) {
+                        e.preventDefault();
+                        $('datalist').empty();
+                        var research = e.target.value;
+                        var research_uri = encodeURIComponent(research).replace(/[!'()]/g, escape).replace(/\*/g, "%2A");
+                        var url = API_ROOT + "organizations/suggest/?q=" + research_uri + "&size=10"
+                        var jqxhr = $.get(url);
+                        jqxhr.done(function(result) {
+                            last_research_list = result;
+                            result.forEach(function(element) {
+                                $('datalist').append('<option value="' + element.name + '" />')
+                            });
+                        })
+                        jqxhr.fail(function() {
+                            alert("error");
+                        })
+                    })
+                    .on('input', 'input[name="research"]', function(e) {
+                         var userText = $(this).val();
+                         var organizations = container[0].dataset.organizations;
+                         organizations = organizations.split(",");
+                         var research = $('input[name="research"]').val();
+                         
+                         last_research_list.forEach(function(element) {
                             if (research == element.name) {
+                                $('datalist').empty();
                                 last_research_list = [];
-                                $('#metaclic-autocomplete-input').val("");
+                                $('input[name="research"]').val("");
                                 var is_unique = true;
                                 organizations.forEach(function(organization) {
-                                    console.log(organization)
                                     if (organization == element.id) {
                                         is_unique = false;
                                     }
@@ -1178,35 +1204,12 @@ DESACTIVATION CHECKURL (car probleme API)
                                     loadDataSets();
                                 }
                             }
-                        });
-                        //updateParams();
-                        //l/oadDataSets();
-                    })
-                    /*.on('click', '.datasetsForm button', function(e) {                        
-                        e.preventDefault();
-                        updateParams();
-                        loadDataSets();
-                    })*/
-                    .on('change', '.datasetsForm .form-control', function(e) {
-                        e.preventDefault();
-                        updateParams();
-                        loadDataSets();
-                    })
-                    .on('keyup', '#metaclic-autocomplete-input', function(e) {
-                        $('#metaclic-autocomplete-list').empty();
-                        var research = $('#metaclic-autocomplete-input').val();
-                        var research_uri = encodeURIComponent(research).replace(/[!'()]/g, escape).replace(/\*/g, "%2A");
-                        //var url = API_ROOT+"organizations/suggest/?q="+research+"&size=10"
-                        var url = API_ROOT + "organizations/suggest/?q=" + research_uri + "&size=10"
-                        var jqxhr = $.get(url);
-                        jqxhr.done(function(result) {
-                            last_research_list = result;
-                            result.forEach(function(element) {
-                                $('#metaclic-autocomplete-list').append('<option value="' + element.name + '" />')
-                            });
-                        })
-                        jqxhr.fail(function() {
-                            alert("error");
+                         
+                         
+                         /*$("#metaclic-autocomplete-list").find("option").each(function() {
+                          if ($(this).val() == userText) {
+                            
+                          }*/
                         })
                     })
                     .on('click', 'a[data-removeOrganizationToOrigin]', function(e) {
