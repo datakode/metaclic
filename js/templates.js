@@ -501,6 +501,7 @@ MetaclicUtils.Templates.shareLink = [
     '   data-q="{{q}}"',
     '   data-organizations="{{organizationList}}"',
     //'   data-organization="{{organization}}"',
+    '   data-background_layers="{{background_layers}}"',
     '   data-page_size="{{page_size}}"',
     '&gt&lt;/div&gt',
     '   </pre>',
