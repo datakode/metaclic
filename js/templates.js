@@ -346,6 +346,7 @@ MetaclicUtils.Templates.datasetsForm = [
     '<div class="datasetsForm">',
     '{{#if production}}',
     '   <input type="text" id="metaclic-autocomplete-input" list="metaclic-autocomplete-list" placeholder="Organisation">',
+    '   <button type="button" class="btn btn-default">Ajouter</button>',
     '   <datalist id="metaclic-autocomplete-list">',
     '   </datalist>',
     '   <ul class="tags">',

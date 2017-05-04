@@ -1138,50 +1138,62 @@ DESACTIVATION CHECKURL (car probleme API)
                     })
                     .on('click', '.datasetsForm button', function(e) {                        
                         e.preventDefault();
+                        var organizations = container[0].dataset.organizations;
+                        organizations=organizations.split(",");
+                        $('#metaclic-autocomplete-list').empty();
+                        var research =$('#metaclic-autocomplete-input').val();
+                        var jqxhr = $.get("https://www.data.gouv.fr/api/1/organizations/suggest/?q="+research+"&size=10");
+                        jqxhr.done(function(result) {
+                            result.forEach(function(element) {
+                                if(research==element.name){
+                                    $('#metaclic-autocomplete-input').val("");
+                                	var is_unique=true;
+                                	organizations.forEach(function(organization) {
+                                    	if(organization.id==element.id){
+                                    		is_unique=false;
+                                    	}
+                                    });
+                                    if(is_unique){
+                                        organizations.push(element.id);
+                                        if(_Metaclic.orgs.length==1){
+                                    	    if (_Metaclic.orgs[0].id=="") {
+                                    		    _Metaclic.orgs=[]
+                                    		}
+                                    	}
+                                        _Metaclic.orgs.push(element);
+                                    	container[0].dataset.organizations=organizations.toString();
+                                    	var exp = /,/g;
+                                        var organization = container[0].dataset.organizations.replace(exp, "|");
+                                        _Metaclic.container.data('organization', organization);
+                                        loadDataSets();
+                                    }
+                                }
+                            });
+                        })
+                        jqxhr.fail(function(data) {
+                            console.log(data)
+                            alert( "error" );
+                        })
+                        //updateParams();
+                        //l/oadDataSets();
+                    })
+                    /*.on('click', '.datasetsForm button', function(e) {                        
+                        e.preventDefault();
                         updateParams();
                         loadDataSets();
-                    })
+                    })*/
                     .on('change', '.datasetsForm .form-control', function(e) {
                         e.preventDefault();
                         updateParams();
                         loadDataSets();
                     })
                     .on('keyup', '#metaclic-autocomplete-input', function(e) {
-                        	var key_code=e.keyCode;
-                        	var organizations = container[0].dataset.organizations;
-                        	organizations=organizations.split(",");
                         	$('#metaclic-autocomplete-list').empty();
                         	var research =$('#metaclic-autocomplete-input').val();
                               var jqxhr = $.get("https://www.data.gouv.fr/api/1/organizations/suggest/?q="+research+"&size=10");
                             	  jqxhr.done(function(result) {
                             	    result.forEach(function(element) {
-                            		  if(key_code==13){
-                            		  	if(research==element.name){
-                            		  		$('#metaclic-autocomplete-input').val("");
-                            		  		var is_unique=true;
-                            		  		 organizations.forEach(function(organization) {
-                            		  		 	if(organization.id==element.id){
-                            		  		 		is_unique=false;
-                            		  		 	}
-                            		  		 });
-                            		  		 if(is_unique){
-                            		  		 	organizations.push(element.id);
-                            		  		 	if(_Metaclic.orgs.length==1){
-                            		  		 	    if (_Metaclic.orgs[0].id=="") {
-                            		  		 	       _Metaclic.orgs=[]
-                            		  		 	    }
-                            		  		 	}
-                            		  		 	 _Metaclic.orgs.push(element);
-                            		  		 	container[0].dataset.organizations=organizations.toString();
-                            		  		 	var exp = /,/g;
-                                                var organization = container[0].dataset.organizations.replace(exp, "|");
-                                                _Metaclic.container.data('organization', organization);
-                                                loadDataSets();
-                            		  		 }
-                            		  	}
-                            		  } else {
                             		  	$('#metaclic-autocomplete-list').append('<option value="'+element.name+'" />')
-                            		  }
                             		});
                             	  })
                             	  jqxhr.fail(function() {
