@@ -104,12 +104,19 @@ jQuery(document).ready(function($) {
                     production: options.production,
                 };
 
-                var html = Templates.datasetsForm(params);
-
+                
+                //var html = Templates.datasetsForm(params);
+                var html=Templates.organizationAdd(params);
                 if (options.sharelink) {
                     html += Templates.shareLink(options);
                 }
-
+                
+                
+                /*if (options.sharelink) {
+                    html = Templates.organizationAdd(params) +Templates.shareLink(options)+ Templates.datasetsForm(params) +Templates.datasets(data);
+                } else {
+                    html = Templates.datasetsForm(params) + Templates.datasets(data);
+                }*/
                 obj.html(html);
                 updateGeozonesTrans();
                 updateListLimit();
@@ -154,7 +161,7 @@ jQuery(document).ready(function($) {
                 data.sortTypes = sortTypes;
                 var html;
                 if (options.sharelink) {
-                    html = Templates.datasetsForm(params) +Templates.shareLink(options)+ Templates.datasets(data);
+                    html = Templates.organizationAdd(params) +Templates.shareLink(options)+ Templates.datasetsForm(params) +Templates.datasets(data);
                 } else {
                     html = Templates.datasetsForm(params) + Templates.datasets(data);
                 }

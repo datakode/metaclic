@@ -341,8 +341,7 @@ MetaclicUtils.Templates.dataset = [
     '    </div>'
 ];
  
-
-MetaclicUtils.Templates.datasetsForm = [
+ MetaclicUtils.Templates.organizationAdd = [
     '{{#if production}}',
     '<div class="organization_add">',
     '   <input type="text" name="research"  list="metaclic-autocomplete-list" class="form-control" placeholder="Organisation">',
@@ -360,6 +359,8 @@ MetaclicUtils.Templates.datasetsForm = [
     '       {{/if}}',
     '   </ul>',
     '{{/if}}',
+];
+MetaclicUtils.Templates.datasetsForm = [
     '<div class="datasetsForm">',
     ' <form action="" method="get">',
     '    <input type="hidden" name="option" value="com_metaclic"></input>',
