@@ -9,9 +9,6 @@ var data_bool = true;
 
 jQuery(document).ready(function($) {
 
-
-
-
     var Templates = MetaclicUtils.Templates;
 
     var sortTypes = [{
@@ -86,7 +83,6 @@ jQuery(document).ready(function($) {
                 }
             }
             delete options2.organizations;
-            delete options2.sharelink;
             delete options2.sharemaps;
             delete options2.baseUrl;
             delete options2.organizationList;
@@ -101,22 +97,14 @@ jQuery(document).ready(function($) {
                     sort: options.sort,
                     sortTypes: sortTypes,
                     sortDesc: sortDesc,
-                    production: options.production,
+                    generator: options.generator,
                 };
 
-                
-                //var html = Templates.datasetsForm(params);
-                var html=Templates.organizationAdd(params);
-                if (options.sharelink) {
-                    html += Templates.shareLink(options);
+                if (options.generator) {
+                    var html=Templates.organizationAdd(params);
+                    html += Templates.shareCode(options);
                 }
                 
-                
-                /*if (options.sharelink) {
-                    html = Templates.organizationAdd(params) +Templates.shareLink(options)+ Templates.datasetsForm(params) +Templates.datasets(data);
-                } else {
-                    html = Templates.datasetsForm(params) + Templates.datasets(data);
-                }*/
                 obj.html(html);
                 updateGeozonesTrans();
                 updateListLimit();
@@ -136,7 +124,7 @@ jQuery(document).ready(function($) {
                     sort: options.sort,
                     sortTypes: sortTypes,
                     sortDesc: sortDesc,
-                    production: options.production,
+                    generator: options.generator,
                 };
 
 
@@ -160,8 +148,8 @@ jQuery(document).ready(function($) {
                 data.sortDesc = sortDesc;
                 data.sortTypes = sortTypes;
                 var html;
-                if (options.sharelink) {
-                    html = Templates.organizationAdd(params) +Templates.shareLink(options)+ Templates.datasetsForm(params) +Templates.datasets(data);
+                if (options.generator) {
+                    html = Templates.organizationAdd(params) +Templates.shareCode(options)+ Templates.datasetsForm(params) +Templates.datasets(data);
                 } else {
                     html = Templates.datasetsForm(params) + Templates.datasets(data);
                 }
@@ -828,7 +816,7 @@ DESACTIVATION CHECKURL (car probleme API)
             }
             return options.inverse(this);
         });
-
+        
 
         Handlebars.registerHelper('paginate', function(n, total, page_size) {
 
@@ -1255,11 +1243,7 @@ DESACTIVATION CHECKURL (car probleme API)
                         updateParams();
                         loadDataSets();
                     })
-                /*.on('click', '.Metaclic-shareLink a[href="#"]', function(e) {
-                        jQuery('.Metaclic-shareLink .hidden').removeClass('hidden').hide().slideDown('slow');
-                        jQuery('.Metaclic-shareLink  a[href="#"]').fadeOut();
-                        e.preventDefault();
-                    })*/
+               
                     .on('click', 'a[data-addId]', function(e) {
                         var organization = jQuery(this).data('addid');
                         e.preventDefault();
@@ -1381,7 +1365,7 @@ DESACTIVATION CHECKURL (car probleme API)
             var params = {
                 q: options.q,
                 organization: options.organization,
-                production: options.production,
+                generator: options.generator,
                 orgs: _Metaclic.orgs,
                 sort: options.sort,
                 sortTypes: sortTypes,

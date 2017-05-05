@@ -35,10 +35,6 @@ MetaclicUtils.baseLayers = {
         "title": "Transport",
         "url": "http://{s}.tile2.opencyclemap.org/transport/{z}/{x}/{y}.png"
     },
-    /*"MapQuest_Open": {
-        "title": "MapQuest Open",
-        "url": "http://otile1.mqcdn.com/tiles/1.0.0/osm/{z}/{x}/{y}.png"
-    },*/
     "HOTOSM_style": {
         "title": "HOTOSM style",
         "url": "https://tilecache.openstreetmap.fr/hot/{z}/{x}/{y}.png"

@@ -342,10 +342,11 @@ MetaclicUtils.Templates.dataset = [
 ];
  
  MetaclicUtils.Templates.organizationAdd = [
-    '{{#if production}}',
+    '{{#if generator}}',
     '<div class="organization_add">',
+    '<h1>Générateur de code metaClic</h1></br>',
+    '<i>Ajoutez des organismes en saisissant leur nom et en les sélectionnant dans la liste</i></br>',
     '   <input type="text" name="research"  list="metaclic-autocomplete-list" class="form-control" placeholder="Organisation">',
-    
     '   <datalist id="metaclic-autocomplete-list">',
     '   </datalist>',
     '</div>',
@@ -358,6 +359,7 @@ MetaclicUtils.Templates.dataset = [
     '           {{/each}}',
     '       {{/if}}',
     '   </ul>',
+    '   <div class="Metaclic-clear"></div>',
     '{{/if}}',
 ];
 MetaclicUtils.Templates.datasetsForm = [
@@ -372,7 +374,6 @@ MetaclicUtils.Templates.datasetsForm = [
     '    <div class="hidden">',
     '        {{/ifCount}}', 
     '       </div>',
-    //'    <div><label></label><input type="submit" value="ok"></input></div>',
     '    </form>',
     '    <div class="selected_facets">',
     '<ul class="tags">',
@@ -483,34 +484,32 @@ MetaclicUtils.Templates.lastdatasets = [
     '    </div>'
 ];
 
-
-
-
-
-MetaclicUtils.Templates.shareLink = [
-    '<div class="Metaclic-shareLink">',
-    //'<div class="linkDiv"><a href="#">intégrez cet outil de recherche sur votre site&nbsp;<i class="fa fa-share-alt"></i></a></div>',
+MetaclicUtils.Templates.shareCode = [
+    '{{#if generator}}',
+    '{{#if organizationList}}',
+    '<div class="Metaclic-shareCode">',
     '<div>',
-    '   <h4>Vous pouvez intégrer cet outil de recherche de données sur votre site</h4>',
-    '   <p>Pour ceci collez le code suivant dans le code HTML de votre page</p>',
+    '   Code à intégrer dans votre site Internet :',
     '   <pre>',
     '&lt;script&gt;window.jQuery || document.write("&lt;script src=\'https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.0/jquery.min.js\'&gt;&lt;\\\/script&gt;")&lt;/script&gt;',
     '',
     '&lt;!-- chargement feuille de style font-awesome --&gt;',
     '&lt;link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/css/font-awesome.min.css"&gt;',
     '',
-    '&lt;script src="{{baseUrl}}metaclic.js"&gt;&lt;/script&gt;',
+    '&lt;script src="https://unpkg.com/metaclic/dist/metaclic.js"&gt;&lt;/script&gt;',
     '&lt;div class="Metaclic-data"',
     '   data-q="{{q}}"',
     '   data-organizations="{{organizationList}}"',
-    //'   data-organization="{{organization}}"',
     '   data-background_layers="{{background_layers}}"',
     '   data-page_size="{{page_size}}"',
     '&gt&lt;/div&gt',
     '   </pre>',
-    "   <p>vous pouvez trouver plus d'info sur cet outil et son paramétrage à cette adresse: <a href='https://github.com/datakode/metaclic' target='_blank'>https://github.com/datakode/metaclic</a></p>",
+    "   <p>Plus de paramétrage disponible dans la documentation: <a href='https://github.com/datakode/metaclic/wiki/Personnalisation' target='_blank'>https://github.com/datakode/metaclic/wiki/Personnalisation</a></p>",
+    "   <p><h1>Prévisualisation : </h1></p>",
     '</div>',
     '</div>',
+    '{{/if}}',
+    '{{/if}}',
 ];
 
 
