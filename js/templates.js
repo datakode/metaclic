@@ -501,6 +501,7 @@ MetaclicUtils.Templates.shareCode = [
     '   data-q="{{q}}"',
     '   data-organizations="{{organizationList}}"',
     '   data-background_layers="{{background_layers}}"',
+    '   data-facets="all"',
     '   data-page_size="{{page_size}}"',
     '&gt&lt;/div&gt',
     '   </pre>',
