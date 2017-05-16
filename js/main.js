@@ -1094,7 +1094,7 @@ DESACTIVATION CHECKURL (car probleme API)
             var scrollTop = function() {
                 $('html, body').animate({
                     scrollTop: jQuery('div.Metaclic-data').offset().top
-                }, 250);
+                }, 250); 
             }
 
             var updateParams = function() {
