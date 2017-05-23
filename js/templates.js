@@ -42,7 +42,7 @@ MetaclicUtils.Templates.datasets = [
     '            <a href="{{ page }}" title="{{  organization.name }}"  data-dataset="{{id}}">',
     '',
     '                <div class="result-logo">',
-    '                    <img alt="" src="{{organization.logo}}" width="70" height="70">',
+    '                    <img alt="" src="{{organization.logo}}" >',
     '                </div>',
     '                    {{#if organization.public_service }}',
     '                        <img alt="certified"',
@@ -332,13 +332,36 @@ MetaclicUtils.Templates.dataset = [
     '                </li>',
     '                {{/each}}',
     '            </ul>',
+    '            <div class="Metaclic-clear">',
+    '            </div>',
+      '        </div>',
     '        </div>',
     '',
     '',
     '    </div>'
 ];
-
-
+ 
+ MetaclicUtils.Templates.organizationAdd = [
+    '{{#if generator}}',
+    '<div class="organization_add">',
+    '<h1>Générateur de code metaClic</h1></br>',
+    '<i>Ajoutez des organismes en saisissant leur nom et en les sélectionnant dans la liste</i></br>',
+    '   <input type="text" name="research"  list="metaclic-autocomplete-list" class="form-control" placeholder="Organisation">',
+    '   <datalist id="metaclic-autocomplete-list">',
+    '   </datalist>',
+    '</div>',
+    '   <ul class="tags">',
+    '       {{#if orgs}}',
+    '           {{#each orgs}}',
+    '               {{#if name}}',
+    '               <li><a title="Fermer" href="#" class="facet-remove facet-organization" data-removeorganizationtoorigin="organization" data-id="{{id}}"> {{name}} ×</a></li>',
+    '               {{/if}}',
+    '           {{/each}}',
+    '       {{/if}}',
+    '   </ul>',
+    '   <div class="Metaclic-clear"></div>',
+    '{{/if}}',
+];
 MetaclicUtils.Templates.datasetsForm = [
     '<div class="datasetsForm">',
     ' <form action="" method="get">',
@@ -346,19 +369,20 @@ MetaclicUtils.Templates.datasetsForm = [
     '    <input type="hidden" name="view" value="metaclic"></input>',
     '    <div><label>&nbsp;</label><input type="text" name="q" value="{{q}}" placeholder="Rechercher des données" class="form-control"></input></div>',
     '        {{#ifCount orgs ">" 1 }}',
-    '    <div>',
+    '    <div>', 
     '        {{else}}',
     '    <div class="hidden">',
-    '        {{/ifCount}}',
+    '        {{/ifCount}}', 
     '       </div>',
-    //'    <div><label></label><input type="submit" value="ok"></input></div>',
     '    </form>',
     '    <div class="selected_facets">',
     '<ul class="tags">',
     '   {{#if organization}}',
+    '   {{#if organization_name}}',
     '   {{#ifNotall organization "|"}}',
     '       <li><a title="{{_ \'fermer\'}}" href="#" class="facet-remove facet-organization" data-removeOrganization="organization"> {{organization_name}} &times;</a></li>',
     '   {{/ifNotall}}',
+    '   {{/if}}',
     '   {{/if}}',
     '   {{#if tags}}',
     '   {{#each tags}}',
@@ -460,33 +484,33 @@ MetaclicUtils.Templates.lastdatasets = [
     '    </div>'
 ];
 
-
-
-
-
-MetaclicUtils.Templates.shareLink = [
-    '<div class="Metaclic-shareLink">',
-    '<div class="linkDiv"><a href="#">intégrez cet outil de recherche sur votre site&nbsp;<i class="fa fa-share-alt"></i></a></div>',
-    '<div class="hidden">',
-    '   <h4>Vous pouvez intégrer cet outil de recherche de données sur votre site</h4>',
-    '   <p>Pour ceci collez le code suivant dans le code HTML de votre page</p>',
+MetaclicUtils.Templates.shareCode = [
+    '{{#if generator}}',
+    '{{#if organizationList}}',
+    '<div class="Metaclic-shareCode">',
+    '<div>',
+    '   Code à intégrer dans votre site Internet :',
     '   <pre>',
     '&lt;script&gt;window.jQuery || document.write("&lt;script src=\'https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.0/jquery.min.js\'&gt;&lt;\\\/script&gt;")&lt;/script&gt;',
     '',
     '&lt;!-- chargement feuille de style font-awesome --&gt;',
     '&lt;link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/css/font-awesome.min.css"&gt;',
     '',
-    '&lt;script src="{{baseUrl}}metaclic.js"&gt;&lt;/script&gt;',
+    '&lt;script src="https://unpkg.com/metaclic/dist/metaclic.js"&gt;&lt;/script&gt;',
     '&lt;div class="Metaclic-data"',
     '   data-q="{{q}}"',
     '   data-organizations="{{organizationList}}"',
-    '   data-organization="{{organization}}"',
+    '   data-background_layers="{{background_layers}}"',
+    '   data-facets="all"',
     '   data-page_size="{{page_size}}"',
     '&gt&lt;/div&gt',
     '   </pre>',
-    "   <p>vous pouvez trouver plus d'info sur cet outil et son paramétrage à cette adresse: <a href='https://github.com/datakode/metaclic' target='_blank'>https://github.com/datakode/metaclic</a></p>",
+    "   <p>Plus de paramétrage disponible dans la documentation: <a href='https://github.com/datakode/metaclic/wiki/Personnalisation' target='_blank'>https://github.com/datakode/metaclic/wiki/Personnalisation</a></p>",
+    "   <p><h1>Prévisualisation : </h1></p>",
     '</div>',
     '</div>',
+    '{{/if}}',
+    '{{/if}}',
 ];
 
 
@@ -519,7 +543,7 @@ MetaclicUtils.Templates.li_resource = [
     '<a href="{{metadata_url}}">{{title}}</a>',
     '<i class="fa fa-copyright"></i> {{_ license}}',
     '<p class="organization" data-id="{{organization.id}}" data-slug="{{organization.slug}}">',
-    '<img alt="{{  organization.name }}" src="{{ organization.logo }}" width="70" height="70">',
+    '<img alt="{{  organization.name }}" src="{{ organization.logo }}">',
     '<span>{{organization.name}}</span>',
     '</p>',
     '</li>'

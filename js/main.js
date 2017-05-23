@@ -4,6 +4,9 @@
  * and open the template in the editor.
  */
 var data_bool = true;
+
+
+
 jQuery(document).ready(function($) {
 
     var Templates = MetaclicUtils.Templates;
@@ -30,8 +33,6 @@ jQuery(document).ready(function($) {
 
 
 
-
-
     var baseUrl = jQuery('script[src$="/metaclic.js"]')[0].src.replace('/metaclic.js', '/');
 
     var _Metaclic = {};
@@ -50,7 +51,7 @@ jQuery(document).ready(function($) {
         });
         options.organizationList = options.organizationList.join(',');
 
-        if (options.organization == '') {
+        if (options.organization == '' && _Metaclic.orgs[0]) {
             options.organization = _Metaclic.orgs[0].id;
         }
 
@@ -68,7 +69,7 @@ jQuery(document).ready(function($) {
             });*/
         };
 
-        _Metaclic.displayDatasets = function() {            
+        _Metaclic.displayDatasets = function() {
             var options2 = jQuery.extend({}, options);
 
             if (typeof options2.sort == 'undefined') {
@@ -82,17 +83,38 @@ jQuery(document).ready(function($) {
                 }
             }
             delete options2.organizations;
-            delete options2.sharelink;
             delete options2.sharemaps;
             delete options2.baseUrl;
             delete options2.organizationList;
             if (options2.tags != undefined)
                 options2.tag = options2.tags;
 
+            if (!options2.organization) {
+                var params = {
+                    q: options.q,
+                    organization: options.organization,
+                    orgs: _Metaclic.orgs,
+                    sort: options.sort,
+                    sortTypes: sortTypes,
+                    sortDesc: sortDesc,
+                    generator: options.generator,
+                };
 
+                if (options.generator) {
+                    var html=Templates.organizationAdd(params);
+                    html += Templates.shareCode(options);
+                }
+                
+                obj.html(html);
+                updateGeozonesTrans();
+                updateListLimit();
+                scrollTop();
+                return false;
+            }
             var url = API_ROOT + 'datasets/?' + jQuery.param(options2);
             url = url.replace(/tag%5B%5D/g, 'tag'); // ! a corriger dans l'API pour gerer des vrais get array
             jQuery.getJSON(url, function(data) {
+
 
 
                 var params = {
@@ -102,6 +124,7 @@ jQuery(document).ready(function($) {
                     sort: options.sort,
                     sortTypes: sortTypes,
                     sortDesc: sortDesc,
+                    generator: options.generator,
                 };
 
 
@@ -124,14 +147,16 @@ jQuery(document).ready(function($) {
                 }
                 data.sortDesc = sortDesc;
                 data.sortTypes = sortTypes;
-
-
-                var html = Templates.datasetsForm(params) + Templates.datasets(data);
-
-                if (options.sharelink) {
-                    html += Templates.shareLink(options);
+                var html;
+                if (options.generator) {
+                    html = Templates.organizationAdd(params) +Templates.shareCode(options)+ Templates.datasetsForm(params) +Templates.datasets(data);
+                } else {
+                    html = Templates.datasetsForm(params) + Templates.datasets(data);
                 }
 
+                //html += Templates.datasetsForm(params) + Templates.datasets(data);
+
+                
                 obj.html(html);
                 updateGeozonesTrans();
                 updateListLimit();
@@ -161,10 +186,50 @@ jQuery(document).ready(function($) {
             if (list.length) {
                 var url = API_ROOT + 'spatial/zones/' + list.join(',');
                 bloc.find('.info').append(jQuery('<h3>Couverture spatiale</h3><div class="spatial_zones"><div class="map map_zones" id="map' + options.dataset + '_zones"></div></div>'));
+
+
+
                 var map = L.map('map' + options.dataset + '_zones', {
-                    scrollWheelZoom: false
+                    scrollWheelZoom: false,
+
                 }).setView([0, 0], 1);
-                L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png').addTo(map);
+
+
+
+                ///////
+                //LA///
+                ///////
+
+                var layers=_Metaclic.container.data("background_layers")
+                if (!layers) {
+                    layers=["OSM-Fr","Positron","Outdoors_OSM","Hydda"];
+                } else {
+                    layers = layers.split(",")
+                }
+                var baseMaps = {};
+                var default_layer;
+                var attribution = ' &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors'
+                for (var a in layers) {
+                    if (MetaclicUtils.baseLayers[layers[a]]) {
+                        if (MetaclicUtils.baseLayers[layers[a]].title != "OSM-Fr") {
+                            baseMaps[MetaclicUtils.baseLayers[layers[a]].title] = L.tileLayer(MetaclicUtils.baseLayers[layers[a]].url, {
+                                attribution: attribution
+                            });
+                        } else {
+                            default_layer = L.tileLayer(MetaclicUtils.baseLayers[layers[a]].url, {
+                                attribution: attribution
+                            });
+                            default_layer.addTo(map);
+                            baseMaps[MetaclicUtils.baseLayers[layers[a]].title] = default_layer;
+                        }
+                    }
+                }
+                //default_layer.addTo(map);
+                map.addControl(new L.Control.Layers(baseMaps));
+
+
+
+
                 jQuery.getJSON(url, function(data) {
                     var layer = L.geoJson(data, {
                         onEachFeature: function(feature, layer) {
@@ -178,14 +243,6 @@ jQuery(document).ready(function($) {
 
             }
         }
-
-
-
-
-
-
-
-
         var addPreviewMap = function(dataset_id, datasetdata) {
             var bloc = obj.find('.dataset-result[data-dataset="' + dataset_id + '"]');
             var geojson_links = bloc.find('.resources-list a[data-format="JSON"],.resources-list a[data-format="GEOJSON"]');
@@ -279,12 +336,18 @@ DESACTIVATION CHECKURL (car probleme API)
     MetaclicMap = function(obj, ori_options, datasetdata) {
 
         var _MetaclicMap = {};
+        var layers=_Metaclic.container.data("background_layers")
+        if (!layers) {
+            layers=["OSM-Fr","Positron","Outdoors_OSM","Hydda"];
+        } else {
+            layers = layers.split(",")
+        }
         var defaults = {
             title: false,
             sharelink: false,
             resources: [],
             leaflet_map_options: {},
-            background_layers: ['OpenStreetMap', 'MapQuest_Open', 'OpenTopoMap']
+            background_layers: layers
         }
 
         var backgroundLayers = [];
@@ -324,7 +387,9 @@ DESACTIVATION CHECKURL (car probleme API)
                         }
                     }
                 }
-                var l = L.tileLayer(bl.url);
+                var l = L.tileLayer(bl.url, {
+                    attribution: ' &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors'
+                });
                 var t = bl.title;
                 _MetaclicMap.addBackground(t, l, i == 0);
             }
@@ -549,7 +614,6 @@ DESACTIVATION CHECKURL (car probleme API)
 
 
 
-
         _MetaclicMap.map = map;
         return _MetaclicMap;
     }; // FIN MetaclicMap
@@ -561,8 +625,8 @@ DESACTIVATION CHECKURL (car probleme API)
 
 
 
-        //var API_ROOT = "https://next.data.gouv.fr/api/1/"
-        //var API_ROOT = "https://demo.data.gouv.fr/api/1/"; //!TODO get from div param
+    //var API_ROOT = "https://next.data.gouv.fr/api/1/"
+    //var API_ROOT = "https://demo.data.gouv.fr/api/1/"; //!TODO get from div param
     var API_ROOT = "https://www.data.gouv.fr/api/1/";
     var contentlength_limit = 2.5 * 1000000; //2.5Mo
     var icons_limit = 200;
@@ -752,7 +816,7 @@ DESACTIVATION CHECKURL (car probleme API)
             }
             return options.inverse(this);
         });
-
+        
 
         Handlebars.registerHelper('paginate', function(n, total, page_size) {
 
@@ -1030,7 +1094,7 @@ DESACTIVATION CHECKURL (car probleme API)
             var scrollTop = function() {
                 $('html, body').animate({
                     scrollTop: jQuery('div.Metaclic-data').offset().top
-                }, 250);
+                }, 250); 
             }
 
             var updateParams = function() {
@@ -1061,6 +1125,7 @@ DESACTIVATION CHECKURL (car probleme API)
                     loadDataSets();
                 }
 
+                var last_research_list = [];
                 container.on('click', 'a[data-page]', function(e) {
                         e.preventDefault();
                         setPage(jQuery(this).data('page'));
@@ -1073,6 +1138,8 @@ DESACTIVATION CHECKURL (car probleme API)
                         e.preventDefault();
                         loadDataSets();
                     })
+                    
+
                     .on('click', '.datasetsForm button', function(e) {                        
                         e.preventDefault();
                         updateParams();
@@ -1082,6 +1149,88 @@ DESACTIVATION CHECKURL (car probleme API)
                         e.preventDefault();
                         updateParams();
                         loadDataSets();
+                    })
+                    .on('keyup', 'input[name="research"]', function(e) {
+                        e.preventDefault();
+                        $('datalist').empty();
+                        var research = e.target.value;
+                        var research_uri = encodeURIComponent(research).replace(/[!'()]/g, escape).replace(/\*/g, "%2A");
+                        var url = API_ROOT + "organizations/suggest/?q=" + research_uri + "&size=10"
+                        var jqxhr = $.get(url);
+                        jqxhr.done(function(result) {
+                            last_research_list = result;
+                            result.forEach(function(element) {
+                                $('datalist').append('<option value="' + element.name + '" />')
+                            });
+                        })
+                        jqxhr.fail(function() {
+                            alert("error");
+                        })
+                    })
+                    .on('input', 'input[name="research"]', function(e) {
+                         var userText = $(this).val();
+                         var organizations = container[0].dataset.organizations;
+                         organizations = organizations.split(",");
+                         var research = $('input[name="research"]').val();
+                         
+                         last_research_list.forEach(function(element) {
+                            if (research == element.name) {
+                                $('datalist').empty();
+                                last_research_list = [];
+                                $('input[name="research"]').val("");
+                                var is_unique = true;
+                                organizations.forEach(function(organization) {
+                                    if (organization == element.id) {
+                                        is_unique = false;
+                                    }
+                                });
+                                if (is_unique) {
+                                    organizations.push(element.id);
+                                    if (_Metaclic.orgs.length == 1) {
+                                        if (_Metaclic.orgs[0].id == "") {
+                                            _Metaclic.orgs = []
+                                        }
+                                    }
+                                    _Metaclic.orgs.push(element);
+                                    container[0].dataset.organizations = organizations.toString();
+                                    var exp = /,/g;
+                                    var organization = container[0].dataset.organizations.replace(exp, "|");
+                                    _Metaclic.container.data('organization', organization);
+                                    loadDataSets();
+                                }
+                            }
+                         
+                         
+                         /*$("#metaclic-autocomplete-list").find("option").each(function() {
+                          if ($(this).val() == userText) {
+                            
+                          }*/
+                        })
+                    })
+                    .on('click', 'a[data-removeOrganizationToOrigin]', function(e) {
+                        var paramName = jQuery(this).data('removeorganization');
+                        e.preventDefault();
+                        var id = e.target.dataset.id;
+                        var organizations = container[0].dataset.organizations;
+                        organizations = organizations.split(",");
+                        for (var k = 0; k < organizations.length; k++) {
+                            organizations[k];
+                            if (organizations[k] == id) {
+                                organizations.splice(k, 1);
+                            }
+                        }
+                        for (var k = 0; k < _Metaclic.orgs.length; k++) {
+                            _Metaclic.orgs[k];
+                            if (_Metaclic.orgs[k].id == id) {
+                                _Metaclic.orgs.splice(k, 1);
+                            }
+                        }
+                        container[0].dataset.organizations = organizations.toString();
+                        var exp = /,/g;
+                        var organization = container[0].dataset.organizations.replace(exp, "|");
+                        _Metaclic.container.data('organization', organization);
+                        loadDataSets();
+
                     })
                     .on('click', '.result-sort a.sortdirection', function(e) {
                         e.preventDefault();
@@ -1093,12 +1242,8 @@ DESACTIVATION CHECKURL (car probleme API)
                         e.preventDefault();
                         updateParams();
                         loadDataSets();
-                    }).
-                on('click', '.Metaclic-shareLink a[href="#"]', function(e) {
-                        jQuery('.Metaclic-shareLink .hidden').removeClass('hidden').hide().slideDown('slow');
-                        jQuery('.Metaclic-shareLink  a[href="#"]').fadeOut();
-                        e.preventDefault();
                     })
+               
                     .on('click', 'a[data-addId]', function(e) {
                         var organization = jQuery(this).data('addid');
                         e.preventDefault();
@@ -1125,7 +1270,7 @@ DESACTIVATION CHECKURL (car probleme API)
                         if (unique) {
                             tags.push(tag);
                             _Metaclic.container.data('tags', tags);
-                            loadDataSets();
+                            //loadDataSets();
                         }
                     })
                     .on('click', 'a[data-addLicense]', function(e) {
@@ -1217,16 +1362,16 @@ DESACTIVATION CHECKURL (car probleme API)
             });
             //ICI
             options = _Metaclic.container.data();
-
             var params = {
                 q: options.q,
                 organization: options.organization,
+                generator: options.generator,
                 orgs: _Metaclic.orgs,
                 sort: options.sort,
                 sortTypes: sortTypes,
                 sortDesc: sortDesc,
+                background_layers:options.background_layers
             };
-
             var html = Templates.datasetsForm(params);
             jQuery('.datasetsForm').replaceWith(html);
 
@@ -1238,6 +1383,7 @@ DESACTIVATION CHECKURL (car probleme API)
         jQuery('<link type="text/css" href="' + baseUrl + 'metaclic.css" rel="stylesheet">').appendTo('head');
 
     checklibs();
+
 
 
 });

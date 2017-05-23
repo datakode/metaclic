@@ -29,4 +29,10 @@ body {
   box-shadow: none;
 }
 
+.Metaclic-data .search-results .result-body {
+    padding-left: 10px !important;
+    line-height: 1.3em;
+    word-wrap: break-word;
+}
+
 

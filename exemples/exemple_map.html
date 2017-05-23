@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>metaclic exemple carte</title>
+    <title>Metaclic exemple carte</title>
     <link type="text/css" href="./exemple.css" rel="stylesheet">
     <style>
         .Metaclic-map .geojson_preview .map{
@@ -17,19 +17,21 @@
 
    <script>window.jQuery || document.write("<script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.0/jquery.min.js'><\/script>")</script>
 
-   <script src="../dist/metaclic.js"></script>
+   <script src="https://unpkg.com/metaclic@0.5.0/dist/metaclic.js"></script>
+   <!--<script src="../dist/metaclic.js"></script>-->
 
    <div class="Metaclic-map"
    data-resources='[
-       {
+      {
         "id": "f5037f9e-09c2-4dff-b998-b3f9f06f2392",
         "dataset": "551d22fb88ee383095cf2007"
     }
 ]'
 
 data-background_layers= '["OSM-Fr","Positron","Outdoors_OSM","OSM_Roads","Dark_Matter","OpenStreetMap","Toner","Landscape",
-"Transport","MapQuest_Open","HOTOSM_style","OpenCycleMap","Watercolor","hikebikemap","OSM-monochrome","Hydda","OpenTopoMap",
+"Transport","HOTOSM_style","OpenCycleMap","Watercolor","hikebikemap","OSM-monochrome","Hydda","OpenTopoMap",
 "OpenRiverboatMap"]'
+
 
 data-leaflet_map_options='{
     "scrollWheelZoom": false
@@ -38,6 +40,6 @@ data-leaflet_map_options='{
 data-title='SDIS Tarn'
 
 ></div>
-
+<!-- "MapQuest_Open"-->
 </body>
 </html>

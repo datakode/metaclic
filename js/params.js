@@ -1,13 +1,13 @@
 MetaclicUtils.baseLayers = {
-    "OSM-Fr": {
+    "OSM-Fr": {//ok
         "title": "OSM-Fr",
         "url": "https://tilecache.openstreetmap.fr/osmfr/{z}/{x}/{y}.png"
     },
-    "Positron": {
+    "Positron": {//ok
         "title": "Positron",
         "url": "https://cartodb-basemaps-a.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png"
     },
-    "Outdoors_OSM": {
+    "Outdoors_OSM": {//ok
         "title": "Outdoors (OSM)",
         "url": "https://{s}.tile.thunderforest.com/outdoors/{z}/{x}/{y}.png"
     },
@@ -25,19 +25,15 @@ MetaclicUtils.baseLayers = {
     },
     "Toner": {
         "title": "Toner",
-        "url": "https://{s}.tile.stamen.com/toner-lite/{z}/{x}/{y}.png"
+        "url": "http://{s}.tile.stamen.com/toner-lite/{z}/{x}/{y}.png"
     },
     "Landscape": {
         "title": "Landscape",
-        "url": "https://{s}.tile3.opencyclemap.org/landscape/{z}/{x}/{y}.png"
+        "url": "http://{s}.tile3.opencyclemap.org/landscape/{z}/{x}/{y}.png"
     },
     "Transport": {
         "title": "Transport",
-        "url": "https://{s}.tile2.opencyclemap.org/transport/{z}/{x}/{y}.png"
-    },
-    "MapQuest_Open": {
-        "title": "MapQuest Open",
-        "url": "https://otile1.mqcdn.com/tiles/1.0.0/osm/{z}/{x}/{y}.png"
+        "url": "http://{s}.tile2.opencyclemap.org/transport/{z}/{x}/{y}.png"
     },
     "HOTOSM_style": {
         "title": "HOTOSM style",
@@ -45,11 +41,11 @@ MetaclicUtils.baseLayers = {
     },
     "OpenCycleMap": {
         "title": "OpenCycleMap",
-        "url": "https://{s}.tile.opencyclemap.org/cycle/{z}/{x}/{y}.png"
+        "url": "http://{s}.tile.opencyclemap.org/cycle/{z}/{x}/{y}.png"
     },
     "Watercolor": {
         "title": "Watercolor",
-        "url": "https://{s}.tile.stamen.com/watercolor/{z}/{x}/{y}.png"
+        "url": "http://{s}.tile.stamen.com/watercolor/{z}/{x}/{y}.png"
     },
     "hikebikemap": {
         "title": "hikebikemap",
@@ -59,13 +55,13 @@ MetaclicUtils.baseLayers = {
         "title": "OSM-monochrome",
         "url": "https://www.toolserver.org/tiles/bw-mapnik/{z}/{x}/{y}.png"
     },
-    "Hydda": {
+    "Hydda": {//ok
         "title": "Hydda",
         "url": "https://{s}.tile.openstreetmap.se/hydda/full/{z}/{x}/{y}.png"
     },
     "OpenTopoMap": {
         "title": "OpenTopoMap",
-        "url": "https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png"
+        "url": "http://{s}.tile.opentopomap.org/{z}/{x}/{y}.png"
     },
     "OpenRiverboatMap": {
         "title": "OpenRiverboatMap",

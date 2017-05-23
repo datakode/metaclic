@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Metaclic exemple personnalisation</title>
+    <link type="text/css" href="./exemple2.css" rel="stylesheet">
+
+</head>
+<body>
+
+    <script>window.jQuery || document.write("<script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.0/jquery.min.js'><\/script>")</script>
+
+
+    <!-- chargement feuille de style font-awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/css/font-awesome.min.css">
+
+    <script src="https://unpkg.com/metaclic/dist/metaclic.js"></script>
+<!--<script src="../dist/metaclic.js"></script>-->
+
+    <script id='metaclic_template_datasetsForm' type="text/x-handlebars-template">
+        <h1>Service départemental d'incendie et de secours du Tarn</h1>
+    </script>
+
+    <script id='metaclic_template_datasets' type="text/x-handlebars-template">
+        <div class="result-count">{{ total }} résultat(s)</div>
+        {{#ifCond sort "!=" false}}
+        <div class="result-sort form-inline"><label>Trier par</label>
+                <select name="sort" class="form-control">
+                    {{#each sortTypes}}
+
+                    {{#ifCond id "==" ../sort}}
+                    <option value="{{id}}" selected>{{name}}</option>
+                    {{else}}
+                    <option value="{{id}}">{{name}}</option>
+                    {{/ifCond}}
+
+                    {{/each}}
+                </select>
+                <a href="#" class="sortdirection">
+                    {{#ifCond sortDesc "==" true}}
+                    <i class="fa fa-sort-alpha-desc"></i>
+                    {{else}}
+                    <i class="fa fa-sort-alpha-asc"></i>
+                    {{/ifCond}}
+                </a>
+        </div>
+        {{/ifCond}}
+        <ul class="search-results">
+                {{#each data}}
+                <li class="search-result dataset-result" data-dataset="{{id}}">
+                    <a href="{{ page }}" title="{{  organization.name }}"  data-dataset="{{id}}">
+
+                        <div class="result-body ellipsis-dot is-truncated" style="word-wrap: break-word;">
+                            <h4 class="result-title">{{title}}</h4>
+
+                            <div class="result-description">
+                                {{mdshort description 128}}
+                            </div>
+                        </div>
+
+                        </a>
+                        
+                </li>
+                {{/each}}
+        </ul>
+        <div class="text-center">
+                <div class="pagination">
+                    {{{ paginate page total page_size }}}
+                </div>
+        </div>
+</script>
+
+
+    <script id='metaclic_template_dataset' type="text/x-handlebars-template">
+        <div class="dataset" data-dataset="{{id}}">
+                <div class='dataset-info'>
+                    <blockquote>{{md description }}</blockquote>
+                    {{#if extras.remote_url}}
+                    <a class="site_link" href="{{extras.remote_url}}" target=_blank>
+                        Voir le site original
+                </a>
+                {{/if}}
+                <p class="published_on">
+                        {{_ 'published_on' }} {{dt created_at}}
+                        {{_ 'and_modified_on'}} {{dt last_modified}}
+                        {{_ 'by'}} <a title="{{organization.name}}" href="{{organization.page}}">{{organization.name}}</a>
+                </p>
+        </div>
+
+        <div class="resources-list">
+                {{#each resources}}
+                        <a href="{{url}}" data-size="{{filesize}}"  data-title="{{title}}" data-id="{{id}}" itemprop="url" target=_blank>
+                            <h4>
+                                <span data-format="{{format}}">
+                                    {{format}}
+                                </span>
+                                {{title}}
+                            </h4>
+                        </a>
+        {{/each}}
+        </div>
+    </script>
+
+    <div class="Metaclic-data"
+    data-organizations="551959f6c751df6682057c91"
+    ></div>
+
+</body>
+</html>
