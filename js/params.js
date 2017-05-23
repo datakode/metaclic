@@ -1,3 +1,7 @@
+/**
+ * Params used in metaclic
+ */
+
 MetaclicUtils.baseLayers = {
     "OSM-Fr": {//ok
         "title": "OSM-Fr",

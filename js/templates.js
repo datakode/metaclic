@@ -1,3 +1,9 @@
+/**
+ * Default HandleBars templates used in metaclic.
+ *
+ */
+
+
 MetaclicUtils.Templates = {};
 
 

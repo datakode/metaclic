@@ -1,7 +1,5 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * metaclic
  */
 var data_bool = true;
 
@@ -37,10 +35,14 @@ jQuery(document).ready(function($) {
 
     var _Metaclic = {};
 
-
+/**
+ * Metaclic constructor
+ *
+ * @param  {Obj} obj      Container
+ * @param  {Array} options   Options used by metaclic to display the catalog
+ * @return {Obj}       Metaclic Object
+ */
     Metaclic = function(obj, options) {
-
-        //La
 
         options.baseUrl = baseUrl;
         options.organizationList = [];
@@ -55,6 +57,9 @@ jQuery(document).ready(function($) {
             options.organization = _Metaclic.orgs[0].id;
         }
 
+        /**
+         * scroll to the top of the catalog
+         */
         var scrollTop = function() {
             $('html, body').animate({
                 scrollTop: jQuery('div.Metaclic-data').offset().top
@@ -69,6 +74,9 @@ jQuery(document).ready(function($) {
             });*/
         };
 
+        /**
+        * display the results
+        */                             
         _Metaclic.displayDatasets = function() {
             var options2 = jQuery.extend({}, options);
 
@@ -166,6 +174,11 @@ jQuery(document).ready(function($) {
             });
         };
 
+        /**
+         * Add the spatial bounding box of a dataset
+         *
+         * @param  {obj} dataset
+         */
         var addSpatialZoneMap = function(dataset) {
 
             var bloc = obj.find('.dataset-result[data-dataset="' + options.dataset + '"]');
@@ -243,6 +256,13 @@ jQuery(document).ready(function($) {
 
             }
         }
+        
+        /**
+         * Add the preview of a geojson file
+         *
+         * @param  {String} dataset_id
+         * @param  {Json} datasetdata  json to display in leaflet
+         */
         var addPreviewMap = function(dataset_id, datasetdata) {
             var bloc = obj.find('.dataset-result[data-dataset="' + dataset_id + '"]');
             var geojson_links = bloc.find('.resources-list a[data-format="JSON"],.resources-list a[data-format="GEOJSON"]');
@@ -302,7 +322,9 @@ DESACTIVATION CHECKURL (car probleme API)
             });
         }
 
-
+         /**
+         * Display a dataset
+         */
         _Metaclic.displayDataset = function() {
             var url = API_ROOT + 'datasets/' + options.dataset + '/';
             jQuery.getJSON(url, function(data) {
@@ -331,8 +353,13 @@ DESACTIVATION CHECKURL (car probleme API)
         return _Metaclic;
     };
 
-    //////////////////// UDATAMAP
-
+    /**
+    * Constructor of a Map
+    *
+    * @param  {String} dataset_id
+    * @param  {Array} ori_options
+    * @param  {Json} datasetdata
+    */
     MetaclicMap = function(obj, ori_options, datasetdata) {
 
         var _MetaclicMap = {};
@@ -357,7 +384,13 @@ DESACTIVATION CHECKURL (car probleme API)
         options = jQuery.extend({}, defaults, ori_options || {});
         var map = null;
 
-
+        /**
+        * Add a background layer to the map
+        *
+        * @param  {String} title
+        * @param  {Obj} layer
+        * @param  {Bool} show
+        */
         _MetaclicMap.addBackground = function(title, layer, show) {
             backgroundLayers[title] = layer;
             if (show === true) layer.addTo(map);
@@ -365,6 +398,9 @@ DESACTIVATION CHECKURL (car probleme API)
 
         }
 
+         /**
+        * Init a new map
+        */
         var initMap = function() {
             obj.append(jQuery('<div class="geojson_preview card card-5"><div class="map map_preview"></div>' + (options.title ? '<h4>' + options.title + '</h4>' : '') + '<ul class="resources"></ul></div>'));
 
@@ -411,8 +447,9 @@ DESACTIVATION CHECKURL (car probleme API)
 
         }; //FIN initMap
 
-
-
+        /**
+        * Update bbox
+        */
         var updateBBoxAndLayerController = function() {
             var bounds = null;
             for (var i in loadedLayers) {
@@ -466,6 +503,12 @@ DESACTIVATION CHECKURL (car probleme API)
             return L.marker(latlng)
         }
 
+         /**
+        * Add a new ressource to the dataset
+        *
+        * @param  {Obj} resource
+        * @param  {Obj} data_dataset
+        */
         var addResource = function(resource, data_dataset) {
 
             jQuery.each(data_dataset.resources, function(k, val) {
@@ -572,7 +615,11 @@ DESACTIVATION CHECKURL (car probleme API)
         }
 
 
-
+         /**
+        * Display a new GeoJson resource
+        *
+        * @param  {Obj} resource
+        */
         var loadResource = function(resource) {
 
             var resource_defaults = {
@@ -633,7 +680,9 @@ DESACTIVATION CHECKURL (car probleme API)
     var featurelength_limit = 2000 * 100; //nb max d'objet geojson
 
 
-
+     /**
+    * Check and add all the libraries used by metaclic
+    */
     var checklibs = function() {
         var dependences = {
             'Handlebars': 'https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.2/handlebars.min.js',
@@ -671,7 +720,9 @@ DESACTIVATION CHECKURL (car probleme API)
 
 
 
-
+    /**
+    * Launch the loading of the catalog
+    */
     var start = function() {
 
         var container = _Metaclic.container;
@@ -1065,7 +1116,11 @@ DESACTIVATION CHECKURL (car probleme API)
 
             }
 
-
+            /**
+            * Load and display a dataset
+            *
+            * @param  {String} id
+            */
             var loadDataSet = function(id) {
 
                 if (jQuery('div.dataset[data-dataset="' + id + '"]').length) {
@@ -1344,6 +1399,11 @@ DESACTIVATION CHECKURL (car probleme API)
         _Metaclic.container.html('<p class="error">Serveur ' + API_ROOT + ' injoignable</p>')
     }
 
+     /**
+    * Get organization name from the Id
+    *
+    * @param  {String} org
+    */
     var getOrganizationName = function(org) {
         var url = API_ROOT + 'organizations/' + org + '/';
         jQuery.getJSON(url, function(data) {

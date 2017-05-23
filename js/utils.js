@@ -1,3 +1,7 @@
+/**
+ * Utils functions used in metaclic
+ */
+
 MetaclicUtils.urlify = function (text) {
     if ('string' != typeof text) return text;
     var urlRegex = /(https?:\/\/[^\s]+)/g;
