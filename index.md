@@ -6,4 +6,7 @@ Ce logiciel a été développé dans le cadre du projet [http://www.opendatalab.
 
 [Documentation](https://github.com/datakode/metaclic/wiki)<br>
 [Exemple](http://datakode.github.io/metaclic/exemples/exemple_simple.html)<br>
-[Galerie](https://github.com/datakode/metaclic/wiki/Gallerie)
+[Fonctionnalités](https://github.com/datakode/metaclic/wiki/Fonctionnalit%C3%A9s)<br>
+[Galerie](https://github.com/datakode/metaclic/wiki/Galerie)<br>
+[Intégration simple](https://github.com/datakode/metaclic/wiki/Int%C3%A9gration-simple)<br>
+[Personnalisation](https://github.com/datakode/metaclic/wiki/Personnalisation)
