@@ -26,23 +26,22 @@
 
         console.log(feature.properties);
 
-        switch(feature.properties.CODEZONE) {
-            case 'Rouge':
+        switch(feature.properties.NOM) {
+            case 'Zone rouge':
             color="#ff0000";
             break;
-            case 'Bleue':
+            case 'Zone bleue':
             color="#0000ff";
             break;
-            case 'Violet':
+            case 'Zone violette':
             color="#ff00ff";
             break;
-            case 'Violette':
+            case 'Zone violet':
             color="#ff00ff";
             break;
-             case 'Vert':
+             case 'Zone verte':
             color="#00ff00";
             break;
-
             default:
              console.log(feature.properties.CODEZONE+' not found');
         }
